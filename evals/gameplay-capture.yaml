@@ -1,0 +1,25 @@
+version: 1
+service: gameplay-capture
+milestone: MGSF-M0.3
+required_status: PASS
+criteria:
+  - id: media_present
+    description: At least one media artifact exists.
+  - id: media_integrity_indexed
+    description: Every media artifact has non-zero bytes and a SHA-256 digest.
+  - id: timeline_present
+    description: At least one timestamped event exists.
+  - id: input_trace_present
+    description: At least one input event exists.
+  - id: observable_result_present
+    description: At least one observation, result, or friction event exists.
+  - id: media_traceable
+    description: Every referenced media ID resolves to a captured artifact.
+  - id: evidence_class_disclosed
+    description: The source explicitly states whether media is direct, reconstructed, or synthetic.
+promotion_gate:
+  target_stage: active
+  blocked_until:
+    - direct_recorded_gameplay_capture_exists
+    - capture_eval_passes
+    - evidence_bundle_exists
