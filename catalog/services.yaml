@@ -2,12 +2,17 @@ version: 1
 services:
   - id: playtest-report
     name: Game Playtest AI
-    stage: incubation
+    stage: active
     problem: Detect player friction and turn it into traceable, actionable playtest findings.
     related_repo: madowaku/mado-game-experience-loop
-    milestone: MGSF-M0.1
+    milestone: MGSF-M0.2
     entrypoint: mgsf playtest-report
     eval: evals/playtest-report.yaml
+    service_contract: services/active/playtest-report/SERVICE.md
+    dogfood:
+      repository: madowaku/vertical-slice
+      evidence_class: real_project_headless_test
+      status: PASS
 
   - id: build-doctor
     name: Game Build Doctor
