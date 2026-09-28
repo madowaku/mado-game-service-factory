@@ -26,15 +26,7 @@ The factory must prefer working, testable services over speculative infrastructu
 - Never describe modeled experience values as human measurements.
 - Never describe reconstructed or synthetic media as a direct gameplay capture.
 - For direct media, preserve source SHA, media hash, dimensions, and capture provenance.
-
-## Required artifacts for a promoted service
-- service spec
-- runnable implementation
-- deterministic fixture
-- eval definition
-- Evidence Bundle
-- real-project dogfood
-- catalog entry with lifecycle stage
+- Do not claim paid-release readiness before external-user and final license/dependency review evidence exists.
 
 ## Lifecycle
 candidate -> incubation -> active -> retired
@@ -42,16 +34,31 @@ candidate -> incubation -> active -> retired
 A service may move backward if evidence degrades.
 
 ## Current milestone
-MGSF-M0.3b: Godot Capture Adapter — complete
+MGSF-M0.4: Windows Product Pack — complete
 
 ## Active services
 - `playtest-report`
 - `gameplay-capture`
 
-## Direct capture evidence
-`gameplay-capture` was promoted after a real Godot 4.7.2 render produced two 1280x720 PNG frames from `madowaku/vertical-slice`.
+## Product preview
+`MADO Playtest Evidence 0.4.0` builds as a single-file Windows x64 executable and is distributed with an offline sample, privacy statement, preview license, third-party notices, support instructions, sample report, and per-file release hashes.
 
-The direct media passed capture integrity checks, preserved `recorded_gameplay_capture`, and reached a final playtest finding with media hashes intact.
+Windows verification:
+
+- run `36493989574`
+- job `109169128163`
+- 15 tests passed
+- bundled demo PASS
+- sample analyze PASS
+- versioned ZIP uploaded as artifact `11001819146`
 
 ## Next boundary
-Prefer product packaging and a second adapter/project proof over additional internal architecture. A portable Windows release is now more valuable than another abstraction layer.
+MGSF-M0.5 should measure external-user friction rather than add internal architecture.
+
+Prioritize:
+- unzip and first-run comprehension
+- Windows SmartScreen/antivirus friction
+- Godot discovery/setup friction
+- usefulness of the generated report
+- privacy/license comprehension
+- evidence needed before a paid itch.io preview
