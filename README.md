@@ -16,7 +16,7 @@ DISCOVER
 
 ## Current milestone
 
-**MGSF-M0: Factory Skeleton**
+**MGSF-M0.1: playtest-report incubation service**
 
 Factoryの仕事は「たくさん作る」ことではありません。実際のゲーム開発でdogfoodでき、Evidence Bundleを残し、evalを通過したサービスだけを育てます。
 
@@ -31,36 +31,71 @@ mgsf list
 pytest
 ```
 
+Run the deterministic playtest-report fixture:
+
+```bash
+mgsf playtest-report fixtures/playtest-report/mgel-session-001
+```
+
+Output:
+
+```text
+evidence/playtest-report/fixture-001/session-001/
+├── manifest.json
+├── report.json
+├── report.md
+├── eval.json
+└── run.log
+```
+
+## MGSF-M0.1
+
+`playtest-report` consumes an MGEL M0 Evidence Bundle and converts each friction event into one developer-facing finding with:
+
+- deterministic severity
+- source event ID and step index
+- player impact
+- reproduction steps
+- expected vs actual result
+- recommendation
+- confusion / surprise evidence
+
+The service fails closed if source identity, event counts, friction counts, or event traceability do not agree.
+
+The committed fixture is expected to produce one high-severity finding for `event-001` and a passing service eval.
+
+**Important:** passing the deterministic fixture moves the service into incubation only. Promotion to `active` still requires real-project dogfood evidence.
+
 ## Mission 001
 
-最初の自走ミッションは、既存MADO資産からゲーム開発サービス候補を10件抽出し、3件をMVP候補に絞り、最小の1件を実装・dogfood・evalすることです。
+The first autonomous mission discovered ten service candidates and selected three MVPs. The first build is **Game Playtest AI / playtest-report**.
 
-現在のfirst buildは **Game Playtest AI / playtest-report**。
-
-候補と根拠は `missions/mission-001-candidates.yaml` に保存しています。
+Candidate rationale lives in `missions/mission-001-candidates.yaml`.
 
 ## Repository map
 
-- `AGENTS.md` - Codexの自走契約とguardrail
-- `docs/MADO_GAME_SERVICE_FACTORY_SPEC.md` - Factory仕様 v0.1
-- `catalog/services.yaml` - サービスのmachine-readable catalog
-- `missions/mission-001.md` - 最初の自走ミッション
-- `missions/mission-001-candidates.yaml` - 10候補とMVP選定
-- `src/mgsf/` - Factory CLI
+- `AGENTS.md` - Codex operating contract and guardrails
+- `docs/MADO_GAME_SERVICE_FACTORY_SPEC.md` - Factory specification v0.1
+- `catalog/services.yaml` - machine-readable service catalog
+- `missions/` - autonomous factory missions
+- `services/incubation/playtest-report/` - M0.1 service contract
+- `evals/playtest-report.yaml` - M0.1 promotion eval
+- `fixtures/playtest-report/` - deterministic MGEL input fixture
+- `src/mgsf/` - Factory and service CLI
 - `tests/` - deterministic checks
-- `evidence/` - 生成Evidence Bundle。git管理外
+- `evidence/` - generated Evidence Bundles, excluded from git
 
 ## Guardrails
 
-- SaaS UIから作らない
-- auth / billingから作らない
-- speculative infrastructureを作らない
-- fixtureだけで成功扱いしない
-- Evidence Bundleなしでactiveへ昇格しない
-- CLI -> local API -> Web UI -> hosted service の順で価値を証明する
+- Do not start with SaaS UI.
+- Do not start with auth or billing.
+- Do not build speculative infrastructure.
+- Do not treat fixture success as active-service proof.
+- Do not promote without an Evidence Bundle.
+- Prove value in the order CLI -> local API -> Web UI -> hosted service.
 
 ## Related MADO foundations
 
-Mission 001は既存の `mado-game-experience-loop`, `mado-loop`, `vertical-slice`, `mado-system-one`, `mado-vibe-shipping` を最初の観測対象にしています。
+Mission 001 currently builds on `mado-game-experience-loop`, `mado-loop`, `vertical-slice`, `mado-system-one`, and `mado-vibe-shipping`.
 
-次の実装境界は **MGSF-M0.1: playtest-report incubation service** です。
+Next gate: **dogfood playtest-report against non-fixture game evidence before active promotion**.
