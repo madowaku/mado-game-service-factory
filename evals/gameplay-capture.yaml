@@ -1,6 +1,6 @@
 version: 1
 service: gameplay-capture
-milestone: MGSF-M0.3
+milestone: MGSF-M0.3b
 required_status: PASS
 criteria:
   - id: media_present
@@ -19,7 +19,15 @@ criteria:
     description: The source explicitly states whether media is direct, reconstructed, or synthetic.
 promotion_gate:
   target_stage: active
-  blocked_until:
-    - direct_recorded_gameplay_capture_exists
-    - capture_eval_passes
-    - evidence_bundle_exists
+  satisfied:
+    direct_recorded_gameplay_capture_exists: true
+    capture_eval_passes: true
+    evidence_bundle_exists: true
+    direct_media_reaches_finding: true
+  evidence:
+    source_repository: madowaku/vertical-slice
+    source_sha: f0514229d7f2036ec25646d09e3647c8d870dadb
+    factory_run_id: 36488219481
+    factory_job_id: 109150207262
+    artifact_id: 11000425066
+    result: dogfood/vertical-slice-c6-direct/RESULT.md
