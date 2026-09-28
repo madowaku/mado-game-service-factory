@@ -57,6 +57,14 @@ jobs:
           --source-sha f0514229d7f2036ec25646d09e3647c8d870dadb
           --output-root ci-evidence
 
+      - name: Summarize direct capture evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat ci-evidence/godot-capture-adapter/vertical-slice-c6-direct/adapter_eval.json
+          sha256sum ci-evidence/godot-capture-adapter/vertical-slice-c6-direct/raw-capture/*.png
+          file ci-evidence/godot-capture-adapter/vertical-slice-c6-direct/raw-capture/*.png
+
       - run: pytest -q
 
       - uses: actions/upload-artifact@v4
