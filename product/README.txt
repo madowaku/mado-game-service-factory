@@ -75,7 +75,24 @@ RELEASE-MANIFEST.json
 SUPPORT.txt
   Support and issue-reporting information.
 
+VERIFICATION
+
+The 0.4.0 Windows pack has been built and smoke-tested on a clean GitHub
+Windows runner.
+
+Verified:
+- mado-playtest.exe --version
+- self-check
+- bundled demo
+- sample analyze
+- 15 automated tests
+
+The distributed executable is unsigned in this preview. Windows SmartScreen or
+antivirus reputation warnings may appear on some machines. External tester
+evidence is the next product milestone.
+
 LIMITS OF THIS PREVIEW
+
 
 - No GUI yet.
 - No automatic instrumentation of arbitrary Godot games.
