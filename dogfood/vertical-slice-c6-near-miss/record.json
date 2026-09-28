@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "source": {
+    "repository": "madowaku/vertical-slice",
+    "source_head_sha": "7597c87bae0e66afbdb09165496843da10b0a221",
+    "tested_merge_sha": "6a2e49bd3bc20b18ccd99a825fa332380685fc4c",
+    "main_merge_sha": "9e06cdefdcad9b951fb64bae6b50873702aec03f",
+    "workflow_run_id": 33968989364,
+    "workflow_job_id": 101314031594,
+    "engine": "Godot 4.7.2 stable",
+    "test_suite": "C6 playfeel",
+    "test_file": "tests/test_c6_playfeel.gd",
+    "evidence_class": "real_project_headless_test",
+    "required_log_markers": [
+      "Godot Engine v4.7.2.stable.official.ed1daf0bf",
+      "C6 playfeel: 24 / 0 failures",
+      "Tests: 794 passed",
+      "Failures: 0"
+    ]
+  },
+  "session": {
+    "fixture_id": "vertical-slice-c6-near-miss",
+    "session_id": "dogfood-001",
+    "player_id": "bridge-fresh-player-001"
+  },
+  "scenario": {
+    "id": "c6-near-miss",
+    "step_index": 1,
+    "observation": "On board 01, the blind player has walked two RIGHT beats with STOP between them and is one cell short of the watermelon before the final swing.",
+    "action": "SWING",
+    "expected_result": "The swing succeeds because the player believes the target has been reached.",
+    "actual_result": "The swing misses one cell early; the reveal confirms the watermelon was next door.",
+    "friction": true,
+    "category": "near_miss",
+    "reason": "The modeled player expectation conflicts with the verified one-cell-early miss.",
+    "confusion": 0.3,
+    "surprise": 0.6,
+    "recommendation": "Keep the adjacent-miss reveal explicit and consider surfacing equally clear feedback at RESULT so the player understands the miss before entering REVEAL."
+  }
+}
