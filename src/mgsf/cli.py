@@ -4,7 +4,7 @@ import argparse
 from pathlib import Path
 
 from .catalog import load_catalog
-from .gameplay_capture import run_gameplay_capture
+from .gameplay_capture import run_capture_playtest, run_gameplay_capture
 from .playtest_report import run_playtest_report
 from .real_game_bridge import run_real_game_bridge, run_real_game_dogfood
 
@@ -50,6 +50,22 @@ def main() -> int:
         type=Path,
         default=Path("evidence"),
         help="root directory for gameplay capture evidence",
+    )
+
+    capture_report = sub.add_parser(
+        "capture-playtest-report",
+        help="Package gameplay capture evidence and turn captured friction into a playtest report",
+    )
+    capture_report.add_argument(
+        "capture_root",
+        type=Path,
+        help="capture directory containing capture.json, timeline.jsonl, and media",
+    )
+    capture_report.add_argument(
+        "--output-root",
+        type=Path,
+        default=Path("evidence"),
+        help="root directory for capture and report evidence",
     )
 
     bridge = sub.add_parser(
@@ -110,6 +126,17 @@ def main() -> int:
             f"events={result.event_count} eval={result.eval_status}"
         )
         return 0 if result.eval_status == "PASS" else 1
+
+    if args.command == "capture-playtest-report":
+        result = run_capture_playtest(args.capture_root, args.output_root)
+        print(f"Capture evidence: {result.capture.root}")
+        print(f"MGEL bridge: {result.mgel_root}")
+        print(f"Playtest report: {result.report_root}")
+        print(
+            f"capture-playtest findings={result.finding_count} "
+            f"eval={result.status}"
+        )
+        return 0 if result.status == "PASS" else 1
 
     if args.command == "real-game-bridge":
         result = run_real_game_bridge(args.record, args.runtime_log, args.output_root)
