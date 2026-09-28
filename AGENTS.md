@@ -25,6 +25,7 @@ The factory must prefer working, testable services over speculative infrastructu
 - Every service must have a machine-readable catalog entry.
 - Never describe modeled experience values as human measurements.
 - Never describe reconstructed or synthetic media as a direct gameplay capture.
+- For direct media, preserve source SHA, media hash, dimensions, and capture provenance.
 
 ## Required artifacts for a promoted service
 - service spec
@@ -41,15 +42,16 @@ candidate -> incubation -> active -> retired
 A service may move backward if evidence degrades.
 
 ## Current milestone
-MGSF-M0.3: Gameplay Evidence Capture
+MGSF-M0.3b: Godot Capture Adapter — complete
 
-## Current active service
-`playtest-report` is active with deterministic and real-project headless dogfood evidence.
+## Active services
+- `playtest-report`
+- `gameplay-capture`
 
-## Current incubation service
-`gameplay-capture` packages gameplay media and timestamped events with SHA-256 integrity indexing.
+## Direct capture evidence
+`gameplay-capture` was promoted after a real Godot 4.7.2 render produced two 1280x720 PNG frames from `madowaku/vertical-slice`.
 
-Its first fixture uses `reconstructed_from_verified_state`, so it proves the capture contract but does not satisfy active promotion.
+The direct media passed capture integrity checks, preserved `recorded_gameplay_capture`, and reached a final playtest finding with media hashes intact.
 
-## M0.3 promotion gate
-Do not promote `gameplay-capture` until at least one `recorded_gameplay_capture` from a real running game passes the capture eval and produces a durable Evidence Bundle.
+## Next boundary
+Prefer product packaging and a second adapter/project proof over additional internal architecture. A portable Windows release is now more valuable than another abstraction layer.
