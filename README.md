@@ -55,16 +55,16 @@ mado-playtest.exe godot <godot-project> [--godot <Godot.exe>]
 
 Windows verification:
 
-- workflow run `36493989574`
-- job `109169128163`
+- workflow run `36494396400`
+- job `109170434996`
 - 15 tests passed
 - executable version check passed
 - bundled demo produced one finding and PASS
 - sample analyze produced one finding and PASS
 - packaged files: 14
-- product ZIP: 8,141,141 bytes
-- ZIP SHA-256: `690921e45c71308e6f4442fb10e411775349b7b5a96d12ba45e0cc259bdd553b`
-- artifact: `11001819146`
+- product ZIP: 8,142,722 bytes
+- ZIP SHA-256: `4dbb4a53f95c56fc7177cbe653542ec28add4e84beaa5e0d9a59bb4676f204a2`
+- artifact: `11002044584`
 
 ## Active game-evidence services
 
