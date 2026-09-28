@@ -24,6 +24,7 @@ The factory must prefer working, testable services over speculative infrastructu
 - Keep service-specific code isolated from factory orchestration.
 - Every service must have a machine-readable catalog entry.
 - Never describe modeled experience values as human measurements.
+- Never describe reconstructed or synthetic media as a direct gameplay capture.
 
 ## Required artifacts for a promoted service
 - service spec
@@ -40,12 +41,15 @@ candidate -> incubation -> active -> retired
 A service may move backward if evidence degrades.
 
 ## Current milestone
-MGSF-M0.2: Real Game Dogfood Bridge — complete
+MGSF-M0.3: Gameplay Evidence Capture
 
-## Mission 001 status
-Mission 001 has produced its first active service: `playtest-report`.
+## Current active service
+`playtest-report` is active with deterministic and real-project headless dogfood evidence.
 
-Its promotion is backed by both deterministic fixture evidence and `madowaku/vertical-slice` real-project Godot headless evidence.
+## Current incubation service
+`gameplay-capture` packages gameplay media and timestamped events with SHA-256 integrity indexing.
 
-## Next boundary
-MGSF-M0.3 should increase evidence fidelity rather than add SaaS surface area. Prefer a live/recorded gameplay capture adapter, screenshot/video evidence, or human-observation ingestion over auth, billing, or hosted UI.
+Its first fixture uses `reconstructed_from_verified_state`, so it proves the capture contract but does not satisfy active promotion.
+
+## M0.3 promotion gate
+Do not promote `gameplay-capture` until at least one `recorded_gameplay_capture` from a real running game passes the capture eval and produces a durable Evidence Bundle.
