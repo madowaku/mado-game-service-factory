@@ -1,0 +1,11 @@
+[
+  {
+    "action": "open_hatch",
+    "actual_result": "The hatch stays closed. Nothing changes.",
+    "confusion": 0.8,
+    "event_id": "event-001",
+    "reason": "The selected action did not change the fixture state.",
+    "step_index": 1,
+    "surprise": 0.7
+  }
+]
