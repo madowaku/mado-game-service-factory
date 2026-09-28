@@ -16,142 +16,110 @@ DISCOVER
 
 ## Current milestone
 
-**MGSF-M0.3b: Godot Capture Adapter — complete**
+**MGSF-M0.4: Windows Product Pack — complete**
 
 Current lifecycle:
 
 ```text
 playtest-report    active
 gameplay-capture   active
+Windows product    preview verified
 ```
 
-The system now supports a real customer-visible loop:
+The system now supports both the internal evidence loop and a portable external-facing Windows preview:
 
 ```text
-run Godot game
+run game
   -> capture rendered frames
   -> preserve input/result timeline
   -> hash media evidence
-  -> bridge friction into MGEL
   -> generate playtest finding
-  -> retain exact media evidence
+  -> package as mado-playtest.exe
+  -> ship sample + docs + release manifest in a ZIP
 ```
 
-## Quick start
+## Windows product preview
 
-Requirements: Python 3.11+
+Product:
 
-```bash
-python -m pip install -e ".[dev]"
-mgsf validate-catalog
-mgsf list
-pytest
-```
+`MADO Playtest Evidence 0.4.0`
 
-Capture an existing contract:
-
-```bash
-mgsf gameplay-capture <capture-dir>
-```
-
-Capture through a playtest report:
-
-```bash
-mgsf capture-playtest-report <capture-dir>
-```
-
-Run a Godot capture scene:
-
-```bash
-mgsf godot-capture <godot-project> \
-  --godot /path/to/godot
-```
-
-On Linux CI, add `--xvfb`.
-
-## MGSF-M0.3b proof
-
-First direct target:
-
-`madowaku/vertical-slice`
-
-Capture SHA:
-
-`f0514229d7f2036ec25646d09e3647c8d870dadb`
-
-Factory CI:
-
-- run `36488219481`
-- job `109150207262`
-- adapter eval: PASS
-- finding count: 1
-- tests: 12 passed
-- evidence artifact: `11000425066`
-
-Direct frames:
+Customer-facing commands:
 
 ```text
-before-swing.png
-1280 x 720 RGBA
-sha256 ac5c0ec22875fe6222021fc82d420abd3195a518904cbd39febd8ff953d7ddcd
-
-reveal.png
-1280 x 720 RGBA
-sha256 126240e5e70057d17be6322137d3c662c4361a993ce39b2cf4157a2322a98d51
+mado-playtest.exe self-check
+mado-playtest.exe demo
+mado-playtest.exe analyze <capture-dir>
+mado-playtest.exe godot <godot-project> [--godot <Godot.exe>]
 ```
 
-The adapter eval explicitly verified:
+Windows verification:
+
+- workflow run `36493989574`
+- job `109169128163`
+- 15 tests passed
+- executable version check passed
+- bundled demo produced one finding and PASS
+- sample analyze produced one finding and PASS
+- packaged files: 14
+- product ZIP: 8,141,141 bytes
+- ZIP SHA-256: `690921e45c71308e6f4442fb10e411775349b7b5a96d12ba45e0cc259bdd553b`
+- artifact: `11001819146`
+
+## Active game-evidence services
+
+### playtest-report
+
+Turns MGEL-compatible friction evidence into traceable developer-facing findings.
+
+### gameplay-capture
+
+Preserves media, timestamps, SHA-256 integrity, and captured friction. A Godot adapter has proven direct `recorded_gameplay_capture` with real 1280x720 PNG frames.
+
+## Product pack
 
 ```text
-recorded_gameplay_capture = true
-direct_media_reaches_finding = true
-status = PASS
+MADO-Playtest-Evidence-0.4.0-win-x64/
+├── mado-playtest.exe
+├── README.txt
+├── PRIVACY.txt
+├── PRODUCT_LICENSE.txt
+├── THIRD_PARTY_NOTICES.txt
+├── SUPPORT.txt
+├── RELEASE_NOTES.txt
+├── RELEASE-MANIFEST.json
+└── examples/
+    ├── sample-capture/
+    └── sample-report/
 ```
 
-## Fresh checkout behavior
-
-The Godot adapter performs a headless editor preflight before capture so fresh clones can generate/import Godot's project metadata and global script-class cache.
-
-Then it launches the capture scene with an actual display surface. Linux CI uses Xvfb; local Windows usage does not need it.
-
-## Evidence classes
-
-```text
-recorded_gameplay_capture
-reconstructed_from_verified_state
-synthetic_capture_fixture
-```
-
-They remain intentionally separate.
-
-Only `recorded_gameplay_capture` is treated as direct gameplay media.
+The product executable has no intentional telemetry or automatic cloud upload in 0.4.0.
 
 ## Repository map
 
 - `AGENTS.md` - Codex operating contract and guardrails
 - `docs/MADO_GAME_SERVICE_FACTORY_SPEC.md` - Factory specification
-- `docs/MGSF_M0_2_REAL_GAME_DOGFOOD_BRIDGE.md` - real-game bridge contract
+- `docs/MGSF_M0_2_REAL_GAME_DOGFOOD_BRIDGE.md` - real-game bridge
 - `docs/MGSF_M0_3_GAMEPLAY_EVIDENCE_CAPTURE.md` - capture contract
 - `docs/MGSF_M0_3B_GODOT_CAPTURE_ADAPTER.md` - direct Godot adapter
-- `docs/ITCH_IO_PRODUCTIZATION.md` - productization gate
-- `catalog/services.yaml` - machine-readable service catalog
-- `services/active/` - promoted services
-- `dogfood/` - real-project dogfood records
-- `evals/` - service and promotion evals
-- `fixtures/` - deterministic fixtures
-- `src/mgsf/` - Factory and service CLI
-- `tests/` - deterministic checks
+- `docs/MGSF_M0_4_WINDOWS_PRODUCT_PACK.md` - Windows packaging
+- `docs/ITCH_IO_PRODUCTIZATION.md` - commercialization gate
+- `product/` - customer-facing package documents
+- `packaging/windows/` - frozen executable build inputs
+- `scripts/build_windows_product.py` - versioned pack builder
+- `dogfood/` - real-project and product proof
+- `src/mgsf/` - Factory, services, adapters, and product CLI
 
 ## Guardrails
 
-- Do not start with SaaS UI.
-- Do not start with auth or billing.
-- Do not build speculative infrastructure.
 - Do not call modeled psychometric values human measurements.
 - Do not call reconstructed media screenshots.
 - Preserve source and media provenance.
-- Prove value before adding product chrome.
+- Keep downloaded product behavior local unless a future network feature is explicitly disclosed.
+- Do not call the preview paid-release-ready until external-user and final legal/third-party review gates pass.
 
 ## Next boundary
 
-The highest-value next step is a portable Windows product package for external testers, not another internal service layer.
+**MGSF-M0.5: External Tester Preview**
+
+The highest-value evidence now comes from someone who did not build the system: can they unzip it, understand it, run the demo, and get useful evidence without guidance?
