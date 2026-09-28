@@ -16,12 +16,17 @@ services:
 
   - id: gameplay-capture
     name: Gameplay Evidence Capture
-    stage: incubation
+    stage: active
     problem: Preserve screenshots, video, and input/result timing as integrity-checked gameplay evidence.
-    milestone: MGSF-M0.3
+    milestone: MGSF-M0.3b
     entrypoint: mgsf gameplay-capture
+    adapter_entrypoint: mgsf godot-capture
     eval: evals/gameplay-capture.yaml
-    service_contract: services/incubation/gameplay-capture/SERVICE.md
+    service_contract: services/active/gameplay-capture/SERVICE.md
+    dogfood:
+      repository: madowaku/vertical-slice
+      evidence_class: recorded_gameplay_capture
+      status: PASS
 
   - id: build-doctor
     name: Game Build Doctor
