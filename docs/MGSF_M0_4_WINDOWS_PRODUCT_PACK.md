@@ -75,11 +75,11 @@ The license is explicitly marked for publisher review before the first paid publ
 
 Workflow run:
 
-`36493989574`
+`36494396400`
 
 Job:
 
-`109169128163`
+`109170434996`
 
 Verification:
 
@@ -94,14 +94,14 @@ Product ZIP:
 
 ```text
 MADO-Playtest-Evidence-0.4.0-win-x64.zip
-8,141,141 bytes
-sha256 690921e45c71308e6f4442fb10e411775349b7b5a96d12ba45e0cc259bdd553b
+8,142,722 bytes
+sha256 4dbb4a53f95c56fc7177cbe653542ec28add4e84beaa5e0d9a59bb4676f204a2
 14 packaged files
 ```
 
 Artifact:
 
-`11001819146`
+`11002044584`
 
 ## M0.4 completion criteria
 
