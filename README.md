@@ -110,7 +110,7 @@ evidence/
         └── run.log
 ```
 
-CI publishes the generated `.ci-evidence` tree as a GitHub Actions artifact.
+CI publishes the generated `ci-evidence` tree as a GitHub Actions artifact.
 
 ## Repository map
 
