@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any
 
 SERVICE_ID = "playtest-report"
-SERVICE_VERSION = "0.1.0"
+SERVICE_VERSION = "0.1.1"
 REQUIRED_FILES = (
     "session.json",
     "experience_trace.jsonl",
@@ -156,6 +156,18 @@ def _impact_for(severity: str) -> str:
     )
 
 
+def _default_recommendation(category: str) -> str:
+    if category == "near_miss":
+        return (
+            "Make the miss and remaining gap legible at result time so the player can "
+            "understand how close the attempt was before entering reveal."
+        )
+    return (
+        "Clarify the prerequisite or strengthen immediate failure feedback "
+        "so the player can infer the next useful action."
+    )
+
+
 def build_report(bundle: dict[str, Any]) -> dict[str, Any]:
     trace_by_id = {event["event_id"]: event for event in bundle["trace"]}
     findings: list[dict[str, Any]] = []
@@ -170,6 +182,23 @@ def build_report(bundle: dict[str, Any]) -> dict[str, Any]:
         step_index = int(friction.get("step_index", trace_event.get("step_index", 0)))
         observation = str(trace_event.get("observation", ""))
         expected_result = str(trace_event.get("expected_result", ""))
+        category = str(friction.get("category", "blocked_progress"))
+        title = (
+            f"Action `{action}` produced a verified near miss"
+            if category == "near_miss"
+            else f"Action `{action}` did not advance the game state"
+        )
+        recommendation = str(
+            friction.get("recommendation", _default_recommendation(category))
+        )
+
+        evidence = {
+            "reason": str(friction.get("reason", "")),
+            "confusion": float(friction.get("confusion", 0.0)),
+            "surprise": float(friction.get("surprise", 0.0)),
+        }
+        if "bridge_policy" in friction:
+            evidence["bridge_policy"] = friction["bridge_policy"]
 
         findings.append(
             {
@@ -177,8 +206,8 @@ def build_report(bundle: dict[str, Any]) -> dict[str, Any]:
                 "source_event_id": friction["event_id"],
                 "step_index": step_index,
                 "severity": severity,
-                "category": "blocked_progress",
-                "title": f"Action `{action}` did not advance the game state",
+                "category": category,
+                "title": title,
                 "player_impact": _impact_for(severity),
                 "reproduction_steps": [
                     f"Start fixture `{bundle['fixture_id']}` with a fresh player.",
@@ -188,15 +217,8 @@ def build_report(bundle: dict[str, Any]) -> dict[str, Any]:
                 ],
                 "expected_result": expected_result,
                 "actual_result": actual_result,
-                "recommendation": (
-                    "Clarify the prerequisite or strengthen immediate failure feedback "
-                    "so the player can infer the next useful action."
-                ),
-                "evidence": {
-                    "reason": str(friction.get("reason", "")),
-                    "confusion": float(friction.get("confusion", 0.0)),
-                    "surprise": float(friction.get("surprise", 0.0)),
-                },
+                "recommendation": recommendation,
+                "evidence": evidence,
             }
         )
 
