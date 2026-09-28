@@ -1,6 +1,6 @@
 # itch.io Productization Gate
 
-Status: draft
+Status: direct-capture proof complete; packaging gate remains
 
 ## Product shape
 
@@ -20,6 +20,7 @@ Internal services:
 
 - gameplay-capture
 - playtest-report
+- Godot capture adapter
 - real-game bridge
 
 Customer-facing promise:
@@ -27,27 +28,48 @@ Customer-facing promise:
 ```text
 record play
   -> capture screenshots/video + inputs
-  -> detect/record friction
-  -> generate evidence-backed report
+  -> preserve evidence
+  -> generate a report tied to exact frames
 ```
 
 ## Paid-release gate
 
-Do not treat the current reconstructed M0.3 fixture as a paid-product proof.
+Technical proof completed:
 
-Before the first paid release:
+- [x] direct `recorded_gameplay_capture` from a running game passes
+- [x] at least one Godot project is captured end-to-end
+- [x] capture-to-report finding includes direct media hashes
 
-- direct `recorded_gameplay_capture` from a running game passes
-- at least one Godot project is captured end-to-end
-- capture-to-report finding includes direct media hashes
-- portable Windows package exists
-- first-run command or launcher is documented
-- sample project/session is included
-- privacy behavior is documented
-- LICENSE/EULA decision is explicit
-- third-party dependency notices are reviewed
-- versioned release artifact is reproducible
-- support/contact route is documented
+Still required before the first paid release:
+
+- [ ] portable Windows package exists
+- [ ] first-run command or launcher is documented
+- [ ] sample project/session is included
+- [ ] privacy behavior is documented
+- [ ] LICENSE/EULA decision is explicit
+- [ ] third-party dependency notices are reviewed
+- [ ] versioned release artifact is reproducible
+- [ ] support/contact route is documented
+
+## Direct product proof
+
+Source:
+
+`madowaku/vertical-slice@f0514229d7f2036ec25646d09e3647c8d870dadb`
+
+MGSF CI run:
+
+`36488219481`
+
+Evidence:
+
+- two direct 1280x720 RGBA PNG captures
+- SHA-256 indexed media
+- direct media attached to one playtest finding
+- `recorded_gameplay_capture = true`
+- adapter eval PASS
+
+This is sufficient to move productization from “concept” to “working technical slice,” but not yet sufficient for a polished paid release.
 
 ## Distribution shape
 
@@ -72,7 +94,7 @@ Suggested phases:
 
 1. private/free testers
 2. paid early access around the low-teens USD range
-3. raise price after direct capture + polished packaging + multiple-engine proof
+3. raise price after polished packaging + second-engine or broader project proof
 
 A higher tier can later include adapters, batch sessions, comparison reports, or team workflows.
 
