@@ -1,6 +1,6 @@
 version: 1
 service: playtest-report
-milestone: MGSF-M0.1
+milestone: MGSF-M0.2
 required_status: PASS
 criteria:
   - id: source_identity_preserved
@@ -15,7 +15,13 @@ criteria:
     description: Every finding severity is one of high, medium, or low.
 promotion_gate:
   target_stage: active
-  blocked_until:
-    - deterministic_fixture_passes
-    - real_project_dogfood_exists
-    - evidence_bundle_exists
+  satisfied:
+    deterministic_fixture_passes: true
+    real_project_dogfood_exists: true
+    evidence_bundle_exists: true
+  evidence:
+    fixture: fixtures/playtest-report/mgel-session-001
+    real_project_record: dogfood/vertical-slice-c6-near-miss/record.json
+    real_project_result: dogfood/vertical-slice-c6-near-miss/RESULT.md
+    source_workflow_run_id: 33968989364
+    factory_dogfood_run_id: 36438711683
