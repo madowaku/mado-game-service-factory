@@ -1,0 +1,26 @@
+{
+  "fixture_id": "fixture-001",
+  "fresh_player": {
+    "game_specific_memory": {},
+    "initial_game_specific_memory": {},
+    "player_id": "fresh-player-001"
+  },
+  "initial_player_mind": {
+    "attention_target": "open_hatch",
+    "confidence": 0.5,
+    "current_goal": "Make progress while learning the interaction rule.",
+    "expectations": [
+      "The action 'open_hatch' will change the state or reveal a constraint."
+    ],
+    "hypotheses": [
+      "The available actions contain a path toward progress."
+    ],
+    "intended_action": "open_hatch",
+    "perceived_goal": "Find an action that changes the current state.",
+    "uncertainties": [
+      "The effect of the available actions is not yet known."
+    ]
+  },
+  "session_id": "session-001",
+  "status": "completed"
+}
