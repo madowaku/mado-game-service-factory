@@ -1,0 +1,20 @@
+MADO PLAYTEST EVIDENCE - SUPPORT
+
+Preview version: 0.4.0
+
+For preview testing, report reproducible issues at:
+
+https://github.com/madowaku/mado-game-service-factory/issues
+
+Please include:
+- product version
+- Windows version
+- command used
+- Godot version, when relevant
+- adapter/report status
+- the smallest safe log excerpt that reproduces the problem
+
+Do not attach confidential game source, screenshots, or unreleased assets unless
+you intend to share them publicly in the issue.
+
+This preview does not include a guaranteed response-time SLA.
