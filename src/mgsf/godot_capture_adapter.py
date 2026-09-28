@@ -93,6 +93,7 @@ def run_godot_capture_adapter(
         godot,
         "--path",
         str(project),
+        "--scene",
         scene,
     ]
 
@@ -105,9 +106,31 @@ def run_godot_capture_adapter(
             text=True,
             timeout=90,
         )
-    except (OSError, subprocess.TimeoutExpired) as exc:
+    except subprocess.TimeoutExpired as exc:
+        stdout = exc.stdout.decode("utf-8", errors="replace") if isinstance(exc.stdout, bytes) else (exc.stdout or "")
+        stderr = exc.stderr.decode("utf-8", errors="replace") if isinstance(exc.stderr, bytes) else (exc.stderr or "")
+        runtime_log_path.write_text(
+            f"command={' '.join(command)}\n"
+            "returncode=TIMEOUT\n"
+            "--- stdout ---\n"
+            f"{stdout}\n"
+            "--- stderr ---\n"
+            f"{stderr}\n",
+            encoding="utf-8",
+            newline="\n",
+        )
         raise GodotCaptureAdapterError(
-            f"Godot capture process failed to start or timed out: {exc}"
+            f"Godot capture timed out; see {runtime_log_path}"
+        ) from exc
+    except OSError as exc:
+        runtime_log_path.write_text(
+            f"command={' '.join(command)}\n"
+            f"launch_error={exc}\n",
+            encoding="utf-8",
+            newline="\n",
+        )
+        raise GodotCaptureAdapterError(
+            f"Godot capture process failed to start; see {runtime_log_path}"
         ) from exc
 
     runtime_text = (
