@@ -1,0 +1,4 @@
+{"at_ms":1200,"event_id":"capture-event-001","kind":"observation","label":"One cell short before swing","media_id":"frame-before-swing"}
+{"at_ms":1400,"event_id":"capture-event-002","kind":"input","input":"SWING","label":"Blind player confirms swing"}
+{"at_ms":1600,"event_id":"capture-event-003","kind":"friction","label":"Swing misses one cell early","media_id":"frame-before-swing","result":"miss"}
+{"at_ms":1800,"event_id":"capture-event-004","kind":"result","label":"Reveal confirms watermelon was next door","media_id":"frame-reveal"}
