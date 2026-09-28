@@ -1,0 +1,25 @@
+MADO PLAYTEST EVIDENCE 0.4.0 - PRODUCT PREVIEW
+
+First Windows product-pack milestone.
+
+Included:
+- single-file Windows executable
+- self-check command
+- bundled offline sample
+- capture analysis
+- capture-to-playtest reporting
+- Godot capture adapter entrypoint
+- SHA-256 media integrity evidence
+- privacy statement
+- preview product license
+- third-party notices
+- release manifest
+
+Verified technical foundation before packaging:
+- Godot 4.7.2 direct framebuffer capture
+- two 1280x720 RGBA PNG frames
+- recorded_gameplay_capture = true
+- direct_media_reaches_finding = true
+- adapter eval PASS
+
+This preview is intended for external testing, not yet a polished paid release.
