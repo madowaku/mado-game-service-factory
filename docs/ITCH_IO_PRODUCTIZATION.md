@@ -46,11 +46,11 @@ Avoid selling the internal Factory architecture as the product.
 
 Workflow run:
 
-`36493989574`
+`36494396400`
 
 Job:
 
-`109169128163`
+`109170434996`
 
 Product:
 
@@ -64,14 +64,14 @@ mado-playtest 0.4.0
 bundled demo: findings=1 PASS
 sample analyze: findings=1 PASS
 14 packaged files
-ZIP bytes: 8,141,141
+ZIP bytes: 8,142,722
 ZIP SHA-256:
-690921e45c71308e6f4442fb10e411775349b7b5a96d12ba45e0cc259bdd553b
+4dbb4a53f95c56fc7177cbe653542ec28add4e84beaa5e0d9a59bb4676f204a2
 ```
 
 Artifact:
 
-`11001819146`
+`11002044584`
 
 ## Distribution shape
 
