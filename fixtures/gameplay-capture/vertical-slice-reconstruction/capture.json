@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "capture_id": "vertical-slice-c6-reconstruction",
+  "session_id": "capture-001",
+  "source": {
+    "repository": "madowaku/vertical-slice",
+    "source_head_sha": "7597c87bae0e66afbdb09165496843da10b0a221",
+    "tested_merge_sha": "6a2e49bd3bc20b18ccd99a825fa332380685fc4c",
+    "workflow_run_id": 33968989364,
+    "workflow_job_id": 101314031594,
+    "engine": "Godot 4.7.2 stable",
+    "evidence_class": "reconstructed_from_verified_state",
+    "note": "Frames are deterministic SVG reconstructions of a verified C6 near-miss state, not screenshots."
+  },
+  "media": [
+    {
+      "id": "frame-before-swing",
+      "path": "frame-before-swing.svg",
+      "kind": "frame",
+      "at_ms": 1200
+    },
+    {
+      "id": "frame-reveal",
+      "path": "frame-reveal.svg",
+      "kind": "frame",
+      "at_ms": 1800
+    }
+  ]
+}
