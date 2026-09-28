@@ -4,6 +4,7 @@ import argparse
 from pathlib import Path
 
 from .catalog import load_catalog
+from .playtest_report import run_playtest_report
 
 
 def _catalog_path(value: str | None) -> Path:
@@ -21,20 +22,43 @@ def main() -> int:
     listing.add_argument("--path")
     listing.add_argument("--stage")
 
-    args = parser.parse_args()
-    catalog = load_catalog(_catalog_path(args.path))
+    playtest = sub.add_parser(
+        "playtest-report",
+        help="Turn an MGEL M0 Evidence Bundle into an actionable playtest report",
+    )
+    playtest.add_argument("bundle", type=Path, help="MGEL Evidence Bundle directory")
+    playtest.add_argument(
+        "--output-root",
+        type=Path,
+        default=Path("evidence"),
+        help="root directory for the service Evidence Bundle",
+    )
 
-    if args.command == "validate-catalog":
-        print(f"catalog ok: {len(catalog['services'])} services")
+    args = parser.parse_args()
+
+    if args.command in {"validate-catalog", "list"}:
+        catalog = load_catalog(_catalog_path(args.path))
+        if args.command == "validate-catalog":
+            print(f"catalog ok: {len(catalog['services'])} services")
+            return 0
+
+        services = catalog["services"]
+        if args.stage:
+            services = [s for s in services if s["stage"] == args.stage]
+        for service in services:
+            print(f"{service['id']}\t{service['stage']}\t{service['name']}")
         return 0
 
-    services = catalog["services"]
-    if args.stage:
-        services = [s for s in services if s["stage"] == args.stage]
+    if args.command == "playtest-report":
+        result = run_playtest_report(args.bundle, args.output_root)
+        print(f"Evidence bundle: {result.root}")
+        print(
+            f"service=playtest-report findings={result.finding_count} "
+            f"eval={result.eval_status}"
+        )
+        return 0 if result.eval_status == "PASS" else 1
 
-    for service in services:
-        print(f"{service['id']}\t{service['stage']}\t{service['name']}")
-    return 0
+    return 2
 
 
 if __name__ == "__main__":
