@@ -1,0 +1,34 @@
+THIRD-PARTY NOTICES
+MADO Playtest Evidence 0.4.0
+
+This product is built with or may include components from the following
+projects. Their original licenses remain in effect.
+
+Python
+- Runtime: CPython
+- License: Python Software Foundation License
+- Project: https://www.python.org/
+
+PyYAML
+- Runtime dependency used for MGSF catalog support
+- License: MIT License
+- Project: https://pyyaml.org/
+
+PyInstaller
+- Build-time packager and bootloader
+- License: GPL-2.0-or-later with the PyInstaller bootloader exception
+- Project: https://pyinstaller.org/
+- The bootloader exception permits distributing applications built by
+  PyInstaller under terms chosen by the application author, subject to the
+  licenses of the application and included dependencies.
+
+Godot Engine
+- NOT bundled in the Windows product pack.
+- The product can launch a separately installed Godot executable when requested.
+- Godot is available under the MIT License.
+- Project: https://godotengine.org/
+
+This notice is a packaging summary, not a substitute for the full upstream
+license texts. Before a paid public release, the publisher should perform a
+final third-party license review and include any full notices required by the
+exact frozen dependency set.
