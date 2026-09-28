@@ -1,0 +1,20 @@
+Recorded excerpt from GitHub Actions workflow run 33968989364, job 101314031594.
+Repository: madowaku/vertical-slice
+Tested PR merge SHA: 6a2e49bd3bc20b18ccd99a825fa332380685fc4c
+Source head SHA: 7597c87bae0e66afbdb09165496843da10b0a221
+
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+Board validation: 39 / 0 failures
+Sensors: 21 / 0 failures
+Movement: 58 / 0 failures
+Round flow: 65 / 0 failures
+Step record: 19 / 0 failures
+Local debug session: 138 / 0 failures
+Projection safety: 308 / 0 failures
+Watermelon role: 84 / 0 failures
+C4 UI: 15 / 0 failures
+C5 UI: 20 / 0 failures
+C6 playfeel: 24 / 0 failures
+Debug scene: 3 / 0 failures
+Tests: 794 passed
+Failures: 0
