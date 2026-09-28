@@ -119,8 +119,9 @@ def run_godot_capture_adapter(
             encoding="utf-8",
             newline="\n",
         )
+        tail = "\n".join((stdout + "\n" + stderr).splitlines()[-30:])
         raise GodotCaptureAdapterError(
-            f"Godot capture timed out; see {runtime_log_path}"
+            f"Godot capture timed out; see {runtime_log_path}\nGodot output tail:\n{tail}"
         ) from exc
     except OSError as exc:
         runtime_log_path.write_text(
