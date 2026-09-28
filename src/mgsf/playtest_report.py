@@ -199,6 +199,10 @@ def build_report(bundle: dict[str, Any]) -> dict[str, Any]:
         }
         if "bridge_policy" in friction:
             evidence["bridge_policy"] = friction["bridge_policy"]
+        if "media_evidence" in friction:
+            evidence["media_evidence"] = friction["media_evidence"]
+        if "capture_policy" in friction:
+            evidence["capture_policy"] = friction["capture_policy"]
 
         findings.append(
             {
