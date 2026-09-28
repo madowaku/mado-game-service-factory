@@ -1,10 +1,13 @@
 version: 1
 services:
-  - id: game-playtest
+  - id: playtest-report
     name: Game Playtest AI
-    stage: candidate
-    problem: Detect player friction and actionable gameplay issues from observed play.
+    stage: incubation
+    problem: Detect player friction and turn it into traceable, actionable playtest findings.
     related_repo: madowaku/mado-game-experience-loop
+    milestone: MGSF-M0.1
+    entrypoint: mgsf playtest-report
+    eval: evals/playtest-report.yaml
 
   - id: build-doctor
     name: Game Build Doctor
