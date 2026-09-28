@@ -1,0 +1,27 @@
+version: 1
+services:
+  - id: game-playtest
+    name: Game Playtest AI
+    stage: candidate
+    problem: Detect player friction and actionable gameplay issues from observed play.
+    related_repo: madowaku/mado-game-experience-loop
+
+  - id: build-doctor
+    name: Game Build Doctor
+    stage: candidate
+    problem: Diagnose common Unity and Godot project startup, configuration, and dependency failures.
+
+  - id: asset-forge
+    name: Game Asset Forge
+    stage: candidate
+    problem: Produce coherent, reusable game asset sets from a compact art direction brief.
+
+  - id: tutorial-doctor
+    name: Tutorial Doctor
+    stage: candidate
+    problem: Detect where first-time players become confused or blocked.
+
+  - id: release-doctor
+    name: Release Doctor
+    stage: candidate
+    problem: Run evidence-backed pre-release checks for game projects.
