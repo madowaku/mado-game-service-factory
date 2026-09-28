@@ -1,6 +1,6 @@
 # MGSF-M0.4 Windows Product Pack
 
-Status: **BUILDING**
+Status: **COMPLETE**
 
 ## Goal
 
@@ -71,12 +71,61 @@ It allows personal, educational, evaluation, and internal commercial game-develo
 
 The license is explicitly marked for publisher review before the first paid public release.
 
+## Windows proof
+
+Workflow run:
+
+`36493989574`
+
+Job:
+
+`109169128163`
+
+Verification:
+
+```text
+15 passed
+mado-playtest 0.4.0
+demo findings=1 status=PASS
+sample analyze findings=1 status=PASS
+```
+
+Product ZIP:
+
+```text
+MADO-Playtest-Evidence-0.4.0-win-x64.zip
+8,141,141 bytes
+sha256 690921e45c71308e6f4442fb10e411775349b7b5a96d12ba45e0cc259bdd553b
+14 packaged files
+```
+
+Artifact:
+
+`11001819146`
+
 ## M0.4 completion criteria
 
-- Windows x64 EXE builds in CI.
-- EXE `self-check` succeeds from the assembled product folder.
-- EXE bundled `demo` succeeds.
-- EXE can analyze the sample capture.
-- ZIP contains docs, sample, report, and release manifest.
-- Release manifest contains SHA-256 for every packaged file.
-- Windows CI uploads the versioned ZIP as an artifact.
+- [x] Windows x64 EXE builds in CI.
+- [x] EXE `self-check` succeeds from the assembled product folder.
+- [x] EXE bundled `demo` succeeds.
+- [x] EXE can analyze the sample capture.
+- [x] ZIP contains docs, sample, report, and release manifest.
+- [x] Release manifest contains SHA-256 for every packaged file.
+- [x] Windows CI uploads the versioned ZIP as an artifact.
+
+## Next product gate
+
+The highest-value evidence now comes from humans outside the development loop.
+
+Recommended next milestone:
+
+`MGSF-M0.5 External Tester Preview`
+
+Focus:
+
+- download/unzip friction
+- first-run comprehension
+- Windows SmartScreen/antivirus friction
+- Godot discovery/setup friction
+- report usefulness
+- privacy/license comprehension
