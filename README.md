@@ -38,25 +38,29 @@ mgsf list
 pytest
 ```
 
-Deterministic playtest report:
-
-```bash
-mgsf playtest-report fixtures/playtest-report/mgel-session-001
-```
-
-Real-project headless dogfood:
-
-```bash
-mgsf dogfood-playtest-report \
-  dogfood/vertical-slice-c6-near-miss/record.json \
-  dogfood/vertical-slice-c6-near-miss/runtime_log.txt
-```
-
-Gameplay capture contract fixture:
+Capture evidence only:
 
 ```bash
 mgsf gameplay-capture \
   fixtures/gameplay-capture/vertical-slice-reconstruction
+```
+
+Capture through playtest report:
+
+```bash
+mgsf capture-playtest-report \
+  fixtures/gameplay-capture/vertical-slice-reconstruction
+```
+
+The second command performs:
+
+```text
+media + timeline
+  -> SHA-256 evidence index
+  -> captured friction
+  -> MGEL event
+  -> playtest finding
+  -> media IDs + hashes
 ```
 
 ## Gameplay Evidence Capture
@@ -77,6 +81,8 @@ evidence/gameplay-capture/<capture_id>/<session_id>/
 ├── media_index.json
 ├── timeline.jsonl
 ├── eval.json
+├── capture_playtest_eval.json
+├── mgel/
 └── media/
 ```
 
@@ -98,7 +104,7 @@ The current committed M0.3 fixture uses `reconstructed_from_verified_state`. Its
 
 ## Existing M0.2 evidence
 
-The first active `playtest-report` service is backed by `madowaku/vertical-slice`:
+The active `playtest-report` service is backed by `madowaku/vertical-slice`:
 
 - Godot 4.7.2 stable
 - source GitHub Actions run `33968989364`
