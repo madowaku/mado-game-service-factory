@@ -1,0 +1,41 @@
+MADO PLAYTEST EVIDENCE - PRIVACY STATEMENT
+Product Preview 0.4.0
+
+LOCAL PROCESSING
+
+This preview is designed to run locally.
+
+The executable reads only the paths you explicitly provide plus the bundled
+sample files. It writes evidence and reports to the output directory you choose.
+
+NETWORK BEHAVIOR
+
+The 0.4.0 product executable does not intentionally send telemetry, analytics,
+gameplay media, source code, reports, or personal information to madowaku or to
+a hosted MADO service.
+
+The Godot adapter launches a Godot executable already present on the machine.
+Godot itself and the operating system may have their own behavior and policies.
+
+DATA WRITTEN
+
+Depending on the command, output can include:
+- copied screenshots/video
+- SHA-256 hashes
+- input/result timelines
+- source repository/commit metadata supplied by the capture
+- generated report JSON/Markdown
+- runtime logs
+
+SENSITIVE PROJECTS
+
+Gameplay captures can contain unreleased art, text, usernames, file paths, debug
+information, or other confidential material. Review evidence before sharing it.
+
+No automatic cloud upload is performed by this preview.
+
+BUILD/CI NOTE
+
+Official GitHub Actions builds upload their CI evidence as GitHub workflow
+artifacts for verification. That CI behavior is separate from the downloaded
+product executable running on your Windows computer.
