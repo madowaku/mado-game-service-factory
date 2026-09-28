@@ -5,6 +5,7 @@ from pathlib import Path
 
 from .catalog import load_catalog
 from .playtest_report import run_playtest_report
+from .real_game_bridge import run_real_game_bridge, run_real_game_dogfood
 
 
 def _catalog_path(value: str | None) -> Path:
@@ -34,6 +35,32 @@ def main() -> int:
         help="root directory for the service Evidence Bundle",
     )
 
+    bridge = sub.add_parser(
+        "real-game-bridge",
+        help="Bridge recorded real-project headless evidence into an MGEL bundle",
+    )
+    bridge.add_argument("record", type=Path, help="recorded real-game contract JSON")
+    bridge.add_argument("runtime_log", type=Path, help="recorded runtime log")
+    bridge.add_argument(
+        "--output-root",
+        type=Path,
+        default=Path("evidence"),
+        help="root directory for bridge evidence",
+    )
+
+    dogfood = sub.add_parser(
+        "dogfood-playtest-report",
+        help="Run real-game bridge and feed the result into playtest-report",
+    )
+    dogfood.add_argument("record", type=Path, help="recorded real-game contract JSON")
+    dogfood.add_argument("runtime_log", type=Path, help="recorded runtime log")
+    dogfood.add_argument(
+        "--output-root",
+        type=Path,
+        default=Path("evidence"),
+        help="root directory for bridge and service evidence",
+    )
+
     args = parser.parse_args()
 
     if args.command in {"validate-catalog", "list"}:
@@ -57,6 +84,27 @@ def main() -> int:
             f"eval={result.eval_status}"
         )
         return 0 if result.eval_status == "PASS" else 1
+
+    if args.command == "real-game-bridge":
+        result = run_real_game_bridge(args.record, args.runtime_log, args.output_root)
+        print(f"Bridge evidence: {result.root}")
+        print(f"MGEL bundle: {result.mgel_root}")
+        print(f"bridge=real-game-bridge eval={result.eval_status}")
+        return 0 if result.eval_status == "PASS" else 1
+
+    if args.command == "dogfood-playtest-report":
+        result = run_real_game_dogfood(
+            args.record,
+            args.runtime_log,
+            args.output_root,
+        )
+        print(f"Bridge evidence: {result.bridge.root}")
+        print(f"Playtest report: {result.report_root}")
+        print(
+            f"dogfood=playtest-report findings={result.finding_count} "
+            f"eval={result.status}"
+        )
+        return 0 if result.status == "PASS" else 1
 
     return 2
 
