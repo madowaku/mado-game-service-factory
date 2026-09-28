@@ -8,11 +8,11 @@ Workflow: `windows-product`
 
 Run:
 
-`36493989574`
+`36494396400`
 
 Job:
 
-`109169128163`
+`109170434996`
 
 Platform:
 
@@ -21,6 +21,10 @@ Platform:
 Product:
 
 `MADO Playtest Evidence 0.4.0`
+
+Product source SHA:
+
+`01256ba62dda9474c53a8d9962eebf8e7aba317a`
 
 ## Verification
 
@@ -46,17 +50,17 @@ mado-playtest.exe analyze examples\sample-capture
 
 ```text
 MADO-Playtest-Evidence-0.4.0-win-x64.zip
-bytes: 8,141,141
-sha256: 690921e45c71308e6f4442fb10e411775349b7b5a96d12ba45e0cc259bdd553b
+bytes: 8,142,722
+sha256: 4dbb4a53f95c56fc7177cbe653542ec28add4e84beaa5e0d9a59bb4676f204a2
 packaged files: 14
 ```
 
 GitHub Actions artifact:
 
 ```text
-artifact id: 11001819146
+artifact id: 11002044584
 name: MADO-Playtest-Evidence-0.4.0-win-x64
-artifact bytes: 8,143,104
+artifact bytes: 8,144,671
 expires: 2026-10-12
 ```
 
