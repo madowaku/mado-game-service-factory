@@ -16,16 +16,26 @@ DISCOVER
 
 ## Current milestone
 
-**MGSF-M0.3: Gameplay Evidence Capture**
+**MGSF-M0.3b: Godot Capture Adapter — complete**
 
 Current lifecycle:
 
 ```text
 playtest-report    active
-gameplay-capture   incubation
+gameplay-capture   active
 ```
 
-M0.3 adds a media-aware evidence layer so screenshots, video, and input/result timing can survive into later QA and playtest analysis.
+The system now supports a real customer-visible loop:
+
+```text
+run Godot game
+  -> capture rendered frames
+  -> preserve input/result timeline
+  -> hash media evidence
+  -> bridge friction into MGEL
+  -> generate playtest finding
+  -> retain exact media evidence
+```
 
 ## Quick start
 
@@ -38,57 +48,73 @@ mgsf list
 pytest
 ```
 
-Capture evidence only:
+Capture an existing contract:
 
 ```bash
-mgsf gameplay-capture \
-  fixtures/gameplay-capture/vertical-slice-reconstruction
+mgsf gameplay-capture <capture-dir>
 ```
 
-Capture through playtest report:
+Capture through a playtest report:
 
 ```bash
-mgsf capture-playtest-report \
-  fixtures/gameplay-capture/vertical-slice-reconstruction
+mgsf capture-playtest-report <capture-dir>
 ```
 
-The second command performs:
+Run a Godot capture scene:
+
+```bash
+mgsf godot-capture <godot-project> \
+  --godot /path/to/godot
+```
+
+On Linux CI, add `--xvfb`.
+
+## MGSF-M0.3b proof
+
+First direct target:
+
+`madowaku/vertical-slice`
+
+Capture SHA:
+
+`f0514229d7f2036ec25646d09e3647c8d870dadb`
+
+Factory CI:
+
+- run `36488219481`
+- job `109150207262`
+- adapter eval: PASS
+- finding count: 1
+- tests: 12 passed
+- evidence artifact: `11000425066`
+
+Direct frames:
 
 ```text
-media + timeline
-  -> SHA-256 evidence index
-  -> captured friction
-  -> MGEL event
-  -> playtest finding
-  -> media IDs + hashes
+before-swing.png
+1280 x 720 RGBA
+sha256 ac5c0ec22875fe6222021fc82d420abd3195a518904cbd39febd8ff953d7ddcd
+
+reveal.png
+1280 x 720 RGBA
+sha256 126240e5e70057d17be6322137d3c662c4361a993ce39b2cf4157a2322a98d51
 ```
 
-## Gameplay Evidence Capture
-
-Input:
+The adapter eval explicitly verified:
 
 ```text
-capture.json
-timeline.jsonl
-media files
+recorded_gameplay_capture = true
+direct_media_reaches_finding = true
+status = PASS
 ```
 
-Output:
+## Fresh checkout behavior
 
-```text
-evidence/gameplay-capture/<capture_id>/<session_id>/
-├── manifest.json
-├── media_index.json
-├── timeline.jsonl
-├── eval.json
-├── capture_playtest_eval.json
-├── mgel/
-└── media/
-```
+The Godot adapter performs a headless editor preflight before capture so fresh clones can generate/import Godot's project metadata and global script-class cache.
 
-Each media item receives its SHA-256, byte size, timestamp, and stable media ID. Timeline events are monotonic and may link directly to captured media.
+Then it launches the capture scene with an actual display surface. Linux CI uses Xvfb; local Windows usage does not need it.
 
-### Evidence classes
+## Evidence classes
 
 ```text
 recorded_gameplay_capture
@@ -96,21 +122,9 @@ reconstructed_from_verified_state
 synthetic_capture_fixture
 ```
 
-They are intentionally different.
+They remain intentionally separate.
 
-The current committed M0.3 fixture uses `reconstructed_from_verified_state`. Its C6 SVG frames are explanatory reconstructions based on separately verified `vertical-slice` state. They are **not screenshots**.
-
-`gameplay-capture` remains in incubation until a direct `recorded_gameplay_capture` from a real running game passes the same eval.
-
-## Existing M0.2 evidence
-
-The active `playtest-report` service is backed by `madowaku/vertical-slice`:
-
-- Godot 4.7.2 stable
-- source GitHub Actions run `33968989364`
-- `Tests: 794 passed`
-- `Failures: 0`
-- `C6 playfeel: 24 / 0 failures`
+Only `recorded_gameplay_capture` is treated as direct gameplay media.
 
 ## Repository map
 
@@ -118,9 +132,10 @@ The active `playtest-report` service is backed by `madowaku/vertical-slice`:
 - `docs/MADO_GAME_SERVICE_FACTORY_SPEC.md` - Factory specification
 - `docs/MGSF_M0_2_REAL_GAME_DOGFOOD_BRIDGE.md` - real-game bridge contract
 - `docs/MGSF_M0_3_GAMEPLAY_EVIDENCE_CAPTURE.md` - capture contract
+- `docs/MGSF_M0_3B_GODOT_CAPTURE_ADAPTER.md` - direct Godot adapter
+- `docs/ITCH_IO_PRODUCTIZATION.md` - productization gate
 - `catalog/services.yaml` - machine-readable service catalog
 - `services/active/` - promoted services
-- `services/incubation/` - services still proving their evidence
 - `dogfood/` - real-project dogfood records
 - `evals/` - service and promotion evals
 - `fixtures/` - deterministic fixtures
@@ -132,12 +147,11 @@ The active `playtest-report` service is backed by `madowaku/vertical-slice`:
 - Do not start with SaaS UI.
 - Do not start with auth or billing.
 - Do not build speculative infrastructure.
-- Do not treat fixture success as active-service proof.
-- Do not promote without real-project evidence.
 - Do not call modeled psychometric values human measurements.
 - Do not call reconstructed media screenshots.
-- Prove value in the order CLI -> local API -> Web UI -> hosted service.
+- Preserve source and media provenance.
+- Prove value before adding product chrome.
 
-## M0.3 next gate
+## Next boundary
 
-Add an engine or desktop recorder that generates a real `recorded_gameplay_capture` bundle without changing the capture contract.
+The highest-value next step is a portable Windows product package for external testers, not another internal service layer.
