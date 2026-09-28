@@ -23,6 +23,7 @@ The factory must prefer working, testable services over speculative infrastructu
 - Reuse existing MADO capabilities when practical instead of rebuilding them.
 - Keep service-specific code isolated from factory orchestration.
 - Every service must have a machine-readable catalog entry.
+- Never describe modeled experience values as human measurements.
 
 ## Required artifacts for a promoted service
 - service spec
@@ -30,6 +31,7 @@ The factory must prefer working, testable services over speculative infrastructu
 - deterministic fixture
 - eval definition
 - Evidence Bundle
+- real-project dogfood
 - catalog entry with lifecycle stage
 
 ## Lifecycle
@@ -38,7 +40,12 @@ candidate -> incubation -> active -> retired
 A service may move backward if evidence degrades.
 
 ## Current milestone
-MGSF-M0.1: playtest-report incubation service
+MGSF-M0.2: Real Game Dogfood Bridge — complete
 
-## Current mission
-Mission 001 is in BUILD/DOGFOOD. The deterministic playtest-report fixture may establish incubation readiness, but active promotion requires non-fixture game evidence.
+## Mission 001 status
+Mission 001 has produced its first active service: `playtest-report`.
+
+Its promotion is backed by both deterministic fixture evidence and `madowaku/vertical-slice` real-project Godot headless evidence.
+
+## Next boundary
+MGSF-M0.3 should increase evidence fidelity rather than add SaaS surface area. Prefer a live/recorded gameplay capture adapter, screenshot/video evidence, or human-observation ingestion over auth, billing, or hosted UI.
