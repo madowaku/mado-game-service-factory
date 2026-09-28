@@ -1,4 +1,4 @@
 {"at_ms":1200,"event_id":"capture-event-001","kind":"observation","label":"One cell short before swing","media_id":"frame-before-swing"}
 {"at_ms":1400,"event_id":"capture-event-002","kind":"input","input":"SWING","label":"Blind player confirms swing"}
-{"at_ms":1600,"event_id":"capture-event-003","kind":"friction","label":"Swing misses one cell early","media_id":"frame-before-swing","result":"miss"}
+{"action":"SWING","actual_result":"The swing misses one cell early.","at_ms":1600,"category":"near_miss","confusion":0.3,"event_id":"capture-event-003","evidence_media_ids":["frame-before-swing","frame-reveal"],"expected_result":"The swing succeeds because the target has been reached.","kind":"friction","label":"Swing misses one cell early","media_id":"frame-before-swing","reason":"Captured result conflicts with the modeled expectation of a hit.","recommendation":"Keep the adjacent-miss reveal explicit and surface equally clear feedback at RESULT.","result":"miss","surprise":0.6}
 {"at_ms":1800,"event_id":"capture-event-004","kind":"result","label":"Reveal confirms watermelon was next door","media_id":"frame-reveal"}
