@@ -38,7 +38,7 @@ candidate -> incubation -> active -> retired
 A service may move backward if evidence degrades.
 
 ## Current milestone
-MGSF-M0: Factory Skeleton
+MGSF-M0.1: playtest-report incubation service
 
 ## Current mission
-Mission 001: discover ten candidates, select three MVPs, build the smallest one, dogfood it, produce evidence, and promote only if its eval passes.
+Mission 001 is in BUILD/DOGFOOD. The deterministic playtest-report fixture may establish incubation readiness, but active promotion requires non-fixture game evidence.
