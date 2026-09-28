@@ -42,7 +42,7 @@ MADO-Playtest-Evidence-0.4.0-win-x64/
 
 ## Build
 
-The pack is built on `windows-latest` with pinned build dependencies.
+The pack is built on `windows-latest` with the Python 3.12 line and pinned Python build dependencies. The exact Python patch version used by CI is recorded in `RELEASE-MANIFEST.json`.
 
 PyInstaller creates a single-file executable.
 
