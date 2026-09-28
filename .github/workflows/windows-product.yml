@@ -1,0 +1,90 @@
+name: windows-product
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "src/**"
+      - "scripts/build_windows_product.py"
+      - "packaging/windows/**"
+      - "product/**"
+      - "fixtures/gameplay-capture/**"
+      - "tests/**"
+      - "pyproject.toml"
+      - ".github/workflows/windows-product.yml"
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12.14"
+
+      - name: Install product build dependencies
+        shell: pwsh
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r packaging/windows/requirements-build.txt
+          python -m pip install -e ".[dev]"
+
+      - name: Run tests
+        run: pytest -q
+
+      - name: Build Windows product pack
+        run: python scripts/build_windows_product.py
+
+      - name: Smoke test packaged executable
+        shell: pwsh
+        run: |
+          $product = "build/windows-product/MADO-Playtest-Evidence-0.4.0-win-x64"
+          Push-Location $product
+
+          .\mado-playtest.exe --version
+          .\mado-playtest.exe self-check
+          .\mado-playtest.exe demo --output smoke-demo
+          .\mado-playtest.exe analyze examples\sample-capture --output smoke-analyze
+
+          if (-not (Test-Path "smoke-demo\playtest-report\vertical-slice-c6-reconstruction\capture-001\report.md")) {
+            throw "Bundled demo report was not generated."
+          }
+
+          if (-not (Test-Path "smoke-analyze\playtest-report\vertical-slice-c6-reconstruction\capture-001\report.md")) {
+            throw "Sample analyze report was not generated."
+          }
+
+          Pop-Location
+
+      - name: Verify release manifest and ZIP
+        shell: pwsh
+        run: |
+          $product = "build/windows-product/MADO-Playtest-Evidence-0.4.0-win-x64"
+          $manifest = Join-Path $product "RELEASE-MANIFEST.json"
+          $zip = "dist/MADO-Playtest-Evidence-0.4.0-win-x64.zip"
+
+          if (-not (Test-Path $manifest)) { throw "Release manifest missing." }
+          if (-not (Test-Path $zip)) { throw "Product ZIP missing." }
+
+          $data = Get-Content $manifest -Raw | ConvertFrom-Json
+          if ($data.version -ne "0.4.0") { throw "Unexpected product version." }
+          if ($data.files.Count -lt 8) { throw "Release manifest is unexpectedly small." }
+
+          $zipHash = (Get-FileHash $zip -Algorithm SHA256).Hash.ToLower()
+          $zipSize = (Get-Item $zip).Length
+          Write-Host "PRODUCT_ZIP=$zip"
+          Write-Host "PRODUCT_ZIP_BYTES=$zipSize"
+          Write-Host "PRODUCT_ZIP_SHA256=$zipHash"
+          Write-Host "PACKAGED_FILES=$($data.files.Count)"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MADO-Playtest-Evidence-0.4.0-win-x64
+          path: |
+            dist/MADO-Playtest-Evidence-0.4.0-win-x64.zip
+            build/windows-product/MADO-Playtest-Evidence-0.4.0-win-x64/RELEASE-MANIFEST.json
+          retention-days: 14
