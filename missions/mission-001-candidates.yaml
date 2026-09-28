@@ -1,0 +1,130 @@
+version: 1
+mission: mission-001
+sources:
+  - madowaku/mado-game-experience-loop
+  - madowaku/mado-loop
+  - madowaku/vertical-slice
+  - madowaku/mado-system-one
+  - madowaku/mado-vibe-shipping
+
+candidates:
+  - id: playtest-report
+    service: Game Playtest AI
+    problem: Convert deterministic or observed play into friction events and an actionable experience report.
+    evidence_basis: MGEL already emits deterministic experience traces and friction evidence.
+    frequency: high
+    automation_fit: high
+    dogfoodable: true
+    reusable: true
+    scope: small
+    selected_for_mvp: true
+
+  - id: proof-ladder-runner
+    service: Game Proof Runner
+    problem: Turn a requested game change into the minimum required P0-P5 verification route and evidence checklist.
+    evidence_basis: MADO LOOP already defines P0-P5 proof levels and routing domains.
+    frequency: high
+    automation_fit: high
+    dogfoodable: true
+    reusable: true
+    scope: small
+    selected_for_mvp: true
+
+  - id: replay-readiness-audit
+    service: Replay Readiness Audit
+    problem: Check whether a game project has enough deterministic seams, tests, and state boundaries for reliable automated replay.
+    evidence_basis: vertical-slice has authoritative logical state and headless deterministic tests; MGEL is fixture-driven.
+    frequency: medium
+    automation_fit: high
+    dogfoodable: true
+    reusable: true
+    scope: small
+    selected_for_mvp: true
+
+  - id: build-doctor
+    service: Game Build Doctor
+    problem: Diagnose startup, dependency, engine-version, and configuration failures.
+    evidence_basis: MADO LOOP distinguishes runtime proof from static proof and treats missing dependencies explicitly.
+    frequency: high
+    automation_fit: high
+    dogfoodable: true
+    reusable: true
+    scope: medium
+    selected_for_mvp: false
+
+  - id: tutorial-doctor
+    service: Tutorial Doctor
+    problem: Find where a fresh player loses understanding or cannot infer the next useful action.
+    evidence_basis: MGEL models a Fresh Player and records friction events.
+    frequency: medium
+    automation_fit: high
+    dogfoodable: true
+    reusable: true
+    scope: medium
+    selected_for_mvp: false
+
+  - id: information-leak-audit
+    service: Information Boundary Auditor
+    problem: Detect UI or state projections that reveal information a role or player should not receive.
+    evidence_basis: vertical-slice explicitly requires Blind and Guide information separation.
+    frequency: medium
+    automation_fit: medium
+    dogfoodable: true
+    reusable: true
+    scope: medium
+    selected_for_mvp: false
+
+  - id: game-ui-observer
+    service: Game UI Observer
+    problem: Capture and check game UI for legibility, layout, and interaction evidence.
+    evidence_basis: MADO LOOP has a P2 Layout Proof route and explicit UI inspection workflow.
+    frequency: high
+    automation_fit: medium
+    dogfoodable: true
+    reusable: true
+    scope: medium
+    selected_for_mvp: false
+
+  - id: release-doctor
+    service: Release Doctor
+    problem: Audit export, required content, settings, and release artifacts without silently adding features.
+    evidence_basis: MADO LOOP defines P5 Release Proof.
+    frequency: medium
+    automation_fit: high
+    dogfoodable: true
+    reusable: true
+    scope: medium
+    selected_for_mvp: false
+
+  - id: intent-to-vertical-slice
+    service: Prototype Contract Compiler
+    problem: Turn a human-language game idea into a bounded vertical-slice contract without forcing engineering questions.
+    evidence_basis: MADO Vibe Shipping provides intent compilation and a Human Question Gate.
+    frequency: medium
+    automation_fit: high
+    dogfoodable: true
+    reusable: true
+    scope: medium
+    selected_for_mvp: false
+
+  - id: service-proof-bundle
+    service: Evidence Bundle Packager
+    problem: Normalize outputs, logs, eval results, and stable references into a portable evidence bundle.
+    evidence_basis: MGEL and MADO LOOP both treat evidence as a first-class completion artifact.
+    frequency: high
+    automation_fit: high
+    dogfoodable: true
+    reusable: true
+    scope: small
+    selected_for_mvp: false
+
+mvp_selection:
+  selected:
+    - playtest-report
+    - proof-ladder-runner
+    - replay-readiness-audit
+  first_build: playtest-report
+  rationale: >
+    playtest-report has the shortest path from an existing deterministic evidence producer
+    to a reusable user-facing service. It can begin as a cataloged adapter/reporting CLI
+    without requiring browser control, engine automation, auth, billing, or hosted infrastructure.
