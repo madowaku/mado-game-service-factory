@@ -2,7 +2,7 @@
 
 Status: **incubation**  
 Milestone: **MGSF-M0.3**  
-Version: **0.3.0**
+Version: **0.3.1**
 
 ## Problem
 
@@ -40,6 +40,16 @@ media/
 
 Events may reference a media ID.
 
+A friction event must also provide:
+
+- action
+- expected result
+- actual result
+- confusion
+- surprise
+- reason
+- recommendation
+
 ## Evidence classes
 
 - `recorded_gameplay_capture`: direct screenshot/video produced during gameplay.
@@ -48,7 +58,7 @@ Events may reference a media ID.
 
 These classes must not be presented as interchangeable.
 
-## Output
+## Capture output
 
 ```text
 evidence/gameplay-capture/<capture_id>/<session_id>/
@@ -56,10 +66,27 @@ evidence/gameplay-capture/<capture_id>/<session_id>/
 ├── media_index.json
 ├── timeline.jsonl
 ├── eval.json
+├── capture_playtest_eval.json
+├── mgel/
 └── media/
 ```
 
 The service copies media into the Evidence Bundle and records SHA-256 and byte size for each item.
+
+## Capture to playtest
+
+`mgsf capture-playtest-report <capture-dir>` performs:
+
+```text
+capture media + timeline
+  -> integrity index
+  -> captured friction
+  -> MGEL-compatible event
+  -> playtest-report
+  -> finding with media IDs + SHA-256
+```
+
+This lets a finding point back to the exact media artifacts used as evidence.
 
 ## M0.3 eval
 
@@ -71,7 +98,8 @@ PASS requires:
 - at least one input event;
 - at least one observable result/observation/friction event;
 - all timeline media references resolve;
-- evidence class is explicit.
+- evidence class is explicit;
+- captured friction can reach a playtest finding with media hashes intact.
 
 ## Honesty boundary
 
@@ -83,6 +111,8 @@ Only `recorded_gameplay_capture` may be described as direct gameplay media.
 
 ## Current boundary
 
-M0.3 first establishes a trustworthy capture contract and Evidence Bundle.
+The capture contract and capture-to-report path are implemented.
+
+The service remains incubation because the committed fixture uses `reconstructed_from_verified_state`, not a direct framebuffer capture.
 
 A later recorder adapter may generate direct screenshots/video from Godot, Unity, browser, or desktop capture without changing the service contract.
