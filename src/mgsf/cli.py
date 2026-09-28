@@ -5,6 +5,7 @@ from pathlib import Path
 
 from .catalog import load_catalog
 from .gameplay_capture import run_capture_playtest, run_gameplay_capture
+from .godot_capture_adapter import run_godot_capture_adapter
 from .playtest_report import run_playtest_report
 from .real_game_bridge import run_real_game_bridge, run_real_game_dogfood
 
@@ -66,6 +67,37 @@ def main() -> int:
         type=Path,
         default=Path("evidence"),
         help="root directory for capture and report evidence",
+    )
+
+    godot_capture = sub.add_parser(
+        "godot-capture",
+        help="Run a Godot capture scene and feed direct gameplay media into MGSF",
+    )
+    godot_capture.add_argument("project", type=Path, help="Godot project directory")
+    godot_capture.add_argument(
+        "--godot",
+        required=True,
+        help="Godot executable path or command",
+    )
+    godot_capture.add_argument(
+        "--scene",
+        default="res://scenes/capture/mgsf_c6_capture.tscn",
+        help="capture scene inside the target Godot project",
+    )
+    godot_capture.add_argument(
+        "--source-sha",
+        help="expected source commit SHA; defaults to git rev-parse HEAD",
+    )
+    godot_capture.add_argument(
+        "--xvfb",
+        action="store_true",
+        help="run Godot through xvfb-run -a on Linux",
+    )
+    godot_capture.add_argument(
+        "--output-root",
+        type=Path,
+        default=Path("evidence"),
+        help="root directory for direct capture evidence",
     )
 
     bridge = sub.add_parser(
@@ -134,6 +166,25 @@ def main() -> int:
         print(f"Playtest report: {result.report_root}")
         print(
             f"capture-playtest findings={result.finding_count} "
+            f"eval={result.status}"
+        )
+        return 0 if result.status == "PASS" else 1
+
+    if args.command == "godot-capture":
+        prefix = ["xvfb-run", "-a"] if args.xvfb else []
+        result = run_godot_capture_adapter(
+            args.project,
+            args.godot,
+            args.output_root,
+            scene=args.scene,
+            command_prefix=prefix,
+            source_head_sha=args.source_sha,
+        )
+        print(f"Godot adapter evidence: {result.root}")
+        print(f"Raw capture: {result.raw_capture_root}")
+        print(f"Playtest report: {result.capture_playtest.report_root}")
+        print(
+            f"adapter=godot-capture findings={result.capture_playtest.finding_count} "
             f"eval={result.status}"
         )
         return 0 if result.status == "PASS" else 1
