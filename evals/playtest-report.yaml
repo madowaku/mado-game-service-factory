@@ -1,0 +1,21 @@
+version: 1
+service: playtest-report
+milestone: MGSF-M0.1
+required_status: PASS
+criteria:
+  - id: source_identity_preserved
+    description: Fixture and session identity match the validated MGEL source.
+  - id: friction_coverage_exact
+    description: Every friction event produces exactly one finding and no extras.
+  - id: traceability
+    description: Every finding links to an existing ExperienceEvent.
+  - id: actionability
+    description: Every finding includes player impact, recommendation, and reproduction steps.
+  - id: severity_contract
+    description: Every finding severity is one of high, medium, or low.
+promotion_gate:
+  target_stage: active
+  blocked_until:
+    - deterministic_fixture_passes
+    - real_project_dogfood_exists
+    - evidence_bundle_exists
