@@ -14,6 +14,15 @@ services:
       evidence_class: real_project_headless_test
       status: PASS
 
+  - id: gameplay-capture
+    name: Gameplay Evidence Capture
+    stage: incubation
+    problem: Preserve screenshots, video, and input/result timing as integrity-checked gameplay evidence.
+    milestone: MGSF-M0.3
+    entrypoint: mgsf gameplay-capture
+    eval: evals/gameplay-capture.yaml
+    service_contract: services/incubation/gameplay-capture/SERVICE.md
+
   - id: build-doctor
     name: Game Build Doctor
     stage: candidate
