@@ -22,4 +22,17 @@ Verified technical foundation before packaging:
 - direct_media_reaches_finding = true
 - adapter eval PASS
 
+Windows product-pack verification:
+- clean GitHub Windows runner
+- 15 tests passed
+- mado-playtest.exe --version passed
+- self-check passed
+- bundled demo produced 1 finding and PASS
+- sample analyze produced 1 finding and PASS
+- versioned ZIP built and hashed
+
+Reference product ZIP proof:
+- bytes: 8,141,141
+- SHA-256: 690921e45c71308e6f4442fb10e411775349b7b5a96d12ba45e0cc259bdd553b
+
 This preview is intended for external testing, not yet a polished paid release.
