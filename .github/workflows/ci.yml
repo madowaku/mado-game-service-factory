@@ -9,16 +9,56 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Checkout vertical-slice capture target
+        uses: actions/checkout@v4
+        with:
+          repository: madowaku/vertical-slice
+          ref: 02f827a92df5b02639620d517610264d52265203
+          path: vendor/vertical-slice
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+
       - run: python -m pip install -e ".[dev]"
+
+      - name: Install Godot 4.7.2
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -L --fail --retry 3 -o /tmp/godot.zip \
+            https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip
+          unzip -q /tmp/godot.zip -d /tmp/godot
+          chmod +x /tmp/godot/Godot_v4.7.2-stable_linux.x86_64
+          /tmp/godot/Godot_v4.7.2-stable_linux.x86_64 --version
+
+      - name: Ensure Xvfb
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v xvfb-run >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y xvfb
+          fi
+
       - run: mgsf validate-catalog
       - run: mgsf playtest-report fixtures/playtest-report/mgel-session-001 --output-root ci-evidence
       - run: mgsf dogfood-playtest-report dogfood/vertical-slice-c6-near-miss/record.json dogfood/vertical-slice-c6-near-miss/runtime_log.txt --output-root ci-evidence
       - run: mgsf gameplay-capture fixtures/gameplay-capture/vertical-slice-reconstruction --output-root ci-evidence
       - run: mgsf capture-playtest-report fixtures/gameplay-capture/vertical-slice-reconstruction --output-root ci-evidence
+
+      - name: Capture real Godot gameplay frames
+        run: >-
+          mgsf godot-capture
+          vendor/vertical-slice
+          --godot /tmp/godot/Godot_v4.7.2-stable_linux.x86_64
+          --xvfb
+          --source-sha 02f827a92df5b02639620d517610264d52265203
+          --output-root ci-evidence
+
       - run: pytest -q
+
       - uses: actions/upload-artifact@v4
         with:
           name: mgsf-evidence-${{ github.sha }}
