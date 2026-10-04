@@ -8,6 +8,7 @@ from .gameplay_capture import run_capture_playtest, run_gameplay_capture
 from .godot_capture_adapter import run_godot_capture_adapter
 from .playtest_report import run_playtest_report
 from .real_game_bridge import run_real_game_bridge, run_real_game_dogfood
+from .transport_probe import run_fixture as run_transport_fixture
 
 
 def _catalog_path(value: str | None) -> Path:
@@ -126,6 +127,18 @@ def main() -> int:
         help="root directory for bridge and service evidence",
     )
 
+    transport_probe = sub.add_parser(
+        "transport-probe",
+        help="Compile deterministic transport observations into network evidence",
+    )
+    transport_probe.add_argument("fixture", type=Path, help="transport fixture JSON")
+    transport_probe.add_argument(
+        "--output-root",
+        type=Path,
+        default=Path("evidence/transport-probe"),
+        help="output directory for transport evidence",
+    )
+
     args = parser.parse_args()
 
     if args.command in {"validate-catalog", "list"}:
@@ -139,6 +152,12 @@ def main() -> int:
             services = [s for s in services if s["stage"] == args.stage]
         for service in services:
             print(f"{service['id']}\t{service['stage']}\t{service['name']}")
+        return 0
+
+    if args.command == "transport-probe":
+        evidence_path = run_transport_fixture(args.fixture, args.output_root)
+        print(f"Transport evidence: {evidence_path}")
+        print("service=quic-transport-probe evidence=fixture gate=HOLD")
         return 0
 
     if args.command == "playtest-report":
