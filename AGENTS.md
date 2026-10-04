@@ -34,7 +34,7 @@ candidate -> incubation -> active -> retired
 A service may move backward if evidence degrades.
 
 ## Current milestone
-MGSF-M0.4: Windows Product Pack — complete
+MGSF-M0.5: QUIC Transport Probe / Network Evidence Harness — incubation
 
 ## Active services
 - `playtest-report`
@@ -52,13 +52,17 @@ Windows verification:
 - sample analyze PASS
 - versioned ZIP uploaded as artifact `11001819146`
 
-## Next boundary
-MGSF-M0.5 should measure external-user friction rather than add internal architecture.
+## MGSF-M0.5 boundary
+Build the smallest network evidence harness before choosing a QUIC runtime.
 
 Prioritize:
-- unzip and first-run comprehension
-- Windows SmartScreen/antivirus friction
-- Godot discovery/setup friction
-- usefulness of the generated report
-- privacy/license comprehension
-- evidence needed before a paid itch.io preview
+- packets/sec and bytes/sec
+- RTT p50/p95 and jitter
+- loss/disconnect evidence
+- explicit fixture vs live provenance
+- HOLD promotion gate until live network evidence exists
+
+Do not call reconstructed SEGA slide values a live network measurement.
+
+## Deferred boundary
+External Tester Preview remains important and moves to the next unallocated milestone after M0.5.

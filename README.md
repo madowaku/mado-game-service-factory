@@ -16,13 +16,14 @@ DISCOVER
 
 ## Current milestone
 
-**MGSF-M0.4: Windows Product Pack — complete**
+**MGSF-M0.5: QUIC Transport Probe / Network Evidence Harness — incubation**
 
 Current lifecycle:
 
 ```text
 playtest-report    active
 gameplay-capture   active
+quic-transport-probe incubation
 Windows product    preview verified
 ```
 
@@ -103,6 +104,7 @@ The product executable has no intentional telemetry or automatic cloud upload in
 - `docs/MGSF_M0_3_GAMEPLAY_EVIDENCE_CAPTURE.md` - capture contract
 - `docs/MGSF_M0_3B_GODOT_CAPTURE_ADAPTER.md` - direct Godot adapter
 - `docs/MGSF_M0_4_WINDOWS_PRODUCT_PACK.md` - Windows packaging
+- `docs/MGSF_M0_5_QUIC_TRANSPORT_PROBE.md` - transport measurement contract
 - `docs/ITCH_IO_PRODUCTIZATION.md` - commercialization gate
 - `product/` - customer-facing package documents
 - `packaging/windows/` - frozen executable build inputs
@@ -120,6 +122,14 @@ The product executable has no intentional telemetry or automatic cloud upload in
 
 ## Next boundary
 
-**MGSF-M0.5: External Tester Preview**
+**MGSF-M0.5: QUIC Transport Probe / Network Evidence Harness**
 
-The highest-value evidence now comes from someone who did not build the system: can they unzip it, understand it, run the demo, and get useful evidence without guidance?
+The milestone establishes packet-shape metrics and provenance-safe deterministic evidence for UDP, QUIC Stream, and QUIC Datagram. Fixture evidence never passes the promotion gate.
+
+Run:
+
+```text
+mgsf transport-probe fixtures/network/sega-quic-baseline.json --output-root evidence/quic-probe
+```
+
+The previously planned External Tester Preview moves to the next unallocated milestone after M0.5.
