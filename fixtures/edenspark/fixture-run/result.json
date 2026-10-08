@@ -1,0 +1,18 @@
+{
+  "mission_id": "neon-risk-loop-001",
+  "iteration": 1,
+  "scene_inspected": true,
+  "compile_ok": true,
+  "play_started": true,
+  "input_simulated": true,
+  "screenshot_captured": true,
+  "logs_checked": true,
+  "runtime_errors": [],
+  "observations": [
+    "Deterministic fixture only. No EdenSpark process or MCP server was contacted."
+  ],
+  "changed_files": [
+    "fixture://prototype/main.das"
+  ],
+  "artifact_paths": []
+}
