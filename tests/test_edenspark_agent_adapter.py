@@ -57,7 +57,7 @@ def test_live_evaluation_passes_only_with_runner_and_real_artifact(tmp_path: Pat
         result_path,
         tmp_path / "evidence",
         evidence_class="recorded_edenspark_agent_mcp_run",
-        runner_record={"returncode": 0},
+        runner_record={"runner": "codex-exec", "returncode": 0},
     )
     assert evaluation.status == "PASS"
     assert evaluation.artifact_count == 1
@@ -130,3 +130,29 @@ def test_promotion_gate_holds_fixture_and_promotes_live_pass(tmp_path: Path) -> 
     promote = promote_prototype([fixture, live], tmp_path / "promotion-b")
     assert promote.status == "PROMOTE"
     assert promote.selected_engine == "edenspark"
+
+
+def test_live_evaluation_without_preserved_artifact_iterates(tmp_path: Path) -> None:
+    _, mission = _mission(tmp_path)
+    project = tmp_path / "project"
+    project.mkdir()
+    result = {
+        "mission_id": mission.mission_id,
+        "iteration": 1,
+        **{name: True for name in REQUIRED_ACTIONS},
+        "runtime_errors": [],
+        "observations": ["agent claims screenshot, but no file was preserved"],
+        "changed_files": ["game/main.das"],
+        "artifact_paths": [],
+    }
+    result_path = tmp_path / "result-no-artifact.json"
+    result_path.write_text(json.dumps(result), encoding="utf-8")
+    evaluation = evaluate_result(
+        project,
+        mission,
+        result_path,
+        tmp_path / "evidence",
+        evidence_class="recorded_edenspark_agent_mcp_run",
+        runner_record={"runner": "codex-exec", "returncode": 0},
+    )
+    assert evaluation.status == "ITERATE"
