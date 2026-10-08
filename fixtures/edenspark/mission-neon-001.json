@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "mission_id": "neon-risk-loop-001",
+  "title": "One-button risk/reward prototype",
+  "hypothesis": "A player understands a single risky action quickly enough to retry after failure.",
+  "success_criteria": [
+    "the player can trigger the risky action with one obvious input",
+    "success and failure produce visibly different feedback",
+    "the loop can be retried without restarting the editor"
+  ],
+  "max_iterations": 3
+}
