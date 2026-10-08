@@ -16,7 +16,7 @@ DISCOVER
 
 ## Current milestone
 
-**MGSF-M0.5: QUIC Transport Probe / Network Evidence Harness — incubation**
+**MGSF-M0.5: QUIC Transport Probe / Network Evidence Harness - incubation**, with **MGSF-M0.6 to M0.8: EdenSpark Agent-Native Prototype Loop - incubation** in parallel.
 
 Current lifecycle:
 
@@ -24,6 +24,9 @@ Current lifecycle:
 playtest-report    active
 gameplay-capture   active
 quic-transport-probe incubation
+edenspark-agent-adapter incubation
+edenspark-autonomous-playtest incubation
+prototype-promotion-gate incubation
 Windows product    preview verified
 ```
 
@@ -37,6 +40,31 @@ run game
   -> generate playtest finding
   -> package as mado-playtest.exe
   -> ship sample + docs + release manifest in a ZIP
+```
+
+## EdenSpark prototype loop
+
+The agent-native path keeps engine control inside the EdenSpark project's own MCP configuration and uses Codex as the MCP client:
+
+```text
+game hypothesis
+  -> mgsf edenspark-plan
+  -> codex exec
+  -> EdenSpark MCP
+  -> inspect / compile / play / input / screenshot / logs
+  -> hashed MGSF evidence
+  -> retry or promotion gate
+```
+
+Fixture CI proves the contract but always remains `HOLD`. A live `PASS` requires a successful recorded `codex-exec` run plus a preserved artifact whose SHA-256 can be verified.
+
+Commands:
+
+```text
+mgsf edenspark-plan fixtures/edenspark/mission-neon-001.json
+mgsf edenspark-eval <project> <mission.json> <result.json> --runner-record <runner.json>
+mgsf edenspark-loop <project> <mission.json> --max-iterations 3
+mgsf prototype-promote <evaluation.json> [<evaluation.json> ...]
 ```
 
 ## Windows product preview
@@ -105,6 +133,9 @@ The product executable has no intentional telemetry or automatic cloud upload in
 - `docs/MGSF_M0_3B_GODOT_CAPTURE_ADAPTER.md` - direct Godot adapter
 - `docs/MGSF_M0_4_WINDOWS_PRODUCT_PACK.md` - Windows packaging
 - `docs/MGSF_M0_5_QUIC_TRANSPORT_PROBE.md` - transport measurement contract
+- `docs/MGSF_M0_6_TO_M0_8_EDENSPARK_PROTOTYPE_LOOP.md` - agent-native prototype and promotion contract
+- `src/mgsf/edenspark_agent_adapter.py` - mission compiler, Codex runner, evidence evaluator, retry loop
+- `src/mgsf/prototype_promotion.py` - PROMOTE / ITERATE / HOLD gate
 - `docs/ITCH_IO_PRODUCTIZATION.md` - commercialization gate
 - `product/` - customer-facing package documents
 - `packaging/windows/` - frozen executable build inputs
@@ -117,6 +148,9 @@ The product executable has no intentional telemetry or automatic cloud upload in
 - Do not call modeled psychometric values human measurements.
 - Do not call reconstructed media screenshots.
 - Preserve source and media provenance.
+- Do not treat an agent claim as proof of an engine action without runner and artifact evidence.
+- Deterministic EdenSpark fixtures must remain HOLD and may not be described as live engine dogfood.
+- Autonomous prototype loops must not publish or submit games.
 - Keep downloaded product behavior local unless a future network feature is explicitly disclosed.
 - Do not call the preview paid-release-ready until external-user and final legal/third-party review gates pass.
 
@@ -133,3 +167,6 @@ mgsf transport-probe fixtures/network/sega-quic-baseline.json --output-root evid
 ```
 
 The previously planned External Tester Preview moves to the next unallocated milestone after M0.5.
+
+
+Parallel agent-native boundary: run the first real EdenSpark dogfood mission on a local EdenSpark project with its generated MCP configuration. The target proof is one recorded Codex run that inspects the scene, compiles, plays, simulates input, preserves a screenshot or equivalent artifact, checks logs, and earns PASS.

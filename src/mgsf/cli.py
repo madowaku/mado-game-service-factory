@@ -4,9 +4,16 @@ import argparse
 from pathlib import Path
 
 from .catalog import load_catalog
+from .edenspark_agent_adapter import (
+    create_mission_pack,
+    evaluate_result as evaluate_edenspark_result,
+    load_mission as load_edenspark_mission,
+    run_autonomous_loop as run_edenspark_loop,
+)
 from .gameplay_capture import run_capture_playtest, run_gameplay_capture
 from .godot_capture_adapter import run_godot_capture_adapter
 from .playtest_report import run_playtest_report
+from .prototype_promotion import promote_prototype
 from .real_game_bridge import run_real_game_bridge, run_real_game_dogfood
 from .transport_probe import run_fixture as run_transport_fixture
 
@@ -139,6 +146,76 @@ def main() -> int:
         help="output directory for transport evidence",
     )
 
+    edenspark_plan = sub.add_parser(
+        "edenspark-plan",
+        help="Compile a game hypothesis into an EdenSpark/Codex mission pack",
+    )
+    edenspark_plan.add_argument("mission", type=Path, help="mission JSON")
+    edenspark_plan.add_argument(
+        "--output-root",
+        type=Path,
+        default=Path("missions/edenspark"),
+        help="root directory for generated mission packs",
+    )
+
+    edenspark_eval = sub.add_parser(
+        "edenspark-eval",
+        help="Evaluate structured EdenSpark agent evidence without trusting agent self-report",
+    )
+    edenspark_eval.add_argument("project", type=Path, help="EdenSpark project directory")
+    edenspark_eval.add_argument("mission", type=Path, help="mission JSON")
+    edenspark_eval.add_argument("result", type=Path, help="structured agent result JSON")
+    edenspark_eval.add_argument(
+        "--runner-record",
+        type=Path,
+        help="MGSF codex-exec runner.json for live evidence",
+    )
+    edenspark_eval.add_argument(
+        "--fixture",
+        action="store_true",
+        help="mark this evaluation deterministic fixture evidence; fixture evidence always HOLDs",
+    )
+    edenspark_eval.add_argument(
+        "--output-root",
+        type=Path,
+        default=Path("evidence/edenspark"),
+        help="root directory for EdenSpark evaluation evidence",
+    )
+
+    edenspark_loop = sub.add_parser(
+        "edenspark-loop",
+        help="Run Codex against a project-provided EdenSpark MCP and iterate until PASS or budget exhaustion",
+    )
+    edenspark_loop.add_argument("project", type=Path, help="EdenSpark project directory")
+    edenspark_loop.add_argument("mission", type=Path, help="mission JSON")
+    edenspark_loop.add_argument("--codex", default="codex", help="Codex CLI executable")
+    edenspark_loop.add_argument("--max-iterations", type=int)
+    edenspark_loop.add_argument("--timeout-seconds", type=int, default=1800)
+    edenspark_loop.add_argument(
+        "--output-root",
+        type=Path,
+        default=Path("evidence/edenspark"),
+        help="root directory for runner and evaluation evidence",
+    )
+
+    promotion = sub.add_parser(
+        "prototype-promote",
+        help="Promote, iterate, or hold a prototype from one or more evidence bundles",
+    )
+    promotion.add_argument(
+        "evidence",
+        nargs="+",
+        type=Path,
+        help="evaluation.json files or containing directories",
+    )
+    promotion.add_argument("--engine", default="edenspark")
+    promotion.add_argument(
+        "--output-root",
+        type=Path,
+        default=Path("evidence/prototype-promotion"),
+        help="root directory for promotion decisions",
+    )
+
     args = parser.parse_args()
 
     if args.command in {"validate-catalog", "list"}:
@@ -159,6 +236,57 @@ def main() -> int:
         print(f"Transport evidence: {evidence_path}")
         print("service=quic-transport-probe evidence=fixture gate=HOLD")
         return 0
+
+    if args.command == "edenspark-plan":
+        root = create_mission_pack(args.mission, args.output_root)
+        print(f"EdenSpark mission pack: {root}")
+        return 0
+
+    if args.command == "edenspark-eval":
+        mission = load_edenspark_mission(args.mission)
+        runner = None
+        if args.runner_record:
+            import json
+
+            runner = json.loads(args.runner_record.read_text(encoding="utf-8"))
+        evidence_class = (
+            "deterministic_edenspark_fixture"
+            if args.fixture
+            else "recorded_edenspark_agent_mcp_run"
+        )
+        result = evaluate_edenspark_result(
+            args.project,
+            mission,
+            args.result,
+            args.output_root,
+            evidence_class=evidence_class,
+            runner_record=runner,
+        )
+        print(f"EdenSpark evidence: {result.root}")
+        print(f"adapter=edenspark status={result.status} score={result.score:.4f}")
+        return 0 if result.status in {"PASS", "HOLD"} else 1
+
+    if args.command == "edenspark-loop":
+        result = run_edenspark_loop(
+            args.project,
+            args.mission,
+            args.output_root,
+            codex=args.codex,
+            max_iterations=args.max_iterations,
+            timeout_seconds=args.timeout_seconds,
+        )
+        print(f"EdenSpark loop evidence: {result.root}")
+        print(
+            f"service=edenspark-autonomous-playtest status={result.status} "
+            f"iterations={result.iterations} best_score={result.best_score:.4f}"
+        )
+        return 0 if result.status == "PASS" else 1
+
+    if args.command == "prototype-promote":
+        result = promote_prototype(args.evidence, args.output_root, engine=args.engine)
+        print(f"Promotion evidence: {result.root}")
+        print(f"service=prototype-promotion-gate status={result.status}")
+        return 0 if result.status in {"PROMOTE", "HOLD"} else 1
 
     if args.command == "playtest-report":
         result = run_playtest_report(args.bundle, args.output_root)
