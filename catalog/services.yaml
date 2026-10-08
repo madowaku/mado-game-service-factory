@@ -39,6 +39,35 @@ services:
       fixture: deterministic_transport_fixture
       live_required_for_promotion: true
 
+  - id: edenspark-agent-adapter
+    name: EdenSpark Agent-Native Engine Adapter
+    stage: incubation
+    problem: Turn a game hypothesis into a recorded Codex plus EdenSpark MCP implementation and playtest evidence loop.
+    milestone: MGSF-M0.6
+    entrypoint: mgsf edenspark-plan
+    eval_entrypoint: mgsf edenspark-eval
+    service_contract: docs/MGSF_M0_6_TO_M0_8_EDENSPARK_PROTOTYPE_LOOP.md
+    evidence:
+      fixture: deterministic_edenspark_fixture
+      live: recorded_edenspark_agent_mcp_run
+      live_required_for_promotion: true
+
+  - id: edenspark-autonomous-playtest
+    name: EdenSpark Autonomous Playtest Loop
+    stage: incubation
+    problem: Iterate a Codex-driven EdenSpark prototype until observable gameplay criteria pass or the retry budget is exhausted.
+    milestone: MGSF-M0.7
+    entrypoint: mgsf edenspark-loop
+    service_contract: docs/MGSF_M0_6_TO_M0_8_EDENSPARK_PROTOTYPE_LOOP.md
+
+  - id: prototype-promotion-gate
+    name: Prototype Promotion Gate
+    stage: incubation
+    problem: Promote prototype implementations from evidence instead of agent self-report or fixture success.
+    milestone: MGSF-M0.8
+    entrypoint: mgsf prototype-promote
+    service_contract: docs/MGSF_M0_6_TO_M0_8_EDENSPARK_PROTOTYPE_LOOP.md
+
   - id: build-doctor
     name: Game Build Doctor
     stage: candidate
