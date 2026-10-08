@@ -28,6 +28,17 @@ services:
       evidence_class: recorded_gameplay_capture
       status: PASS
 
+  - id: quic-transport-probe
+    name: QUIC Transport Probe / Network Evidence Harness
+    stage: incubation
+    problem: Compare game transport packet shape and latency with provenance-safe evidence before adopting QUIC.
+    milestone: MGSF-M0.5
+    entrypoint: mgsf transport-probe
+    service_contract: docs/MGSF_M0_5_QUIC_TRANSPORT_PROBE.md
+    evidence:
+      fixture: deterministic_transport_fixture
+      live_required_for_promotion: true
+
   - id: build-doctor
     name: Game Build Doctor
     stage: candidate

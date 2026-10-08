@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "provenance": {
+    "kind": "reconstructed_public_slide_fixture",
+    "note": "Representative deterministic values based on the public SEGA CEDEC 2025 presentation. This file is not a live measurement."
+  },
+  "samples": [
+    {"transport": "udp", "payload_bytes": 128, "sent_at_ms": 0, "received_at_ms": 6.6},
+    {"transport": "udp", "payload_bytes": 128, "sent_at_ms": 100, "received_at_ms": 106.6},
+    {"transport": "quic-stream", "payload_bytes": 128, "sent_at_ms": 0, "received_at_ms": 6.3},
+    {"transport": "quic-stream", "payload_bytes": 128, "sent_at_ms": 100, "received_at_ms": 106.3},
+    {"transport": "quic-datagram", "payload_bytes": 128, "sent_at_ms": 0, "received_at_ms": 6.1},
+    {"transport": "quic-datagram", "payload_bytes": 128, "sent_at_ms": 100, "received_at_ms": 106.1}
+  ]
+}
