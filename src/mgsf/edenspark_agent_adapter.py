@@ -215,16 +215,23 @@ def evaluate_result(
     runtime_score = 1.0 if not runtime_errors else 0.0
     score = round((action_score * 0.7) + (artifact_score * 0.15) + (runtime_score * 0.15), 4)
 
-    recorded_runner_ok = bool(runner_record and runner_record.get("returncode") == 0)
+    recorded_runner_ok = bool(
+        runner_record
+        and runner_record.get("runner") == "codex-exec"
+        and runner_record.get("returncode") == 0
+    )
     if evidence_class == "deterministic_edenspark_fixture":
         status = "HOLD"
         reason = "fixture evidence cannot promote an engine adapter"
     elif missing or runtime_errors or invalid_artifacts:
         status = "ITERATE"
         reason = "required live playtest evidence is incomplete"
+    elif not artifacts:
+        status = "ITERATE"
+        reason = "no preserved artifact is available to verify the claimed visual check"
     elif not recorded_runner_ok:
         status = "HOLD"
-        reason = "no successful MGSF runner record accompanies the agent result"
+        reason = "no successful MGSF codex-exec runner record accompanies the agent result"
     else:
         status = "PASS"
         reason = "recorded agent run satisfied the EdenSpark playtest contract"
