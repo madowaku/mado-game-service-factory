@@ -48,6 +48,22 @@ jobs:
       - run: mgsf gameplay-capture fixtures/gameplay-capture/vertical-slice-reconstruction --output-root ci-evidence
       - run: mgsf capture-playtest-report fixtures/gameplay-capture/vertical-slice-reconstruction --output-root ci-evidence
 
+      - name: Exercise EdenSpark mission and fixture evidence contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          mgsf edenspark-plan fixtures/edenspark/mission-neon-001.json --output-root ci-evidence/edenspark-missions
+          mgsf edenspark-eval \
+            fixtures/edenspark \
+            fixtures/edenspark/mission-neon-001.json \
+            fixtures/edenspark/fixture-run/result.json \
+            --fixture \
+            --output-root ci-evidence/edenspark
+          mgsf prototype-promote \
+            ci-evidence/edenspark/neon-risk-loop-001/iteration-1 \
+            --output-root ci-evidence/prototype-promotion
+          grep -q '"status": "HOLD"' ci-evidence/prototype-promotion/neon-risk-loop-001/promotion-decision.json
+
       - name: Capture real Godot gameplay frames
         run: >-
           mgsf godot-capture
