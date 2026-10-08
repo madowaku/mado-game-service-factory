@@ -26,6 +26,8 @@ The factory must prefer working, testable services over speculative infrastructu
 - Never describe modeled experience values as human measurements.
 - Never describe reconstructed or synthetic media as a direct gameplay capture.
 - For direct media, preserve source SHA, media hash, dimensions, and capture provenance.
+- Do not treat an AI agent claim as proof of an engine action without runner and artifact evidence.
+- Do not publish or submit games from autonomous dogfood loops.
 - Do not claim paid-release readiness before external-user and final license/dependency review evidence exists.
 
 ## Lifecycle
@@ -33,12 +35,19 @@ candidate -> incubation -> active -> retired
 
 A service may move backward if evidence degrades.
 
-## Current milestone
-MGSF-M0.5: QUIC Transport Probe / Network Evidence Harness — incubation
+## Current milestones
+- MGSF-M0.5: QUIC Transport Probe / Network Evidence Harness - incubation
+- MGSF-M0.6 to M0.8: EdenSpark Agent-Native Prototype Loop - incubation
 
 ## Active services
 - `playtest-report`
 - `gameplay-capture`
+
+## Incubation services
+- `quic-transport-probe`
+- `edenspark-agent-adapter`
+- `edenspark-autonomous-playtest`
+- `prototype-promotion-gate`
 
 ## Product preview
 `MADO Playtest Evidence 0.4.0` builds as a single-file Windows x64 executable and is distributed with an offline sample, privacy statement, preview license, third-party notices, support instructions, sample report, and per-file release hashes.
@@ -66,3 +75,9 @@ Do not call reconstructed SEGA slide values a live network measurement.
 
 ## Deferred boundary
 External Tester Preview remains important and moves to the next unallocated milestone after M0.5.
+
+
+## EdenSpark boundary
+MGSF must not reimplement EdenSpark's MCP transport. The project-provided MCP configuration is consumed by Codex. MGSF owns the mission, retry budget, runner evidence, artifact hashing, and promotion decision.
+
+A deterministic EdenSpark fixture is useful only for contract regression and must remain HOLD. Prototype promotion requires a real recorded `codex-exec` run with all required actions, no reported runtime errors, a successful runner return code, and at least one preserved artifact.
