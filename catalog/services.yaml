@@ -68,6 +68,17 @@ services:
     entrypoint: mgsf prototype-promote
     service_contract: docs/MGSF_M0_6_TO_M0_8_EDENSPARK_PROTOTYPE_LOOP.md
 
+  - id: gridponder-deterministic-qa
+    name: GridPonder Deterministic Puzzle QA Harness
+    stage: incubation
+    problem: Verify DSL puzzle gold paths and repeatable transitions using the upstream Python engine.
+    milestone: MGSF-GP-M0.6
+    entrypoint: mgsf gridponder-qa
+    service_contract: docs/MGSF_GP_M0_6_GRIDPONDER_QA.md
+    evidence:
+      replay: gridponder_python_engine_gold_path_replay
+      live_required_for_promotion: true
+
   - id: build-doctor
     name: Game Build Doctor
     stage: candidate
