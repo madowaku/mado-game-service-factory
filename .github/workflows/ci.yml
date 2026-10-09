@@ -64,6 +64,23 @@ jobs:
             --output-root ci-evidence/prototype-promotion
           grep -q '"status": "HOLD"' ci-evidence/prototype-promotion/neon-risk-loop-001/promotion-decision.json
 
+      - name: Exercise Unity fixture contract (no Unity Editor required)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mgsf unity-harness fixtures/unity/fixture-project \
+            --fixture fixtures/unity/fixture-probe.json \
+            --run-tests --output-root ci-evidence/unity-cli
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          reports = list(Path('ci-evidence/unity-cli').glob('*/evaluation.json'))
+          assert len(reports) == 1, reports
+          data = json.loads(reports[0].read_text(encoding='utf-8'))
+          assert data['status'] == 'HOLD'
+          assert data['evidence_class'] == 'deterministic_unity_fixture'
+          PY
+
       - name: Capture real Godot gameplay frames
         run: >-
           mgsf godot-capture

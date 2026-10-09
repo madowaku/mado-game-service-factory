@@ -13,6 +13,7 @@ from .edenspark_agent_adapter import (
 from .gameplay_capture import run_capture_playtest, run_gameplay_capture
 from .godot_capture_adapter import run_godot_capture_adapter
 from .playtest_report import run_playtest_report
+from .unity_cli_harness import run_unity_harness
 from .prototype_promotion import promote_prototype
 from .real_game_bridge import run_real_game_bridge, run_real_game_dogfood
 from .transport_probe import run_fixture as run_transport_fixture
@@ -216,7 +217,28 @@ def main() -> int:
         help="root directory for promotion decisions",
     )
 
+    unity_harness = sub.add_parser(
+        "unity-harness",
+        help="Probe a Unity CLI/Pipeline Editor and optionally capture EditMode NUnit evidence",
+    )
+    unity_harness.add_argument("project", type=Path, help="Unity project directory")
+    unity_harness.add_argument("--unity", default="unity", help="Unity CLI binary or path")
+    unity_harness.add_argument("--run-tests", action="store_true", help="explicitly run Unity EditMode tests")
+    unity_harness.add_argument("--fixture", type=Path, help="replay a deterministic fixture; always HOLD")
+    unity_harness.add_argument("--timeout-seconds", type=int, default=120)
+    unity_harness.add_argument("--output-root", type=Path, default=Path("evidence/unity-cli"))
+
     args = parser.parse_args()
+
+    if args.command == "unity-harness":
+        result = run_unity_harness(
+            args.project, args.output_root, unity=args.unity,
+            run_tests=args.run_tests, timeout_seconds=args.timeout_seconds,
+            fixture=args.fixture,
+        )
+        print(f"Unity CLI evidence: {result.root / 'evaluation.json'}")
+        print(f"adapter=unity-cli status={result.status} reason={result.reason}")
+        return 0 if result.status in {"PASS", "HOLD"} else 1
 
     if args.command in {"validate-catalog", "list"}:
         catalog = load_catalog(_catalog_path(args.path))

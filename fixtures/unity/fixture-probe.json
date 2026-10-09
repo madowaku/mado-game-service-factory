@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "steps": {
+    "version": {
+      "returncode": 0,
+      "stdout": "{\"success\":true,\"data\":{\"version\":\"synthetic-fixture\"}}"
+    },
+    "status": {
+      "returncode": 0,
+      "stdout": "{\"success\":true,\"data\":{\"editors\":[{\"projectPath\":\"FIXTURE_ONLY\",\"state\":\"ready\"}]}}"
+    },
+    "manifest": {
+      "returncode": 0,
+      "stdout": "{\"success\":true,\"data\":[{\"name\":\"eval\"}]}"
+    }
+  }
+}

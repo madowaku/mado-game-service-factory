@@ -68,6 +68,18 @@ services:
     entrypoint: mgsf prototype-promote
     service_contract: docs/MGSF_M0_6_TO_M0_8_EDENSPARK_PROTOTYPE_LOOP.md
 
+  - id: unity-cli-pipeline-agent-harness
+    name: Unity CLI / Pipeline Agent Harness
+    stage: incubation
+    problem: Safely identify the active Unity Editor and capture provenance-checked EditMode test evidence.
+    milestone: MGSF-UNITY-M0.7
+    entrypoint: mgsf unity-harness
+    service_contract: docs/MGSF_UNITY_M0_7_CLI_PIPELINE_AGENT_HARNESS.md
+    evidence:
+      fixture: deterministic_unity_fixture
+      live: recorded_unity_cli
+      live_required_for_promotion: true
+
   - id: build-doctor
     name: Game Build Doctor
     stage: candidate
