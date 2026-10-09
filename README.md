@@ -77,7 +77,7 @@ mgsf unity-harness <unity-project> --run-tests
 mgsf unity-harness fixtures/unity/fixture-project --fixture fixtures/unity/fixture-probe.json
 ```
 
-Read-only connection verification and fixtures stay HOLD. A live PASS requires project-matched Unity CLI/Pipeline connectivity and a nonempty passing EditMode NUnit report. No autonomous C# eval, scene modifications, or publishing. See [Unity Harness](docs/MGSF_UNITY_M0_7_CLI_PIPELINE_AGENT_HARNESS.md).
+Read-only connection verification and fixtures stay HOLD. Read-only Pipeline probes can verify a project-matched Editor but remain HOLD. Batch EditMode tests (after closing the project Editor) can independently PASS with a nonempty passing NUnit report; they do not claim Pipeline connectivity. No autonomous C# eval, scene modifications, or publishing. See [Unity Harness](docs/MGSF_UNITY_M0_7_CLI_PIPELINE_AGENT_HARNESS.md).
 
 ## Windows product preview
 

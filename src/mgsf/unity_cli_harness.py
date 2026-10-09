@@ -201,6 +201,8 @@ def run_unity_harness(
         "evidence_class": "deterministic_unity_fixture" if fixture_data is not None else "recorded_unity_cli",
         "started_at": _now(),
         "run_tests_requested": run_tests,
+        "mode": "batch_editmode" if run_tests else "pipeline_probe",
+        "pipeline_verified": False,
         "steps": [],
         "test_report": None,
         "status": "HOLD",
@@ -232,17 +234,15 @@ def run_unity_harness(
             else:
                 status = step("status", ["status", "--format", "json"])
                 ready = _ready_projects(status["data"])
-                if status["returncode"] != 0 or not status["envelope_success"]:
-                    record["reason"] = "Unity Pipeline/Editor status unavailable"
-                elif len(ready) != 1 or _project_key(ready[0]) != _project_key(project_path):
-                    record["reason"] = "cannot verify one ready Unity Editor bound to the requested project"
-                else:
-                    manifest = step("manifest", ["list", "--project-path", str(project_path), "--format", "json"])
-                    if (manifest["returncode"] != 0 or not manifest["envelope_success"]
-                            or not manifest["data"].get("data")):
-                        record["reason"] = "Unity Pipeline command manifest unavailable or empty"
-                    elif not run_tests:
-                        record["reason"] = "read-only connection verified; EditMode tests not requested"
+                matching = [_project_key(path) == _project_key(project_path) for path in ready]
+
+                if run_tests:
+                    # unity test launches a separate batch Editor. Do not run it while
+                    # the same project is already open in a warm Pipeline Editor.
+                    if any(matching):
+                        record["reason"] = (
+                            "close the running Editor for this project before batch EditMode tests"
+                        )
                     else:
                         report = root / "editmode-results.xml"
                         command = [
@@ -257,10 +257,30 @@ def run_unity_harness(
                             record["status"] = "ITERATE"
                             record["reason"] = "Unity EditMode tests reported failures"
                         elif tested["returncode"] != 0 or not tested["envelope_success"] or not verdict:
-                            record["reason"] = "Unity EditMode run lacks a successful CLI result and nonempty NUnit report"
-                        elif verdict["failed"] == 0:
+                            record["reason"] = (
+                                "Unity batch EditMode run lacks a successful CLI result and nonempty NUnit report"
+                            )
+                        else:
                             record["status"] = "PASS"
-                            record["reason"] = "real Unity CLI/Pipeline and EditMode NUnit evidence verified"
+                            record["reason"] = (
+                                "standalone Unity CLI EditMode NUnit evidence verified; Pipeline not probed"
+                            )
+                elif status["returncode"] != 0 or not status["envelope_success"]:
+                    record["reason"] = "Unity Pipeline/Editor status unavailable"
+                elif len(ready) != 1 or not matching[0]:
+                    record["reason"] = (
+                        "cannot verify one ready Unity Editor bound to the requested project"
+                    )
+                else:
+                    manifest = step(
+                        "manifest", ["list", "--project-path", str(project_path), "--format", "json"]
+                    )
+                    if (manifest["returncode"] != 0 or not manifest["envelope_success"]
+                            or not manifest["data"].get("data")):
+                        record["reason"] = "Unity Pipeline command manifest unavailable or empty"
+                    else:
+                        record["pipeline_verified"] = True
+                        record["reason"] = "read-only Pipeline connection verified; promotion remains HOLD"
     finally:
         record["finished_at"] = _now()
         _write_json(root / "evaluation.json", record)

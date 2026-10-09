@@ -22,7 +22,7 @@ def sample_result(root: Path) -> dict:
 
 
 def fake_cli(project: Path, *, status_project: Path | None = None, tests: int = 2,
-             failures: int = 0, status_success: bool = True):
+             failures: int = 0, status_success: bool = True, editor_ready: bool = True):
     calls = []
 
     def run(argv, **kwargs):
@@ -32,8 +32,9 @@ def fake_cli(project: Path, *, status_project: Path | None = None, tests: int = 
         if argv[1] == "version":
             data = {"success": True, "data": {"version": "1.0.0-beta.7"}}
         elif argv[1] == "status":
-            data = {"success": status_success, "data": {
-                "editors": [{"projectPath": str(status_project or project), "state": "ready"}]}}
+            instances = ([{"projectPath": str(status_project or project), "state": "ready"}]
+                         if editor_ready else [])
+            data = {"success": status_success, "data": {"editors": instances}}
         elif argv[1] == "list":
             data = {"success": True, "data": [{"name": "eval"}]}
         elif argv[1] == "test":
@@ -81,14 +82,14 @@ def test_read_only_live_probe_holds_without_tests(tmp_path: Path, monkeypatch):
 
 def test_live_nunit_tests_pass_with_artifact_hash(tmp_path: Path, monkeypatch):
     root = project(tmp_path)
-    runner, calls = fake_cli(root)
+    runner, calls = fake_cli(root, editor_ready=False)
     monkeypatch.setattr(subprocess, "run", runner)
     result = run_unity_harness(root, tmp_path / "evidence", run_tests=True)
     data = sample_result(result.root)
     assert result.status == "PASS"
     assert data["test_report"]["total"] == 2
     assert len(data["test_report"]["sha256"]) == 64
-    assert [call[1] for call in calls] == ["version", "status", "list", "test"]
+    assert [call[1] for call in calls] == ["version", "status", "test"]
     assert all(len(item["stdout_sha256"]) == 64 for item in data["steps"])
 
 
@@ -96,7 +97,7 @@ def test_other_editor_is_not_accepted(tmp_path: Path, monkeypatch):
     root = project(tmp_path)
     runner, calls = fake_cli(root, status_project=tmp_path / "other")
     monkeypatch.setattr(subprocess, "run", runner)
-    result = run_unity_harness(root, tmp_path / "evidence", run_tests=True)
+    result = run_unity_harness(root, tmp_path / "evidence")
     assert result.status == "HOLD"
     assert [call[1] for call in calls] == ["version", "status"]
 
@@ -104,7 +105,7 @@ def test_other_editor_is_not_accepted(tmp_path: Path, monkeypatch):
 @pytest.mark.parametrize("tests,failures,expected", [(0, 0, "HOLD"), (4, 1, "ITERATE")])
 def test_empty_and_failed_suites_never_pass(tmp_path: Path, monkeypatch, tests, failures, expected):
     root = project(tmp_path)
-    runner, _ = fake_cli(root, tests=tests, failures=failures)
+    runner, _ = fake_cli(root, tests=tests, failures=failures, editor_ready=False)
     monkeypatch.setattr(subprocess, "run", runner)
     result = run_unity_harness(root, tmp_path / "evidence", run_tests=True)
     assert result.status == expected
@@ -126,7 +127,7 @@ def test_malformed_status_and_failed_envelope_hold(tmp_path: Path, monkeypatch):
     root = project(tmp_path)
     runner, calls = fake_cli(root, status_success=False)
     monkeypatch.setattr(subprocess, "run", runner)
-    result = run_unity_harness(root, tmp_path / "evidence", run_tests=True)
+    result = run_unity_harness(root, tmp_path / "evidence")
     assert result.status == "HOLD"
     assert [call[1] for call in calls] == ["version", "status"]
 
@@ -146,14 +147,14 @@ def test_empty_pipeline_manifest_holds_even_when_cli_exits_zero(tmp_path: Path, 
         return runner(argv, **kwargs)
 
     monkeypatch.setattr(subprocess, "run", no_tools)
-    result = run_unity_harness(root, tmp_path / "evidence", run_tests=True)
+    result = run_unity_harness(root, tmp_path / "evidence")
     assert result.status == "HOLD"
     assert [call[1] for call in calls] == ["version", "status"]
 
 
 def test_all_skipped_nunit_does_not_pass(tmp_path: Path, monkeypatch):
     root = project(tmp_path)
-    runner, calls = fake_cli(root)
+    runner, calls = fake_cli(root, editor_ready=False)
 
     def skipped(argv, **kwargs):
         completed = runner(argv, **kwargs)
@@ -167,3 +168,25 @@ def test_all_skipped_nunit_does_not_pass(tmp_path: Path, monkeypatch):
     result = run_unity_harness(root, tmp_path / "evidence", run_tests=True)
     assert result.status == "HOLD"
     assert "nonempty NUnit report" in result.reason
+
+
+def test_ready_editor_blocks_batch_test_to_avoid_project_lock(tmp_path: Path, monkeypatch):
+    root = project(tmp_path)
+    runner, calls = fake_cli(root, editor_ready=True)
+    monkeypatch.setattr(subprocess, "run", runner)
+    result = run_unity_harness(root, tmp_path / "evidence", run_tests=True)
+    assert result.status == "HOLD"
+    assert "close the running Editor" in result.reason
+    assert [call[1] for call in calls] == ["version", "status"]
+    assert sample_result(result.root)["pipeline_verified"] is False
+
+
+def test_batch_pass_does_not_claim_pipeline_verified(tmp_path: Path, monkeypatch):
+    root = project(tmp_path)
+    runner, _ = fake_cli(root, editor_ready=False)
+    monkeypatch.setattr(subprocess, "run", runner)
+    result = run_unity_harness(root, tmp_path / "evidence", run_tests=True)
+    assert result.status == "PASS"
+    data = sample_result(result.root)
+    assert data["mode"] == "batch_editmode"
+    assert data["pipeline_verified"] is False
