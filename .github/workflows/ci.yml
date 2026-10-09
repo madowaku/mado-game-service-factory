@@ -81,6 +81,26 @@ jobs:
           sha256sum ci-evidence/godot-capture-adapter/vertical-slice-c6-direct/raw-capture/*.png
           file ci-evidence/godot-capture-adapter/vertical-slice-c6-direct/raw-capture/*.png
 
+      - name: Checkout pinned GridPonder engine and packs
+        uses: actions/checkout@v4
+        with:
+          repository: GridPonder/GridPonder
+          ref: 4aa72a0602f81f29750ae688117a3d57e907d9da
+          path: vendor/gridponder
+          submodules: false
+
+      - name: Replay real GridPonder gold path
+        run: >-
+          mgsf gridponder-qa
+          vendor/gridponder/packs/carrot_quest
+          --gridponder-root vendor/gridponder
+          --level fw_001
+          --output-root ci-evidence
+
+      - name: Assert engine QA pass cannot promote
+        run: >-
+          python -c 'import json; d=json.load(open("ci-evidence/gridponder/carrot_quest/evaluation.json")); assert d["status"] == "PASS"; assert d["promotion_gate"]["status"] == "HOLD"'
+
       - run: pytest -q
 
       - uses: actions/upload-artifact@v4
