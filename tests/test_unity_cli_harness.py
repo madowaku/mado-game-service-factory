@@ -134,3 +134,36 @@ def test_malformed_status_and_failed_envelope_hold(tmp_path: Path, monkeypatch):
 def test_non_unity_project_rejected(tmp_path: Path):
     with pytest.raises(ValueError, match="not a Unity project"):
         run_unity_harness(tmp_path, tmp_path / "evidence")
+
+
+def test_empty_pipeline_manifest_holds_even_when_cli_exits_zero(tmp_path: Path, monkeypatch):
+    root = project(tmp_path)
+    runner, calls = fake_cli(root)
+
+    def no_tools(argv, **kwargs):
+        if argv[1] == "list":
+            return subprocess.CompletedProcess(argv, 0, '{"success":true,"data":[]}', "")
+        return runner(argv, **kwargs)
+
+    monkeypatch.setattr(subprocess, "run", no_tools)
+    result = run_unity_harness(root, tmp_path / "evidence", run_tests=True)
+    assert result.status == "HOLD"
+    assert [call[1] for call in calls] == ["version", "status"]
+
+
+def test_all_skipped_nunit_does_not_pass(tmp_path: Path, monkeypatch):
+    root = project(tmp_path)
+    runner, calls = fake_cli(root)
+
+    def skipped(argv, **kwargs):
+        completed = runner(argv, **kwargs)
+        if argv[1] == "test":
+            report = Path(argv[argv.index("--output") + 1])
+            report.write_text('<test-run total="2" passed="0" failed="0" skipped="2"/>',
+                              encoding="utf-8")
+        return completed
+
+    monkeypatch.setattr(subprocess, "run", skipped)
+    result = run_unity_harness(root, tmp_path / "evidence", run_tests=True)
+    assert result.status == "HOLD"
+    assert "nonempty NUnit report" in result.reason
