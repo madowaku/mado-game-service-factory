@@ -81,3 +81,9 @@ External Tester Preview remains important and moves to the next unallocated mile
 MGSF must not reimplement EdenSpark's MCP transport. The project-provided MCP configuration is consumed by Codex. MGSF owns the mission, retry budget, runner evidence, artifact hashing, and promotion decision.
 
 A deterministic EdenSpark fixture is useful only for contract regression and must remain HOLD. Prototype promotion requires a real recorded `codex-exec` run with all required actions, no reported runtime errors, a successful runner return code, and at least one preserved artifact.
+
+## Parallel Unity boundary (MGSF-UNITY-M0.7)
+- Preserve the existing EdenSpark MGSF-M0.7 namespace; Unity gets its own suffix.
+- Unity harness runs read-only version/status/manifest probes unless --run-tests is supplied.
+- Never invoke arbitrary eval/editor mutations or install Editors implicitly.
+- Fixture evidence remains HOLD; live PASS requires a project-matched ready Editor and a nonempty passing NUnit report.

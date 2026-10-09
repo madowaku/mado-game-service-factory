@@ -67,6 +67,18 @@ mgsf edenspark-loop <project> <mission.json> --max-iterations 3
 mgsf prototype-promote <evaluation.json> [<evaluation.json> ...]
 ```
 
+## Unity CLI / Pipeline incubation (MGSF-UNITY-M0.7)
+
+Unity is an additional engine path, not a replacement for Godot or EdenSpark. The existing MGSF-M0.7 milestone is assigned to EdenSpark, so this parallel milestone has a distinct identifier.
+
+```text
+mgsf unity-harness <unity-project>
+mgsf unity-harness <unity-project> --run-tests
+mgsf unity-harness fixtures/unity/fixture-project --fixture fixtures/unity/fixture-probe.json
+```
+
+Read-only connection verification and fixtures stay HOLD. A live PASS requires project-matched Unity CLI/Pipeline connectivity and a nonempty passing EditMode NUnit report. No autonomous C# eval, scene modifications, or publishing. See [Unity Harness](docs/MGSF_UNITY_M0_7_CLI_PIPELINE_AGENT_HARNESS.md).
+
 ## Windows product preview
 
 Product:
