@@ -170,3 +170,18 @@ The previously planned External Tester Preview moves to the next unallocated mil
 
 
 Parallel agent-native boundary: run the first real EdenSpark dogfood mission on a local EdenSpark project with its generated MCP configuration. The target proof is one recorded Codex run that inspects the scene, compiles, plays, simulates input, preserves a screenshot or equivalent artifact, checks logs, and earns PASS.
+
+## GridPonder deterministic puzzle QA (MGSF-GP-M0.6)
+
+An additive incubation track (the original M0.6 remains EdenSpark).
+Use an explicitly checked-out GridPonder Python engine to replay a game pack's
+Gold Paths twice, comparing each turn's state SHA-256.
+
+```sh
+mgsf gridponder-qa /path/to/GridPonder/packs/carrot_quest \\
+  --gridponder-root /path/to/GridPonder --level fw_001 \\
+  --output-root evidence
+```
+
+This is engine QA, not Dart parity or a human playtest. See
+[contract](docs/MGSF_GP_M0_6_GRIDPONDER_QA.md).
