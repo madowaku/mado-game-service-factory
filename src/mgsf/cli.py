@@ -11,6 +11,7 @@ from .edenspark_agent_adapter import (
     run_autonomous_loop as run_edenspark_loop,
 )
 from .gameplay_capture import run_capture_playtest, run_gameplay_capture
+from .gridponder_qa import run_gridponder_qa
 from .godot_capture_adapter import run_godot_capture_adapter
 from .playtest_report import run_playtest_report
 from .prototype_promotion import promote_prototype
@@ -146,6 +147,16 @@ def main() -> int:
         help="output directory for transport evidence",
     )
 
+    gridponder = sub.add_parser(
+        "gridponder-qa",
+        help="Replay GridPonder gold paths twice with the upstream Python engine",
+    )
+    gridponder.add_argument("pack", type=Path)
+    gridponder.add_argument("--gridponder-root", required=True, type=Path)
+    gridponder.add_argument("--level", action="append")
+    gridponder.add_argument("--timeout-seconds", type=int, default=120)
+    gridponder.add_argument("--output-root", type=Path, default=Path("evidence"))
+
     edenspark_plan = sub.add_parser(
         "edenspark-plan",
         help="Compile a game hypothesis into an EdenSpark/Codex mission pack",
@@ -230,6 +241,17 @@ def main() -> int:
         for service in services:
             print(f"{service['id']}\t{service['stage']}\t{service['name']}")
         return 0
+
+    if args.command == "gridponder-qa":
+        result = run_gridponder_qa(
+            args.pack, args.gridponder_root, args.output_root,
+            levels=args.level, timeout_seconds=args.timeout_seconds,
+        )
+        print(f"GridPonder evidence: {result.root / 'evaluation.json'}")
+        print(f"service=gridponder-deterministic-qa status={result.status} "
+              f"passed={result.passed} failed={result.failed} skipped={result.skipped} "
+              f"nondeterministic={result.nondeterministic} promotion=HOLD")
+        return 1 if result.status == "FAIL" else 0
 
     if args.command == "transport-probe":
         evidence_path = run_transport_fixture(args.fixture, args.output_root)
