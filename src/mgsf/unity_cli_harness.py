@@ -43,7 +43,7 @@ def _envelope(stdout: str) -> dict[str, Any] | None:
         return None
     if not isinstance(data, dict):
         return None
-    if data.get("success") is False or data.get("error"):
+    if data.get("success") is not True or data.get("error") or "data" not in data:
         return None
     return data
 
@@ -148,12 +148,17 @@ def _nunit_verdict(path: Path) -> dict[str, Any] | None:
             return None
         total = int(root.attrib["total"])
         failures = int(root.attrib.get("failed", root.attrib.get("failures", "0")))
-        if total < 1 or failures < 0:
+        skipped = int(root.attrib.get("skipped", root.attrib.get("ignored", "0")))
+        inconclusive = int(root.attrib.get("inconclusive", "0"))
+        passed = int(root.attrib.get("passed", str(total - failures - skipped - inconclusive)))
+        if total < 1 or failures < 0 or skipped < 0 or inconclusive < 0 or passed < 1:
             return None
         return {
             "total": total,
+            "passed": passed,
             "failed": failures,
-            "skipped": int(root.attrib.get("skipped", root.attrib.get("ignored", "0"))),
+            "skipped": skipped,
+            "inconclusive": inconclusive,
             "sha256": _sha(path.read_bytes()),
             "bytes": path.stat().st_size,
         }
@@ -233,8 +238,9 @@ def run_unity_harness(
                     record["reason"] = "cannot verify one ready Unity Editor bound to the requested project"
                 else:
                     manifest = step("manifest", ["list", "--project-path", str(project_path), "--format", "json"])
-                    if manifest["returncode"] != 0 or not manifest["envelope_success"]:
-                        record["reason"] = "Unity Pipeline command manifest probe failed"
+                    if (manifest["returncode"] != 0 or not manifest["envelope_success"]
+                            or not manifest["data"].get("data")):
+                        record["reason"] = "Unity Pipeline command manifest unavailable or empty"
                     elif not run_tests:
                         record["reason"] = "read-only connection verified; EditMode tests not requested"
                     else:
