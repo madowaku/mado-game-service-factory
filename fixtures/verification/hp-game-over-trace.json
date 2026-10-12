@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "game_id": "hp-game-over",
+  "evidence_class": "deterministic_game_fixture",
+  "cases": [
+    {
+      "requirement_id": "HP-001",
+      "steps": [
+        {
+          "action": "enemy_hit",
+          "state_before": {
+            "player": {
+              "hp": 3,
+              "position": 5
+            },
+            "game": {
+              "phase": "playing",
+              "score": 0
+            }
+          },
+          "state_after": {
+            "player": {
+              "hp": 2,
+              "position": 5
+            },
+            "game": {
+              "phase": "playing",
+              "score": 0
+            }
+          },
+          "events": [
+            "player_damaged"
+          ]
+        },
+        {
+          "action": "enemy_hit",
+          "state_before": {
+            "player": {
+              "hp": 2,
+              "position": 5
+            },
+            "game": {
+              "phase": "playing",
+              "score": 0
+            }
+          },
+          "state_after": {
+            "player": {
+              "hp": 1,
+              "position": 5
+            },
+            "game": {
+              "phase": "playing",
+              "score": 0
+            }
+          },
+          "events": [
+            "player_damaged"
+          ]
+        },
+        {
+          "action": "enemy_hit",
+          "state_before": {
+            "player": {
+              "hp": 1,
+              "position": 5
+            },
+            "game": {
+              "phase": "playing",
+              "score": 0
+            }
+          },
+          "state_after": {
+            "player": {
+              "hp": 0,
+              "position": 5
+            },
+            "game": {
+              "phase": "game_over",
+              "score": 0
+            }
+          },
+          "events": [
+            "player_damaged",
+            "game_over"
+          ]
+        },
+        {
+          "action": "player_move",
+          "state_before": {
+            "player": {
+              "hp": 0,
+              "position": 5
+            },
+            "game": {
+              "phase": "game_over",
+              "score": 0
+            }
+          },
+          "state_after": {
+            "player": {
+              "hp": 0,
+              "position": 5
+            },
+            "game": {
+              "phase": "game_over",
+              "score": 0
+            }
+          },
+          "events": []
+        }
+      ]
+    },
+    {
+      "requirement_id": "SCORE-001",
+      "steps": [
+        {
+          "action": "collect_gem",
+          "state_before": {
+            "player": {
+              "hp": 3,
+              "position": 5
+            },
+            "game": {
+              "phase": "playing",
+              "score": 0
+            }
+          },
+          "state_after": {
+            "player": {
+              "hp": 3,
+              "position": 5
+            },
+            "game": {
+              "phase": "playing",
+              "score": 10
+            }
+          },
+          "events": [
+            "gem_collected"
+          ]
+        }
+      ]
+    }
+  ]
+}

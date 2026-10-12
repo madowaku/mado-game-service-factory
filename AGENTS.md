@@ -38,6 +38,7 @@ A service may move backward if evidence degrades.
 ## Current milestones
 - MGSF-M0.5: QUIC Transport Probe / Network Evidence Harness - incubation
 - MGSF-M0.6 to M0.8: EdenSpark Agent-Native Prototype Loop - incubation
+- MGSF-M0.9: AI Game Verification Protocol - incubation (fixture-only release HOLD)
 
 ## Active services
 - `playtest-report`

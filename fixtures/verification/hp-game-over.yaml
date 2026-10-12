@@ -1,0 +1,29 @@
+schema_version: 1
+game_id: hp-game-over
+requirements:
+  - id: HP-001
+    description: Three enemy hits cause game over and block further movement.
+    critical: true
+    actions:
+      - action: enemy_hit
+        repeat: 3
+      - action: player_move
+    assertions:
+      - at_step: 2
+        path: player.hp
+        equals: 0
+      - path: game.phase
+        equals: game_over
+      - at_step: 3
+        path: player.position
+        same_as_before: true
+      - event: game_over
+        count: 1
+  - id: SCORE-001
+    description: Collecting a gem increments score by ten.
+    critical: true
+    actions:
+      - action: collect_gem
+    assertions:
+      - path: game.score
+        equals: 10

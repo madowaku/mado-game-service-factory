@@ -67,6 +67,21 @@ mgsf edenspark-loop <project> <mission.json> --max-iterations 3
 mgsf prototype-promote <evaluation.json> [<evaluation.json> ...]
 ```
 
+## AI Game Verification (MGSF-M0.9, incubation)
+
+Fixture-only specification coverage, replay integrity, and runtime-state **trace**
+assertions. This is intentionally separate from the existing EdenSpark M0.8 gate.
+
+```bash
+mgsf verify-game fixtures/verification/hp-game-over.yaml \
+  fixtures/verification/hp-game-over-trace.json
+```
+
+Known-good deterministic traces earn logic PASS but release HOLD. Missing
+requirements or violated assertions FAIL. No current version claims to execute
+Godot or certify a human playtest. See
+`docs/MGSF_M0_9_AI_GAME_VERIFICATION.md`.
+
 ## Windows product preview
 
 Product:

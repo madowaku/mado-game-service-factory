@@ -68,6 +68,17 @@ services:
     entrypoint: mgsf prototype-promote
     service_contract: docs/MGSF_M0_6_TO_M0_8_EDENSPARK_PROTOTYPE_LOOP.md
 
+  - id: ai-game-verification
+    name: AI Game Verification Protocol
+    stage: incubation
+    problem: Catch missing requirements and faulty gameplay state transitions with replay-backed assertions.
+    milestone: MGSF-M0.9
+    entrypoint: mgsf verify-game
+    service_contract: docs/MGSF_M0_9_AI_GAME_VERIFICATION.md
+    evidence:
+      fixture: deterministic_game_fixture
+      live_required_for_promotion: true
+
   - id: build-doctor
     name: Game Build Doctor
     stage: candidate
