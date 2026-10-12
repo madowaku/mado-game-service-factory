@@ -10,6 +10,7 @@ from .edenspark_agent_adapter import (
     load_mission as load_edenspark_mission,
     run_autonomous_loop as run_edenspark_loop,
 )
+from .game_verification import run_game_verification
 from .gameplay_capture import run_capture_playtest, run_gameplay_capture
 from .godot_capture_adapter import run_godot_capture_adapter
 from .playtest_report import run_playtest_report
@@ -198,6 +199,19 @@ def main() -> int:
         help="root directory for runner and evaluation evidence",
     )
 
+    verify_game = sub.add_parser(
+        "verify-game",
+        help="Check declared game requirements against deterministic action/state replay (HOLD without live proof)",
+    )
+    verify_game.add_argument("spec", type=Path, help="game requirements YAML")
+    verify_game.add_argument("trace", type=Path, help="action/state replay JSON")
+    verify_game.add_argument(
+        "--output-root",
+        type=Path,
+        default=Path("evidence/ai-game-verification"),
+        help="root for hashed game verification evidence",
+    )
+
     promotion = sub.add_parser(
         "prototype-promote",
         help="Promote, iterate, or hold a prototype from one or more evidence bundles",
@@ -281,6 +295,15 @@ def main() -> int:
             f"iterations={result.iterations} best_score={result.best_score:.4f}"
         )
         return 0 if result.status == "PASS" else 1
+
+    if args.command == "verify-game":
+        result = run_game_verification(args.spec, args.trace, args.output_root)
+        print(f"Game verification evidence: {result.root}")
+        print(
+            f"service=ai-game-verification verification={result.verification_status} "
+            f"coverage={result.covered_count}/{result.requirement_count} gate={result.status}"
+        )
+        return 0 if result.status == "HOLD" else 1
 
     if args.command == "prototype-promote":
         result = promote_prototype(args.evidence, args.output_root, engine=args.engine)

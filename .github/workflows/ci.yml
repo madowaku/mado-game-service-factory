@@ -81,6 +81,17 @@ jobs:
           sha256sum ci-evidence/godot-capture-adapter/vertical-slice-c6-direct/raw-capture/*.png
           file ci-evidence/godot-capture-adapter/vertical-slice-c6-direct/raw-capture/*.png
 
+      - name: Verify deterministic game requirements (fixture gate must HOLD)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mgsf verify-game \
+            fixtures/verification/hp-game-over.yaml \
+            fixtures/verification/hp-game-over-trace.json \
+            --output-root ci-evidence/ai-game-verification
+          grep -q '"release_gate": "HOLD"' \
+            ci-evidence/ai-game-verification/hp-game-over/evaluation.json
+
       - run: pytest -q
 
       - uses: actions/upload-artifact@v4
