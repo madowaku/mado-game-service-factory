@@ -135,6 +135,13 @@ def evaluate_session(session_root: str | Path) -> LabResult:
     retries = _state_number(rows[-1], "retries")
     won = any(row["state"]["won"] for row in rows)
     errors = [e for row in rows for e in row["errors"]]
+    if evidence_class == EVIDENCE_LIVE:
+        # Godot can report script/runtime failures despite a zero exit code.
+        for log_name in ("godot.stdout.txt", "godot.stderr.txt"):
+            log_path = root / log_name
+            if log_path.is_file():
+                errors.extend(line for line in log_path.read_text(encoding="utf-8").splitlines()
+                              if re.search(r"\b(?:script error|error)\s*:|MGSF_PLAYTEST_ERROR", line, re.IGNORECASE))
     limits = scenario["limits"]
     metrics = {"goal_reached": won, "stall_transitions": stalls, "deaths": deaths,
                "retries": retries, "frames": sum(row["frames"] for row in rows), "runtime_errors": len(errors)}
