@@ -81,6 +81,20 @@ jobs:
           sha256sum ci-evidence/godot-capture-adapter/vertical-slice-c6-direct/raw-capture/*.png
           file ci-evidence/godot-capture-adapter/vertical-slice-c6-direct/raw-capture/*.png
 
+      - name: Smoke-test M0.8a direct Godot state replay
+        shell: bash
+        run: |
+          set -euo pipefail
+          mgsf playtest-lab-godot \
+            fixtures/playtest-lab/godot-smoke \
+            fixtures/playtest-lab/godot-smoke/scenario.json \
+            --godot /tmp/godot/Godot_v4.7.2-stable_linux.x86_64 \
+            --source-sha "$(git rev-parse HEAD)" \
+            --persona qa \
+            --output-root ci-evidence
+          find ci-evidence/playtest-lab -name evaluation.json -print -exec cat {} \;
+          grep -R -q '"status": "PASS"' ci-evidence/playtest-lab
+
       - run: pytest -q
 
       - uses: actions/upload-artifact@v4
