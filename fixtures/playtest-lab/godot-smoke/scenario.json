@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "scenario_id": "godot-smoke-m08a",
+  "scene": "res://smoke.tscn",
+  "state_node": ".",
+  "steps": [
+    {
+      "action": "ui_right",
+      "frames": 2
+    },
+    {
+      "action": "ui_right",
+      "frames": 3
+    }
+  ],
+  "limits": {
+    "max_stalls": 0,
+    "max_deaths": 0,
+    "max_retries": 0
+  }
+}
