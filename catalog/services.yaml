@@ -68,6 +68,20 @@ services:
     entrypoint: mgsf prototype-promote
     service_contract: docs/MGSF_M0_6_TO_M0_8_EDENSPARK_PROTOTYPE_LOOP.md
 
+  - id: ai-playtest-laboratory
+    name: AI Playtest Laboratory / Godot Refinement Evidence
+    stage: incubation
+    problem: Compare reproducible Godot game-state outcomes before and after candidate improvements.
+    milestone: MGSF-M0.8a
+    entrypoint: mgsf playtest-lab-godot
+    eval_entrypoint: mgsf playtest-lab-eval
+    compare_entrypoint: mgsf playtest-lab-compare
+    service_contract: docs/MGSF_M0_8A_AI_PLAYTEST_LABORATORY.md
+    evidence:
+      fixture: deterministic_playtest_fixture
+      live: recorded_godot_playtest
+      live_required_for_promotion: true
+
   - id: build-doctor
     name: Game Build Doctor
     stage: candidate
