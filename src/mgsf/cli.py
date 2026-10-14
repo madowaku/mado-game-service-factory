@@ -13,6 +13,7 @@ from .edenspark_agent_adapter import (
 from .gameplay_capture import run_capture_playtest, run_gameplay_capture
 from .godot_capture_adapter import run_godot_capture_adapter
 from .playtest_report import run_playtest_report
+from .playtest_lab import compare_sessions, evaluate_session, run_godot_session, write_refinement_brief
 from .prototype_promotion import promote_prototype
 from .real_game_bridge import run_real_game_bridge, run_real_game_dogfood
 from .transport_probe import run_fixture as run_transport_fixture
@@ -216,6 +217,29 @@ def main() -> int:
         help="root directory for promotion decisions",
     )
 
+
+    lab_godot = sub.add_parser("playtest-lab-godot", help="Replay a state-observable Godot scenario")
+    lab_godot.add_argument("project", type=Path)
+    lab_godot.add_argument("scenario", type=Path)
+    lab_godot.add_argument("--godot", required=True)
+    lab_godot.add_argument("--persona", default="qa")
+    lab_godot.add_argument("--driver", choices=("scripted_replay", "agent_authored_replay"), default="scripted_replay")
+    lab_godot.add_argument("--source-sha")
+    lab_godot.add_argument("--timeout-seconds", type=int, default=120)
+    lab_godot.add_argument("--output-root", type=Path, default=Path("evidence"))
+
+    lab_eval = sub.add_parser("playtest-lab-eval", help="Verify replay trace and state metrics")
+    lab_eval.add_argument("session", type=Path)
+
+    lab_compare = sub.add_parser("playtest-lab-compare", help="Compare same-scenario before/after evidence")
+    lab_compare.add_argument("before", type=Path)
+    lab_compare.add_argument("after", type=Path)
+    lab_compare.add_argument("--output-root", type=Path, default=Path("evidence/refinement"))
+
+    lab_brief = sub.add_parser("playtest-lab-brief", help="Produce a review-gated Codex refinement brief")
+    lab_brief.add_argument("session", type=Path)
+    lab_brief.add_argument("--output-root", type=Path, default=Path("evidence/refinement"))
+
     args = parser.parse_args()
 
     if args.command in {"validate-catalog", "list"}:
@@ -229,6 +253,35 @@ def main() -> int:
             services = [s for s in services if s["stage"] == args.stage]
         for service in services:
             print(f"{service['id']}\t{service['stage']}\t{service['name']}")
+        return 0
+
+
+    if args.command == "playtest-lab-godot":
+        result = run_godot_session(
+            args.project, args.scenario, godot=args.godot,
+            output_root=args.output_root, persona=args.persona,
+            driver=args.driver, timeout_seconds=args.timeout_seconds,
+            source_head_sha=args.source_sha,
+        )
+        print(f"Godot playtest evidence: {result.root}")
+        print(f"service=ai-playtest-laboratory status={result.status}")
+        return 0 if result.status == "PASS" else 1
+
+    if args.command == "playtest-lab-eval":
+        result = evaluate_session(args.session)
+        print(f"Playtest evaluation: {result.report_path}")
+        print(f"service=ai-playtest-laboratory status={result.status}")
+        return 0 if result.status in {"PASS", "HOLD"} else 1
+
+    if args.command == "playtest-lab-compare":
+        result = compare_sessions(args.before, args.after, args.output_root)
+        print(f"Playtest comparison: {result.report_path}")
+        print(f"service=ai-playtest-laboratory status={result.status}")
+        return 0 if result.status in {"IMPROVED", "UNCHANGED", "HOLD"} else 1
+
+    if args.command == "playtest-lab-brief":
+        path = write_refinement_brief(args.session, args.output_root)
+        print(f"Review-gated refinement brief: {path}")
         return 0
 
     if args.command == "transport-probe":
