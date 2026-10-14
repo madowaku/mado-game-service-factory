@@ -100,3 +100,14 @@ def test_invalid_scenario_rejected(tmp_path: Path) -> None:
                "limits": {"max_stalls": 0, "max_deaths": 0, "max_retries": 0}})
     with pytest.raises(PlaytestLabError, match="scenario_id"):
         load_scenario(bad)
+
+def test_godot_script_error_prevents_pass(tmp_path: Path) -> None:
+    root = make_session(tmp_path / "script-error", fixture=False)
+    (root / "godot.stderr.txt").write_text("SCRIPT ERROR: Invalid call to function\n", encoding="utf-8")
+    runner = json.loads((root / "runner.json").read_text(encoding="utf-8"))
+    runner["stderr_sha256"] = sha256((root / "godot.stderr.txt").read_bytes()).hexdigest()
+    dump(root / "runner.json", runner)
+    result = evaluate_session(root)
+    assert result.status == "ITERATE"
+    report = json.loads(result.report_path.read_text(encoding="utf-8"))
+    assert report["metrics"]["runtime_errors"] == 1
