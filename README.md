@@ -27,6 +27,7 @@ quic-transport-probe incubation
 edenspark-agent-adapter incubation
 edenspark-autonomous-playtest incubation
 prototype-promotion-gate incubation
+ai-playtest-laboratory incubation
 Windows product    preview verified
 ```
 
@@ -66,6 +67,19 @@ mgsf edenspark-eval <project> <mission.json> <result.json> --runner-record <runn
 mgsf edenspark-loop <project> <mission.json> --max-iterations 3
 mgsf prototype-promote <evaluation.json> [<evaluation.json> ...]
 ```
+
+## MGSF-M0.8a: AI Playtest Laboratory
+
+An additive, evidence-gated Godot replay layer; the existing M0.8 prototype promotion gate remains unchanged. Replays are deterministic (optionally agent-authored action plans) and **not** live AI decision-making or human enjoyment measurements.
+
+```bash
+mgsf playtest-lab-godot fixtures/playtest-lab/godot-smoke fixtures/playtest-lab/godot-smoke/scenario.json --godot /path/to/godot --persona qa
+mgsf playtest-lab-eval evidence/playtest-lab/<session-dir>
+mgsf playtest-lab-brief evidence/playtest-lab/<session-dir>
+mgsf playtest-lab-compare <baseline-dir> <candidate-dir>
+```
+
+The Godot state observer must implement `mgsf_playtest_state()` and return `progress`, `won`, `deaths`, and `retries`. The lab hashes replay and runner evidence; fixture-only sessions always `HOLD`. Comparisons require matching scenario, persona and driver; only verified, non-regressing improvements become review candidates. See [M0.8a contract](docs/MGSF_M0_8A_AI_PLAYTEST_LABORATORY.md).
 
 ## Windows product preview
 
