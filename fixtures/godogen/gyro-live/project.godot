@@ -4,6 +4,9 @@ config_version=5
 config/name="MGSF Gyro State Dogfood"
 run/main_scene="res://GyroDogfood.tscn"
 
+[dotnet]
+project/assembly_name="GyroStateDogfood"
+
 [display]
 window/size/viewport_width=640
 window/size/viewport_height=360
