@@ -83,7 +83,7 @@ jobs:
           assert data["runner_verified"] is True
           assert data["video_verified"] is True
           assert data["state_trace"]["samples"] >= 20
-          assert len(data["checks"]) == 2 and all(check["pass"] for check in data["checks"])
+          assert len(data["checks"]) == 3 and all(check["pass"] for check in data["checks"])
           print("real Godot engine gameplay state PASS; Godogen autonomous proof HOLD")
           PY
 
