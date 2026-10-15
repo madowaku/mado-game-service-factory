@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "mission_id": "vertical-slice-c6-testing-m092",
+  "engine": "godot",
+  "engine_version": "4.7.2",
+  "phase": "verify",
+  "genre": "general",
+  "task": "Verify the Watermelon C6 game core loop with objective, repeatable Godot state assertions for sensors, blind privacy and playfeel.",
+  "capabilities": ["test", "regression", "headless"]
+}

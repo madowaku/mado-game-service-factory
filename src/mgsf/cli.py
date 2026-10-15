@@ -6,6 +6,7 @@ from pathlib import Path
 from .catalog import load_catalog
 from .agent_skill_router import load_skill_registry, run_skill_route
 from .skill_ab_benchmark import prepare_skill_ab, run_skill_ab
+from .skill_dogfood import run_codex_dogfood_arm, evaluate_skill_dogfood
 from .edenspark_agent_adapter import (
     create_mission_pack,
     evaluate_result as evaluate_edenspark_result,
@@ -259,7 +260,67 @@ def main() -> int:
         "--output-root", type=Path, default=Path("evidence/skill-ab-runs")
     )
 
+    dogfood_codex = sub.add_parser(
+        "skill-dogfood-codex",
+        help="Run one controlled Codex A/B arm and preserve complete provenance",
+    )
+    dogfood_codex.add_argument("plan", type=Path)
+    dogfood_codex.add_argument("arm", choices=["control", "treatment"])
+    dogfood_codex.add_argument("project", type=Path)
+    dogfood_codex.add_argument("--codex", default="codex")
+    dogfood_codex.add_argument("--model", required=True)
+    dogfood_codex.add_argument("--budget-seconds", type=int, default=900)
+    dogfood_codex.add_argument("--reviewed-skill", type=Path)
+    dogfood_codex.add_argument("--expected-skill-sha256")
+    dogfood_codex.add_argument(
+        "--output-root", type=Path, default=Path("evidence/codex-ab")
+    )
+
+    dogfood_eval = sub.add_parser(
+        "skill-dogfood-eval",
+        help="Verify paired Codex/gameplay provenance; never auto-promote",
+    )
+    dogfood_eval.add_argument("plan", type=Path)
+    dogfood_eval.add_argument("route", type=Path)
+    dogfood_eval.add_argument("benchmark", type=Path)
+    dogfood_eval.add_argument("control_receipt", type=Path)
+    dogfood_eval.add_argument("treatment_receipt", type=Path)
+    dogfood_eval.add_argument(
+        "--output-root", type=Path, default=Path("evidence/paired-skill-dogfood")
+    )
+
     args = parser.parse_args()
+
+    if args.command == "skill-dogfood-codex":
+        receipt = run_codex_dogfood_arm(
+            args.plan, args.arm, args.project, args.output_root,
+            codex=args.codex,
+            model=args.model,
+            budget_seconds=args.budget_seconds,
+            reviewed_skill=args.reviewed_skill,
+            expected_skill_sha256=args.expected_skill_sha256,
+        )
+        import json
+
+        recorded = json.loads(receipt.read_text(encoding="utf-8"))
+        print(f"Codex dogfood receipt: {receipt}")
+        print(
+            f"service=paired-godot-dogfood arm={args.arm} "
+            f"returncode={recorded['returncode']} promotion=HOLD"
+        )
+        return 0 if recorded["returncode"] == 0 else 1
+
+    if args.command == "skill-dogfood-eval":
+        result = evaluate_skill_dogfood(
+            args.plan, args.route, args.benchmark,
+            args.control_receipt, args.treatment_receipt, args.output_root,
+        )
+        print(f"Paired skill dogfood evidence: {result.root}")
+        print(
+            f"service=paired-godot-dogfood status={result.status} "
+            f"verdict={result.verdict} promotion=HOLD blockers={len(result.blockers)}"
+        )
+        return 0 if result.status in {"HOLD", "REVIEW"} else 1
 
     if args.command == "skill-ab-plan":
         root = prepare_skill_ab(args.experiment, args.route, args.output_root)

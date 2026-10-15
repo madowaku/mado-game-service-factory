@@ -100,3 +100,13 @@ Both real capture bundles and actual engine runner logs must be preserved with h
 Even complete paired evidence is REVIEW, not PROMOTE: independently assess
 test strength, input replay, screenshot quality, prompt parity, and actual third-party skill adoption.
 Never claim a single pair establishes causality, change the EdenSpark promotion gate, or publish games.
+
+## MGSF-M0.9.2 boundary
+
+Run a neutral paired real Godot smoke in CI using `vertical-slice`, but label
+it only as infrastructure proof. Never pass these identical arms off as a Codex
+expert-skill A/B result. Collect independent Codex process logs and full prompt
+hashes with the exact same model/budget, pinned baseline and an explicitly reviewed
+treatment skill. Human review and manual commits precede direct capture and evaluation.
+No upstream automatic install, script execution, autonomous publishing, or PROMOTE.
+One non-fixture A/B comparison can at most be REVIEW, not a causal skill uplift claim.
