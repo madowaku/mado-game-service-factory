@@ -16,6 +16,10 @@ from .godogen_adapter import (
     load_mission as load_godogen_mission,
     run_godogen_loop,
 )
+from .godogen_state_verification import (
+    live_dogfood as run_godogen_state_dogfood,
+    verify_state as verify_godogen_state,
+)
 from .gameplay_capture import run_capture_playtest, run_gameplay_capture
 from .godot_capture_adapter import run_godot_capture_adapter
 from .playtest_report import run_playtest_report
@@ -237,6 +241,31 @@ def main() -> int:
     godogen_loop.add_argument("--timeout-seconds", type=int, default=1800)
     godogen_loop.add_argument("--output-root", type=Path, default=Path("evidence/godogen"))
 
+    gyro_state = sub.add_parser(
+        "godogen-state-dogfood", help="Real Godot .NET GYRO fixture, captured video plus game state",
+    )
+    gyro_state.add_argument("project", type=Path)
+    gyro_state.add_argument("mission", type=Path)
+    gyro_state.add_argument("--execute", action="store_true", help="required for an engine run")
+    gyro_state.add_argument("--godot", required=True, help="Godot .NET/Mono executable")
+    gyro_state.add_argument("--dotnet", default="dotnet")
+    gyro_state.add_argument("--ffmpeg", default="ffmpeg")
+    gyro_state.add_argument("--ffprobe", default="ffprobe")
+    gyro_state.add_argument("--no-xvfb", action="store_true")
+    gyro_state.add_argument("--output-root", type=Path, default=Path("evidence/godogen-state"))
+
+    state_verify = sub.add_parser(
+        "godogen-state-verify", help="Verify signed gameplay state deltas and same-run movie evidence",
+    )
+    state_verify.add_argument("project", type=Path)
+    state_verify.add_argument("mission", type=Path)
+    state_verify.add_argument("--trace", required=True, help="project-relative state trace JSON")
+    state_verify.add_argument("--video", required=True, help="project-relative MP4")
+    state_verify.add_argument("--runner-record", type=Path)
+    state_verify.add_argument("--fixture", action="store_true")
+    state_verify.add_argument("--ffprobe", default="ffprobe")
+    state_verify.add_argument("--output-root", type=Path, default=Path("evidence/godogen-state"))
+
     promotion = sub.add_parser(
         "prototype-promote",
         help="Promote, iterate, or hold a prototype from one or more evidence bundles",
@@ -349,6 +378,31 @@ def main() -> int:
         )
         print(f"Godogen evidence: {evaluation.root} status={evaluation.status}")
         return 0 if evaluation.status == "PASS" else 1
+
+    if args.command == "godogen-state-dogfood":
+        if not args.execute:
+            parser.error("godogen-state-dogfood requires --execute to launch Godot .NET")
+        verdict = run_godogen_state_dogfood(
+            args.project, args.mission, args.output_root,
+            godot=args.godot, dotnet=args.dotnet, ffmpeg=args.ffmpeg,
+            ffprobe=args.ffprobe, xvfb=not args.no_xvfb,
+        )
+        print(f"Godogen state evidence: {verdict.root}")
+        print(f"runtime={verdict.status} autonomy={verdict.autonomous_status} checks={verdict.passed_checks}/{verdict.total_checks}")
+        return 0 if verdict.status == "PASS" else 1
+
+    if args.command == "godogen-state-verify":
+        import json
+
+        runner = json.loads(args.runner_record.read_text(encoding="utf-8")) if args.runner_record else None
+        verdict = verify_godogen_state(
+            args.project, args.mission, trace_path=args.trace,
+            video_path=args.video, runner_record=runner, output_root=args.output_root,
+            fixture=args.fixture, ffprobe=args.ffprobe,
+        )
+        print(f"Godogen state evidence: {verdict.root}")
+        print(f"runtime={verdict.status} autonomy={verdict.autonomous_status} checks={verdict.passed_checks}/{verdict.total_checks}")
+        return 0 if verdict.status in {"PASS", "HOLD"} else 1
 
     if args.command == "prototype-promote":
         result = promote_prototype(args.evidence, args.output_root, engine=args.engine)
