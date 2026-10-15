@@ -205,3 +205,22 @@ The fixture provides a *plan only*, not two tested game variants.
 Without two valid direct Godot capture bundles, the evaluator returns HOLD.
 Complete paired evidence is labeled REVIEW, and prototype promotion remains HOLD.
 See [M0.9.1 evaluation contract](docs/MGSF_M0_9_1_EXPERT_SKILL_AB_BENCHMARK.md).
+
+## MGSF-M0.9.2 - Paired real Godot dogfood with Codex provenance
+
+Run the existing pinned `vertical-slice` game twice with the *same independent
+Godot test scenario* and two actual Godot capture runs. The CI neutral smoke validates
+the engine/evidence plumbing and explicitly returns HOLD at the skill-effect gate
+because no independent Codex generation occurred.
+
+```bash
+bash scripts/run_vertical_slice_ab_smoke.sh <Godot-4.7.2-binary> ci-evidence/paired-godot-neutral-smoke
+```
+
+For a true control/treatment comparison, record **two** Codex implementation
+runs from the exact same baseline, using `mgsf skill-dogfood-codex`,
+review and commit both outputs separately, execute `mgsf skill-ab-run`
+on those revisions and then check `mgsf skill-dogfood-eval`.
+A treatment requires a reviewed local external SKILL.md and SHA-256 approval;
+control may not receive that skill. The external content is not auto-installed
+or executed. See [M0.9.2 contract](docs/MGSF_M0_9_2_PAIRED_GODOT_DOGFOOD.md).

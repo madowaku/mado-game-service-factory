@@ -94,6 +94,14 @@ jobs:
             --output-root ci-evidence/skill-ab
           grep -q '"promotion_status": "HOLD"' ci-evidence/skill-ab/gyro-puzzle-ab-001/experiment.json
 
+      - name: Paired real Godot C6 neutral dogfood (skill effect must HOLD)
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash scripts/run_vertical_slice_ab_smoke.sh \
+            /tmp/godot/Godot_v4.7.2-stable_linux.x86_64 \
+            ci-evidence/paired-godot-neutral-smoke
+
       - run: pytest -q
 
       - uses: actions/upload-artifact@v4

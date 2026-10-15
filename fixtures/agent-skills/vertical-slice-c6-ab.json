@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "experiment_id": "vertical-slice-c6-ab-001",
+  "engine_version": "4.7.2",
+  "baseline_commit": "f0514229d7f2036ec25646d09e3647c8d870dadb",
+  "task": "Improve the C6 vertical-slice game test coverage while preserving the blind-player privacy contract, truthful sensor behavior, and full near-miss / reveal playfeel loop. Maintain existing game invariants.",
+  "seed": 42,
+  "test_script": "res://tests/ab_scenario.gd",
+  "required_assertions": ["playfeel", "blind_privacy", "sensor_logic"]
+}

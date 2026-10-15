@@ -111,3 +111,16 @@ services:
       fixture: deterministic_ab_contract_fixture
       live: paired_godot_runner_evidence
       live_required_for_promotion: true
+
+  - id: paired-godot-dogfood
+    name: Paired Godot Dogfood / Skill Effectiveness Evidence
+    stage: incubation
+    problem: Attribute real paired Godot engine evidence to independently logged Codex control/treatment implementations without claiming causality.
+    milestone: MGSF-M0.9.2
+    entrypoint: mgsf skill-dogfood-codex
+    eval_entrypoint: mgsf skill-dogfood-eval
+    service_contract: docs/MGSF_M0_9_2_PAIRED_GODOT_DOGFOOD.md
+    evidence:
+      neutral_real_engine: paired_godot_runner_evidence
+      codex_receipts_required: true
+      live_required_for_promotion: true
