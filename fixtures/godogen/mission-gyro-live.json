@@ -23,6 +23,14 @@
       "axis": "x",
       "input": "left",
       "max_delta": -80
+    },
+    {
+      "id": "neutral-stable",
+      "start_tick": 300,
+      "end_tick": 390,
+      "axis": "x",
+      "input": "idle",
+      "max_abs_delta": 0.001
     }
   ]
 }
