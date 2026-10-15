@@ -20,6 +20,8 @@ from .godogen_state_verification import (
     live_dogfood as run_godogen_state_dogfood,
     verify_state as verify_godogen_state,
 )
+from .godogen_frame_proof import verify_frame_proof
+from .godogen_generation_proof import capture_generated_game, verify_autonomous_generation
 from .gameplay_capture import run_capture_playtest, run_gameplay_capture
 from .godot_capture_adapter import run_godot_capture_adapter
 from .playtest_report import run_playtest_report
@@ -266,6 +268,46 @@ def main() -> int:
     state_verify.add_argument("--ffprobe", default="ffprobe")
     state_verify.add_argument("--output-root", type=Path, default=Path("evidence/godogen-state"))
 
+    frame_proof = sub.add_parser(
+        "godogen-frame-proof", help="Decode movie pixels and compare player centers to engine state",
+    )
+    frame_proof.add_argument("project", type=Path)
+    frame_proof.add_argument("mission", type=Path)
+    frame_proof.add_argument("--trace", required=True, help="project-relative engine state JSON")
+    frame_proof.add_argument("--video", required=True, help="project-relative movie MP4")
+    frame_proof.add_argument("--state-evidence", type=Path, required=True)
+    frame_proof.add_argument("--ffmpeg", default="ffmpeg")
+    frame_proof.add_argument("--ffprobe", default="ffprobe")
+    frame_proof.add_argument("--fixture", action="store_true")
+    frame_proof.add_argument("--output-root", type=Path, default=Path("evidence/godogen-frame"))
+
+    generated_capture = sub.add_parser(
+        "godogen-generated-capture",
+        help="Replay a staged Codex-generated Godot game, writing real trace/video/frame proof",
+    )
+    generated_capture.add_argument("project", type=Path)
+    generated_capture.add_argument("mission", type=Path)
+    generated_capture.add_argument("--execute", action="store_true", help="required: executes untrusted game code")
+    generated_capture.add_argument("--godot", required=True, help="Godot .NET binary")
+    generated_capture.add_argument("--dotnet", default="dotnet")
+    generated_capture.add_argument("--ffmpeg", default="ffmpeg")
+    generated_capture.add_argument("--ffprobe", default="ffprobe")
+    generated_capture.add_argument("--no-xvfb", action="store_true")
+    generated_capture.add_argument("--output-root", type=Path, default=Path("evidence/godogen-generated"))
+
+    autonomy = sub.add_parser(
+        "godogen-autonomy-gate",
+        help="Bind pinned Codex runner and source fingerprints to independent state/video proof",
+    )
+    autonomy.add_argument("project", type=Path)
+    autonomy.add_argument("mission", type=Path)
+    autonomy.add_argument("--frame-proof", type=Path, required=True)
+    autonomy.add_argument("--state-evidence", type=Path, required=True)
+    autonomy.add_argument("--godogen-evaluation", type=Path, required=True)
+    autonomy.add_argument("--codex-runner", type=Path, required=True)
+    autonomy.add_argument("--fixture", action="store_true")
+    autonomy.add_argument("--output-root", type=Path, default=Path("evidence/godogen-autonomy"))
+
     promotion = sub.add_parser(
         "prototype-promote",
         help="Promote, iterate, or hold a prototype from one or more evidence bundles",
@@ -402,6 +444,42 @@ def main() -> int:
         )
         print(f"Godogen state evidence: {verdict.root}")
         print(f"runtime={verdict.status} autonomy={verdict.autonomous_status} checks={verdict.passed_checks}/{verdict.total_checks}")
+        return 0 if verdict.status in {"PASS", "HOLD"} else 1
+
+    if args.command == "godogen-frame-proof":
+        verdict = verify_frame_proof(
+            args.project, args.mission, trace_path=args.trace, video_path=args.video,
+            state_evidence_path=args.state_evidence, output_root=args.output_root,
+            ffmpeg=args.ffmpeg, ffprobe=args.ffprobe, fixture=args.fixture,
+        )
+        print(f"Frame proof: {verdict.root} status={verdict.status} matched={verdict.matched}/{verdict.total}")
+        return 0 if verdict.status in {"PASS", "HOLD"} else 1
+
+    if args.command == "godogen-generated-capture":
+        if not args.execute:
+            parser.error("godogen-generated-capture requires --execute; this runs untrusted Godot code")
+        proof_path = capture_generated_game(
+            args.project, args.mission, args.output_root,
+            godot=args.godot, dotnet=args.dotnet, ffmpeg=args.ffmpeg,
+            ffprobe=args.ffprobe, xvfb=not args.no_xvfb,
+        )
+        import json
+
+        data = json.loads(proof_path.read_text(encoding="utf-8"))
+        print(f"Generated capture frame proof: {proof_path} status={data['status']}")
+        return 0 if data["status"] == "PASS" else 1
+
+    if args.command == "godogen-autonomy-gate":
+        verdict = verify_autonomous_generation(
+            args.project, args.mission,
+            frame_proof=args.frame_proof,
+            state_evidence=args.state_evidence,
+            godogen_evaluation=args.godogen_evaluation,
+            codex_runner=args.codex_runner,
+            output_root=args.output_root,
+            fixture=args.fixture,
+        )
+        print(f"Autonomous generation proof: {verdict.root} status={verdict.status} checks={verdict.checks_passed}/{verdict.checks_total}")
         return 0 if verdict.status in {"PASS", "HOLD"} else 1
 
     if args.command == "prototype-promote":
