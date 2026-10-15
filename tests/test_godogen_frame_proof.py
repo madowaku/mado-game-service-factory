@@ -198,3 +198,82 @@ def test_bogus_codex_runner_never_promotes(tmp_path: Path, monkeypatch) -> None:
         codex_runner=runner, output_root=tmp_path / "auto",
     )
     assert verdict.status == "HOLD"
+
+
+def test_complete_synthetic_chain_exercises_pass_without_claiming_real_run(
+    tmp_path: Path, monkeypatch,
+) -> None:
+    """This is a fixture CONTRACT test: all runner/code files are synthetic."""
+    project, trace, video, state_path = evidence(tmp_path)
+    setup_decoder(monkeypatch, project)
+    frame = run_frame(tmp_path, project, state_path)
+    assert frame.status == "PASS"
+    for name, content in (
+        ("project.godot", "config_version=5"),
+        ("game.csproj", "<Project/>"),
+        ("Game.cs", "public partial class Game {}"),
+        ("Game.tscn", "[gd_scene]"),
+        ("AGENTS.md", "Build Godot"),
+        ("godot.md", "Godot guide"),
+        (".agents/skills/asset-gen/SKILL.md", "skills"),
+    ):
+        path = project / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(content, encoding="utf-8")
+    inventory = fingerprint_project(project)
+    manifest = {"upstream": "htdt/godogen", "engine": "godot",
+                "upstream_sha": "a" * 40,
+                "staged_files": {name: _sha(project / name) for name in (
+                    "AGENTS.md", "godot.md", ".agents/skills/asset-gen/SKILL.md")}}
+    write_json(project / ".mgsf/godogen-intake.json", manifest)
+    state = json.loads(state_path.read_text(encoding="utf-8"))
+    state["runner"]["source"] = "staged-godogen-candidate"
+    state["runner"]["generated_source"] = inventory
+    write_json(state_path, state)
+    # Frame proof must be refreshed when source state-evaluation changes.
+    frame = run_frame(tmp_path, project, state_path)
+    runner_dir = tmp_path / "codex/iteration-1/runner"
+    runner_dir.mkdir(parents=True, exist_ok=True)
+    (runner_dir / "stdout.txt").write_text("model response")
+    (runner_dir / "stderr.txt").write_text("")
+    (runner_dir / "prompt.txt").write_text(
+        "Build a Godot 4 .NET/C# game\nState-to-Frame contract gyro-lab-state-001")
+    write_json(runner_dir / "answer.json", {
+        "mission_id": "gyro-lab-state-001", "build_ok": True,
+        "runtime_started": True, "input_simulated": True,
+        "gameplay_observed": True, "video_reviewed": True,
+        "runtime_errors": [], "proof_video": "screenshots/proof.mp4",
+    })
+    runner = {
+        "runner": "codex-exec", "returncode": 0, "cwd": str(project.resolve()),
+        "command": ["codex", "exec", "--sandbox", "workspace-write",
+                    "--output-last-message", "answer.json", "-"],
+        "stdout_sha256": _sha(runner_dir / "stdout.txt"),
+        "stderr_sha256": _sha(runner_dir / "stderr.txt"),
+        "generated_source": inventory,
+        "engine_checks": {k: {"returncode": 0} for k in (
+            "dotnet_build", "godot_import", "godot_launch")},
+    }
+    runner_path = write_json(runner_dir / "runner.json", runner)
+    generation_eval = write_json(tmp_path / "godogen/evaluation.json", {
+        "service": "godogen-adapter", "mission_id": "gyro-lab-state-001",
+        "evidence_class": "recorded_godogen_codex_run",
+        "status": "PASS", "upstream_sha": "a" * 40, "runner": runner,
+        "video": [{"sha256": _sha(video)}],
+    })
+    verdict = generation.verify_autonomous_generation(
+        project, MISSION, frame_proof=frame.root / "frame-proof.json",
+        state_evidence=state_path, godogen_evaluation=generation_eval,
+        codex_runner=runner_path, output_root=tmp_path / "auto",
+        fixture=True,
+    )
+    assert verdict.status == "HOLD"
+    data = json.loads((verdict.root / "autonomy-evaluation.json").read_text())
+    assert all(data["checks"].values())
+    # The non-fixture mode checks contract wiring; NOT an actual autonomous run.
+    candidate = generation.verify_autonomous_generation(
+        project, MISSION, frame_proof=frame.root / "frame-proof.json",
+        state_evidence=state_path, godogen_evaluation=generation_eval,
+        codex_runner=runner_path, output_root=tmp_path / "contract-demo",
+    )
+    assert candidate.status == "PASS"
