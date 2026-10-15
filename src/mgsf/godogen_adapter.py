@@ -169,6 +169,17 @@ def intake_godogen(
             ("AGENTS.md", "godot.md", ".agents/skills/asset-gen/SKILL.md")
         }
         _json(staging / ".mgsf/godogen-intake.json", manifest)
+        # Codex exec requires a Git working tree. Use an empty template so no
+        # user-configured Git hooks enter the isolated project.
+        git_template = staging / ".mgsf/empty-git-template"
+        git_template.mkdir()
+        init = subprocess.run(
+            ["git", "init", "-q", "--template=" + str(git_template), str(staging)],
+            capture_output=True, text=True, check=False, timeout=30,
+        )
+        git_template.rmdir()
+        if init.returncode:
+            raise GodogenError("could not initialize isolated game Git repository")
         if dst.exists():
             raise GodogenError("target appeared during intake; refusing overwrite")
         staging.rename(dst)
