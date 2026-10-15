@@ -137,7 +137,7 @@ def test_stage_failure_is_logged_as_hold_never_pass(tmp_path: Path, monkeypatch)
     source, sha = checkout(tmp_path)
     fake_tools(monkeypatch)
     def reject_run(*args, **kwargs):
-        raise RuntimeError("test-only generated runner failure")
+        raise RuntimeError("SECRET_SHOULD_NOT_BE_PERSISTED")
     monkeypatch.setattr(q, "run_godogen_loop", reject_run)
     result = q.qualify(source, tmp_path / "game", MISSION, expected_sha=sha,
                        output_root=tmp_path / "evidence", execute=True,
@@ -146,6 +146,8 @@ def test_stage_failure_is_logged_as_hold_never_pass(tmp_path: Path, monkeypatch)
     assert result.report.is_file()
     data = json.loads(result.report.read_text())
     assert data["failed_stage"] == "codex-generation"
+    assert data["codex_stage_attempted"] is True
+    assert "SECRET_SHOULD_NOT_BE_PERSISTED" not in json.dumps(data)
     assert not data["autonomous_generation_qualified"]
 
 
@@ -187,4 +189,7 @@ def test_synthetic_positive_contract_not_claimed_as_real_engine(tmp_path: Path, 
     assert result.status == "PASS"  # mocked contract only; NEVER recorded as live dogfood
     data = json.loads(result.report.read_text())
     assert data["stage"] == "autonomy-gate"
+    assert data["codex_stage_attempted"] is True
+    assert data["real_codex_observed"] is True
+    assert data["independent_game_replay_observed"] is True
     assert data["artifacts"]["autonomy_evaluation"].endswith("autonomy-evaluation.json")
