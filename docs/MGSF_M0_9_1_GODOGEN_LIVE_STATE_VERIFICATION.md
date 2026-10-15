@@ -14,7 +14,7 @@ This is a new incubation service and leaves MGSF Godot Capture, Playtest Report,
 ## Evidence path
 
 ~~~text
-Mission (input windows + signed deltas)
+Mission (input windows, signed deltas, idle stability)
    -> Godot 4 .NET / C# build
    -> Godot import
    -> scripted Godot Input actions in actual _PhysicsProcess
@@ -50,12 +50,13 @@ Without --execute no engine run starts. The sample fixture is kept in-repository
   "mission_id": "gyro-lab-state-001",
   "state_checks": [
     {"id":"tilt-right","start_tick":30,"end_tick":120,"axis":"x","input":"right","min_delta":80},
-    {"id":"tilt-left","start_tick":180,"end_tick":270,"axis":"x","input":"left","max_delta":-80}
+    {"id":"tilt-left","start_tick":180,"end_tick":270,"axis":"x","input":"left","max_delta":-80},
+    {"id":"neutral-stable","start_tick":300,"end_tick":390,"axis":"x","input":"idle","max_abs_delta":0.001}
   ]
 }
 ~~~
 
-The complete mission is fixtures/godogen/mission-gyro-live.json. Every sample must have an increasing integer tick, valid input label and finite x/y state. Both window boundary samples must be present. Input labels in the entire window must agree with the expected action.
+The complete mission is fixtures/godogen/mission-gyro-live.json. Every sample must have an increasing integer tick, valid input label and finite x/y state. Every window boundary sample must be present. Input labels in the entire window must agree with the expected action, including the neutral/no-input interval.
 
 ## Offline verification
 
