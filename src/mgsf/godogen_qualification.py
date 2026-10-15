@@ -115,7 +115,8 @@ def qualify(
         "upstream_sha": plan["upstream_sha"],
         "target": str(target), "state": "HOLD", "stage": "intake",
         "reason": "qualification incomplete",
-        "real_codex_observed": False, "independent_game_replay_observed": False,
+        "codex_stage_attempted": False, "real_codex_observed": False,
+        "independent_game_replay_observed": False,
         "autonomous_generation_qualified": False,
         "artifacts": {},
         "provenance_note": (
@@ -134,6 +135,8 @@ def qualify(
         report["artifacts"]["intake_sha256"] = _sha(target / ".mgsf/godogen-intake.json")
         persist()
 
+        report["codex_stage_attempted"] = True
+        persist()
         generation = run_godogen_loop(
             target, mission_path, output_root / "generation",
             codex=codex, godot=godot, dotnet=dotnet,
@@ -148,7 +151,6 @@ def qualify(
             report["real_codex_observed"] = (
                 runner.get("runner") == "codex-exec"
                 and runner.get("returncode") == 0
-                and generation.status == "PASS"
             )
         if generation.status != "PASS":
             report["state"] = "HOLD"
@@ -185,7 +187,7 @@ def qualify(
     except Exception as exc:
         # Fail closed. No token values or raw Codex logs are copied here.
         report["state"] = "HOLD"
-        report["reason"] = f"{type(exc).__name__}: {str(exc)[:600]}"
+        report["reason"] = f"{type(exc).__name__} during {report['stage']}; inspect local runner evidence"
         report["failed_stage"] = report["stage"]
         persist()
         return Qualification(report["state"], report["stage"], report["reason"], report_path)
