@@ -16,8 +16,12 @@ for arm in control treatment; do
   cp "$ROOT/fixtures/agent-skills/vertical-slice-ab-scenario.gd" "$WORKTREE/tests/ab_scenario.gd"
   git -C "$WORKTREE" config user.name "MGSF neutral dogfood fixture"
   git -C "$WORKTREE" config user.email "ci-fixture@mgsf.invalid"
-  git -C "$WORKTREE" add tests/ab_scenario.gd
+  # Godot 4.7 generates *.gd.uid imports. Freeze these BEFORE capture and
+  # test-run provenance checks; never weaken the clean-commit requirement.
+  "$GODOT" --headless --editor --path "$WORKTREE" --quit-after 1 >/dev/null
+  git -C "$WORKTREE" add -A
   git -C "$WORKTREE" commit --quiet -m "test: freeze independent MGSF C6 A/B assertions"
+  test -z "$(git -C "$WORKTREE" status --porcelain)"
 done
 
 mgsf skill-route "$ROOT/fixtures/agent-skills/vertical-slice-testing-request.json" \
