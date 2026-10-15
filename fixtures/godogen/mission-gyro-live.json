@@ -32,5 +32,26 @@
       "input": "idle",
       "max_abs_delta": 0.001
     }
-  ]
+  ],
+  "frame_probe": {
+    "fps": 30,
+    "world_width": 640,
+    "world_height": 360,
+    "color_rgb": [
+      38,
+      212,
+      186
+    ],
+    "color_tolerance": 45,
+    "min_pixels": 500,
+    "max_pixels": 2900,
+    "position_tolerance_px": 18,
+    "ticks": [
+      60,
+      105,
+      210,
+      255,
+      330
+    ]
+  }
 }
