@@ -44,6 +44,19 @@ mgsf skill-ab-run "$PLAN" "$OUTPUT/worktrees/control" "$OUTPUT/worktrees/treatme
   --output-root "$OUTPUT/benchmark"
 
 RESULT="$OUTPUT/benchmark/vertical-slice-c6-ab-001/benchmark.json"
+# Diagnostic output is emitted on a failed state test, never concealed by HOLD.
+python - "$RESULT" <<'PY'
+import json
+from pathlib import Path
+import sys
+raw = json.loads(Path(sys.argv[1]).read_text())
+if raw.get("status") != "REVIEW":
+    for arm in ("control", "treatment"):
+        root = Path(sys.argv[1]).parent / arm
+        print("MGSF_DEBUG_ARM:", arm, flush=True)
+        print((root / "stdout.log").read_text(errors="replace")[-3000:], flush=True)
+        print((root / "stderr.log").read_text(errors="replace")[-3000:], flush=True)
+PY
 python - "$RESULT" <<'PY'
 import json
 import sys

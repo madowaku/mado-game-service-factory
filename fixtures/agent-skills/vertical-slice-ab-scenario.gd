@@ -3,7 +3,7 @@
 extends SceneTree
 
 
-const SUITES := {
+const SUITES = {
 	"playfeel": preload("res://tests/test_c6_playfeel.gd"),
 	"blind_privacy": preload("res://tests/test_projection_safety.gd"),
 	"sensor_logic": preload("res://tests/test_sensor_logic.gd"),
