@@ -98,6 +98,22 @@ services:
       live_required_for_promotion: true
       autonomous_proof: HOLD
 
+  - id: godogen-state-to-frame-proof
+    name: Godogen Autonomous Generation / State-to-Frame Proof Gate
+    stage: incubation
+    problem: Independently compare decoded gameplay video pixels with timed engine state, then require pinned Godogen and recorded Codex source provenance before autonomous promotion.
+    milestone: MGSF-M0.9.2
+    entrypoint: mgsf godogen-frame-proof
+    generated_capture_entrypoint: mgsf godogen-generated-capture
+    autonomy_gate_entrypoint: mgsf godogen-autonomy-gate
+    service_contract: docs/MGSF_M0_9_2_AUTONOMOUS_GENERATION_FRAME_PROOF.md
+    evidence:
+      fixture: deterministic_frame_fixture
+      real_engine: recorded_gameplay_frame_probe
+      autonomous: local_codex_godogen_cross_run
+      autonomous_proof: HOLD
+      live_codex_required_for_promotion: true
+
   - id: build-doctor
     name: Game Build Doctor
     stage: candidate
