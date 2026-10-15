@@ -227,6 +227,7 @@ def test_complete_synthetic_chain_exercises_pass_without_claiming_real_run(
                     "AGENTS.md", "godot.md", ".agents/skills/asset-gen/SKILL.md")}}
     write_json(project / ".mgsf/godogen-intake.json", manifest)
     state = json.loads(state_path.read_text(encoding="utf-8"))
+    state["evidence_class"] = "recorded_godot_engine_dogfood"  # mocked contract metadata, not actual engine proof
     state["runner"]["source"] = "staged-godogen-candidate"
     state["runner"]["generated_source"] = inventory
     write_json(state_path, state)
