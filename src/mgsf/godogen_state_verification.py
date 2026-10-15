@@ -20,7 +20,7 @@ from typing import Any
 from .godogen_adapter import _run_step, _verify_video, _sha
 
 MAX_TRACE_BYTES = 2 * 1024 * 1024
-CHECK_KEYS = {"id", "start_tick", "end_tick", "axis", "input", "min_delta", "max_delta"}
+CHECK_KEYS = {"id", "start_tick", "end_tick", "axis", "input", "min_delta", "max_delta", "max_abs_delta"}
 
 
 class StateVerificationError(ValueError):
@@ -74,16 +74,19 @@ def load_contract(mission: str | Path) -> dict[str, Any]:
             raise StateVerificationError("invalid check tick window")
         if check.get("axis") not in ("x", "y"):
             raise StateVerificationError("axis must be x or y")
-        if check.get("input") not in ("right", "left", "up", "down"):
+        if check.get("input") not in ("right", "left", "up", "down", "idle"):
             raise StateVerificationError("unsupported input action")
-        if ("min_delta" in check) == ("max_delta" in check):
-            raise StateVerificationError("check requires exactly one signed delta bound")
-        key = "min_delta" if "min_delta" in check else "max_delta"
+        bounds = [key for key in ("min_delta", "max_delta", "max_abs_delta") if key in check]
+        if len(bounds) != 1:
+            raise StateVerificationError("check requires exactly one delta bound")
+        key = bounds[0]
         value = check[key]
         if type(value) not in (float, int) or not isfinite(value):
             raise StateVerificationError("delta bound must be finite")
         if (key == "min_delta" and value <= 0) or (key == "max_delta" and value >= 0):
             raise StateVerificationError("delta must have the required sign")
+        if (key == "max_abs_delta" and value < 0) or ((key == "max_abs_delta") != (check["input"] == "idle")):
+            raise StateVerificationError("idle requires a nonnegative max_abs_delta bound")
     return data
 
 
@@ -145,7 +148,9 @@ def verify_state(
             if first and last_sample else None
         )
         limit_ok = delta is not None and (
-            delta >= check["min_delta"] if "min_delta" in check else delta <= check["max_delta"]
+            delta >= check["min_delta"] if "min_delta" in check else
+            delta <= check["max_delta"] if "max_delta" in check else
+            abs(delta) <= check["max_abs_delta"]
         )
         results.append({
             "id": check["id"], "input": check["input"],
