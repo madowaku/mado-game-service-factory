@@ -84,6 +84,20 @@ services:
       live_required_for_promotion: true
       status: HOLD
 
+  - id: godogen-gameplay-state-verification
+    name: Godogen Live Dogfood / Gameplay State Verification
+    stage: incubation
+    problem: Check real Godot input-to-state movement with a replay trace, recorded movie, and independent engine runner hashes without confusing a hand-authored dogfood game with Codex generation.
+    milestone: MGSF-M0.9.1
+    entrypoint: mgsf godogen-state-dogfood
+    eval_entrypoint: mgsf godogen-state-verify
+    service_contract: docs/MGSF_M0_9_1_GODOGEN_LIVE_STATE_VERIFICATION.md
+    evidence:
+      fixture: deterministic_state_fixture
+      live: recorded_godot_engine_dogfood
+      live_required_for_promotion: true
+      autonomous_proof: HOLD
+
   - id: build-doctor
     name: Game Build Doctor
     stage: candidate
