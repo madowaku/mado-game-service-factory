@@ -10,7 +10,7 @@ This module is **incubation**. CI verifies a deterministic fixture/contract. No 
 
 ## Safe source intake
 
-Clone Godogen yourself in an isolated local workspace and review the exact commit. Copy the **40-character Git HEAD** SHA into the command. The adapter rejects a dirty checkout, a mismatch, source/target overlap, symlinks or special files, huge asset trees, and **any existing target path**. Default behavior prints a preview only.
+Clone Godogen yourself in an isolated local workspace and review the exact commit. The checkout must have the upstream GitHub origin (https://github.com/htdt/godogen or its supported SSH equivalent). Copy the **40-character Git HEAD** SHA into the command. The adapter rejects a dirty checkout, a mismatch, source/target overlap, symlinks or special files, huge asset trees, and **any existing target path**. Default behavior prints a preview only.
 
 ~~~bash
 git clone https://github.com/htdt/godogen.git ./vendor/godogen
@@ -22,7 +22,7 @@ mgsf godogen-intake ./vendor/godogen ./runs/godogen-001 \
   --expected-sha <PINNED_40_HEX_SHA> --apply
 ~~~
 
-There is deliberately **no --force option**. The local upstream **publish.sh** is **never executed**. The intake copies the minimal manifest, godot.md, MIT LICENSE, and asset-gen skill into .agents/skills/ and writes .mgsf/godogen-intake.json with upstream file hashes and policy. It does not run untrusted scripts or download paid assets.
+There is deliberately **no --force option**. The local upstream **publish.sh** is **never executed**. The intake copies the minimal manifest, godot.md, MIT LICENSE, and asset-gen skill into .agents/skills/ and writes .mgsf/godogen-intake.json with upstream file hashes and policy. It does not run untrusted scripts or download paid assets. It initializes an isolated game Git repository with an empty Git template (no copied hooks), because Codex exec requires a Git working tree.
 
 The staged files contain executable instructions and script sources, so their pinned provenance does not make them automatically safe to run. Review them before the explicitly opted-in Codex execution. Treat upstream files as untrusted.
 
@@ -58,7 +58,7 @@ The loop performs up to three Codex iterations in workspace-write sandbox, retur
 2. godot --headless --path PROJECT --import
 3. godot --headless --path PROJECT --quit-after 5
 
-All subprocesses use argument arrays (no shell string) and finite timeouts. The generated game's project.godot and C# project files must exist. The agent is directed to produce and inspect screenshots/proof.mp4. The adapter uses ffprobe to check a decodable video stream, at least 320x180 dimensions, and duration 14-22 seconds (encoding tolerance around the target of 15-20s). A valid video is copied and SHA-256 indexed into an MGSF evidence bundle.
+All subprocesses use argument arrays (no shell string) and finite timeouts. The generated game's project.godot and C# project files must exist. The agent is directed to produce and inspect screenshots/proof.mp4. The adapter uses ffprobe to inspect an encoded video stream, at least 320x180 dimensions, and duration 14-22 seconds (encoding tolerance around the target of 15-20s). A valid video is copied and SHA-256 indexed into an MGSF evidence bundle.
 
 **Costs:** GOOGLE_API_KEY, XAI_API_KEY and TRIPO_API_KEY are removed from the Codex subprocess environment. Upstream generation scripts are not invoked by intake. This does not guarantee a process cannot use credentials available elsewhere in its workspace, so keep the project isolated and do not store API secrets in it. No paid asset-generation permission is granted by M0.9.
 
