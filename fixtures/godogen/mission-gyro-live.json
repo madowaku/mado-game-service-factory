@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "mission_id": "gyro-lab-state-001",
+  "description": "Proof-of-state for a small GYRO LAB inspired one-axis motion mechanic in a real Godot .NET process.",
+  "success_criteria": [
+    "Godot input action changes player X in each direction",
+    "Recorded video and state samples originate from the same engine run"
+  ],
+  "max_iterations": 2,
+  "state_checks": [
+    {
+      "id": "tilt-right",
+      "start_tick": 30,
+      "end_tick": 120,
+      "axis": "x",
+      "input": "right",
+      "min_delta": 80
+    },
+    {
+      "id": "tilt-left",
+      "start_tick": 180,
+      "end_tick": 270,
+      "axis": "x",
+      "input": "left",
+      "max_delta": -80
+    },
+    {
+      "id": "neutral-stable",
+      "start_tick": 300,
+      "end_tick": 390,
+      "axis": "x",
+      "input": "idle",
+      "max_abs_delta": 0.001
+    }
+  ]
+}

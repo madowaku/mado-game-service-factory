@@ -82,6 +82,17 @@ The deterministic CI evidence stays HOLD. A live PASS requires Codex execution, 
 
 Contract: [docs/MGSF_M0_9_GODOGEN_BRIDGE.md](docs/MGSF_M0_9_GODOGEN_BRIDGE.md).
 
+## MGSF-M0.9.1 Real Godot gameplay-state dogfood (incubation)
+
+The M0.9.1 verifier turns scripted Godot Input actions into signed motion checks, using a **real Godot 4 .NET/C# runtime**, a JSON state trace, and a 15-second gameplay movie from the same engine capture process.
+
+- `mgsf godogen-state-dogfood fixtures/godogen/gyro-live fixtures/godogen/mission-gyro-live.json --execute --godot <Godot.NET binary>`
+- `mgsf godogen-state-verify <project> <mission> --trace screenshots/state-trace.json --video screenshots/proof.mp4 --runner-record <runner.json>`
+- Dedicated CI: `.github/workflows/godogen-live-state.yml`
+- Contract: [MGSF-M0.9.1](docs/MGSF_M0_9_1_GODOGEN_LIVE_STATE_VERIFICATION.md)
+
+Runtime state PASS proves that the hand-authored GYRO fixture responded to injected input in the actual engine. **Autonomous Godogen/Codex generation remains HOLD** until separately demonstrated. All prior services continue unchanged.
+
 ## Windows product preview
 
 Product:
