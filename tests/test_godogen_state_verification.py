@@ -43,7 +43,7 @@ def setup_evidence(tmp_path: Path) -> tuple[Path, Path, dict]:
 
 def test_state_contract_accepts_signed_tilt_windows() -> None:
     mission = state.load_contract("fixtures/godogen/mission-gyro-live.json")
-    assert len(mission["state_checks"]) == 2
+    assert len(mission["state_checks"]) == 3
     assert mission["state_checks"][1]["max_delta"] < 0
 
 
@@ -57,7 +57,7 @@ def test_valid_mock_runtime_is_not_autonomous_proof(tmp_path: Path, monkeypatch)
     )
     assert verdict.status == "PASS"
     assert verdict.autonomous_status == "HOLD"
-    assert verdict.passed_checks == verdict.total_checks == 2
+    assert verdict.passed_checks == verdict.total_checks == 3
     evidence = json.loads((verdict.root / "state-evaluation.json").read_text())
     assert evidence["autonomous_status"] == "HOLD"
     assert evidence["state_trace"]["sha256"] == _sha(verdict.root / "state-trace.json")
@@ -91,7 +91,7 @@ def test_input_mismatch_cannot_pass(tmp_path: Path, monkeypatch) -> None:
         output_root=tmp_path / "evidence",
     )
     assert v.status == "ITERATE"
-    assert v.passed_checks == 1
+    assert v.passed_checks == 2
 
 
 def test_wrong_direction_blocks_pass(tmp_path: Path, monkeypatch) -> None:
