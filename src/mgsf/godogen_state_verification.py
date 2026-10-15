@@ -223,10 +223,12 @@ def live_dogfood(
         "dotnet_build": _run_step([dotnet, "build", "--nologo"], project, 240),
     }
     if checks["dotnet_build"]["returncode"] != 0:
-        raise StateVerificationError("Godot .NET dogfood build failed")
+        _write(Path(output_root) / "failure-evidence/dotnet-build.json", checks["dotnet_build"])
+        raise StateVerificationError("Godot .NET dogfood build failed: " + str(checks["dotnet_build"].get("stderr_tail", "")))
     checks["godot_import"] = _run_step([godot, "--headless", "--path", str(project), "--import"], project, 120)
     if checks["godot_import"]["returncode"] != 0:
-        raise StateVerificationError("Godot resource import failed")
+        _write(Path(output_root) / "failure-evidence/godot-import.json", checks["godot_import"])
+        raise StateVerificationError("Godot resource import failed: " + str(checks["godot_import"].get("stderr_tail", "")))
     argv = [godot, "--path", str(project), "--write-movie",
             str(frames_dir / "frame.png"), "--fixed-fps", "30", "--quit-after", "450",
             "--", "--mgsf-trace", str(trace), "--mgsf-run-id", run_id,
@@ -235,7 +237,12 @@ def live_dogfood(
         argv = ["xvfb-run", "-a", "-s", "-screen 0 1280x720x24", *argv]
     checks["godot_capture"] = _run_step(argv, project, 240)
     if checks["godot_capture"]["returncode"] != 0 or not trace.is_file():
-        raise StateVerificationError("real Godot capture did not produce state trace")
+        debug = Path(output_root) / "failure-evidence"
+        _write(debug / "godot-capture.json", checks["godot_capture"])
+        raise StateVerificationError(
+            "real Godot capture did not produce state trace: "
+            + str(checks["godot_capture"].get("stderr_tail", checks["godot_capture"].get("error", "")))
+        )
     frames = list(frames_dir.glob("frame*.png"))
     if len(frames) < 400:
         raise StateVerificationError("too few real Godot movie frames")
