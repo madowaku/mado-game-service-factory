@@ -67,6 +67,21 @@ mgsf edenspark-loop <project> <mission.json> --max-iterations 3
 mgsf prototype-promote <evaluation.json> [<evaluation.json> ...]
 ```
 
+## MGSF-M0.9 Godogen bridge (incubation)
+
+Godogen is available as a **pinned, isolated Godot 4 .NET/C# + Codex adapter**, not a replacement for the existing EdenSpark or gameplay-capture pipeline. Intake is preview-only by default, never executes the upstream publish script, and refuses to overwrite an existing target. A separate opt-in loop verifies builds, engine import/launch, and the 15-20s proof-video contract, preserving runner and media hashes.
+
+```text
+mgsf godogen-intake <local-godogen-checkout> <new-game-dir> --expected-sha <40-hex>
+mgsf godogen-intake <local-godogen-checkout> <new-game-dir> --expected-sha <40-hex> --apply
+mgsf godogen-loop <new-game-dir> <mission.json> --execute
+mgsf godogen-eval <game-dir> <mission.json> <agent-result.json> --fixture
+```
+
+The deterministic CI evidence stays HOLD. A live PASS requires Codex execution, independent Godot/.NET probes, and verifiable video. External API credentials for paid image/3D generation are removed from the spawned Codex environment. No live game dogfood or license/market release verification is claimed yet.
+
+Contract: [docs/MGSF_M0_9_GODOGEN_BRIDGE.md](docs/MGSF_M0_9_GODOGEN_BRIDGE.md).
+
 ## Windows product preview
 
 Product:
