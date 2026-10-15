@@ -89,6 +89,15 @@ Do not call reconstructed SEGA slide values a live network measurement.
 - Running Codex and newly generated Godot C# always requires an explicit --execute in an isolated expendable workspace.
 - Never add API credentials or paid asset calls to the public CI; no autonomous publishing or commercial readiness assertion.
 
+## MGSF-M0.9.3 real Codex qualification safety
+- `godogen-real-qualify` defaults to preflight, not execution, download, paid API access or target mutation.
+- The live path needs BOTH `--execute` and `--accept-generated-code-risk`; never remove this safety gate.
+- Pinned upstream identity, existing-target rejection, disjoint evidence path, clean Git tree, and complete state/frame mission are required.
+- Run arbitrary generated game code only in a disposable isolated environment with no user secrets.
+- Never inject or store Codex credentials in GitHub Actions, project files, or public artifacts.
+- A synthetic runner contract PASS is NOT an actual Codex generation PASS; publish no such claim without a real authenticated run plus independently inspected evidence.
+- Fail closed and preserve only bounded diagnostic evidence; do not auto-publish, promote, overwrite, or use paid asset-generation APIs.
+
 ## Deferred boundary
 External Tester Preview remains important and moves to the next unallocated milestone after M0.5.
 

@@ -114,6 +114,20 @@ services:
       autonomous_proof: HOLD
       live_codex_required_for_promotion: true
 
+  - id: godogen-real-autonomy-qualification
+    name: Real Codex Generation Dogfood / End-to-End Autonomy Qualification
+    stage: incubation
+    problem: Orchestrate a real pinned Godogen intake, Codex game construction, separate Godot state/movie replay, pixel proof and provenance-based autonomy decision without confusing fixtures for live AI runs.
+    milestone: MGSF-M0.9.3
+    entrypoint: mgsf godogen-real-qualify
+    service_contract: docs/MGSF_M0_9_3_REAL_CODEX_AUTONOMY_QUALIFICATION.md
+    evidence:
+      preflight: local_toolchain_availability
+      live: recorded_codex_godogen_e2e_qualification
+      default_status: HOLD
+      real_codex_required_for_promotion: true
+      no_credentialed_github_ci: true
+
   - id: build-doctor
     name: Game Build Doctor
     stage: candidate

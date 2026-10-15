@@ -103,6 +103,17 @@ The frame verifier independently decodes five real Godot movie frames and compar
 
 The public Godot fixture CI proves engine state and pixels, **not Godogen autonomous generation**. No Codex credentials are used by CI. A true autonomous PASS requires a real local Codex game-build and independent generated-game replay. [Contract](docs/MGSF_M0_9_2_AUTONOMOUS_GENERATION_FRAME_PROOF.md).
 
+## MGSF-M0.9.3 Real Codex Generation E2E Qualification (incubation)
+
+A single opt-in `mgsf godogen-real-qualify` command now chains pinned Godogen intake, a bounded Codex build, independent Godot .NET re-capture, real input/state checks, decoded pixel checks and a strict source/provenance autonomy gate.
+
+~~~text
+mgsf godogen-real-qualify <clean-Godogen-checkout> <NEW-game-dir> <mission.json> --expected-sha <40hex>
+mgsf godogen-real-qualify <clean-Godogen-checkout> <NEW-game-dir> <mission.json> --expected-sha <40hex> --execute --accept-generated-code-risk
+~~~
+
+The first command is read-only preflight (READY or BLOCKED, not gameplay proof). The second runs Codex and untrusted generated C# and must be used only in an expendable isolated environment with an already authenticated Codex CLI, Godot .NET, .NET SDK and FFmpeg. Failed stages remain HOLD in a durable qualification.json. Current MGSF CI does **not** run an authenticated Codex generator. Read the [M0.9.3 contract](docs/MGSF_M0_9_3_REAL_CODEX_AUTONOMY_QUALIFICATION.md) and [dogfood status](dogfood/godogen-real-codex/RESULT.md).
+
 ## Windows product preview
 
 Product:

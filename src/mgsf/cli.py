@@ -20,6 +20,7 @@ from .godogen_state_verification import (
     live_dogfood as run_godogen_state_dogfood,
     verify_state as verify_godogen_state,
 )
+from .godogen_qualification import qualify as qualify_godogen
 from .godogen_frame_proof import verify_frame_proof
 from .godogen_generation_proof import capture_generated_game, verify_autonomous_generation
 from .gameplay_capture import run_capture_playtest, run_gameplay_capture
@@ -308,6 +309,28 @@ def main() -> int:
     autonomy.add_argument("--fixture", action="store_true")
     autonomy.add_argument("--output-root", type=Path, default=Path("evidence/godogen-autonomy"))
 
+    live_qualify = sub.add_parser(
+        "godogen-real-qualify",
+        help="Preflight or explicitly execute pinned Codex build, generated game replay and qualification",
+    )
+    live_qualify.add_argument("source", type=Path, help="clean pinned htdt/godogen checkout")
+    live_qualify.add_argument("target", type=Path, help="NEW isolated generated game path")
+    live_qualify.add_argument("mission", type=Path, help="mission with state_checks and frame_probe")
+    live_qualify.add_argument("--expected-sha", required=True, help="40-character pinned Godogen HEAD SHA")
+    live_qualify.add_argument("--execute", action="store_true", help="actively run Codex and generated Godot game")
+    live_qualify.add_argument(
+        "--accept-generated-code-risk", action="store_true",
+        help="confirm generated game will run on an expendable, isolated machine",
+    )
+    live_qualify.add_argument("--codex", default="codex")
+    live_qualify.add_argument("--godot", default="godot")
+    live_qualify.add_argument("--dotnet", default="dotnet")
+    live_qualify.add_argument("--ffmpeg", default="ffmpeg")
+    live_qualify.add_argument("--ffprobe", default="ffprobe")
+    live_qualify.add_argument("--no-xvfb", action="store_true")
+    live_qualify.add_argument("--timeout-seconds", type=int, default=1800)
+    live_qualify.add_argument("--output-root", type=Path, default=Path("evidence/godogen-real"))
+
     promotion = sub.add_parser(
         "prototype-promote",
         help="Promote, iterate, or hold a prototype from one or more evidence bundles",
@@ -481,6 +504,21 @@ def main() -> int:
         )
         print(f"Autonomous generation proof: {verdict.root} status={verdict.status} checks={verdict.checks_passed}/{verdict.checks_total}")
         return 0 if verdict.status in {"PASS", "HOLD"} else 1
+
+    if args.command == "godogen-real-qualify":
+        result = qualify_godogen(
+            args.source, args.target, args.mission,
+            expected_sha=args.expected_sha, output_root=args.output_root,
+            execute=args.execute, accept_generated_code_risk=args.accept_generated_code_risk,
+            codex=args.codex, godot=args.godot, dotnet=args.dotnet,
+            ffmpeg=args.ffmpeg, ffprobe=args.ffprobe,
+            xvfb=not args.no_xvfb, timeout_seconds=args.timeout_seconds,
+        )
+        print(f"Godogen E2E: stage={result.stage} status={result.status}")
+        print(f"reason={result.reason}")
+        if result.report:
+            print(f"qualification_report={result.report}")
+        return 0 if result.status in {"PASS", "READY"} else 1
 
     if args.command == "prototype-promote":
         result = promote_prototype(args.evidence, args.output_root, engine=args.engine)
