@@ -17,6 +17,8 @@ import subprocess
 import tempfile
 from typing import Any
 
+from .godogen_source_fingerprint import fingerprint_project, SourceFingerprintError
+
 ENGINE = "godot"
 SOURCE_FILES = ("prompts/runtime.md", "engines/godot.md", "LICENSE.md")
 MAX_INTAKE_BYTES = 16 * 1024 * 1024
@@ -367,6 +369,19 @@ def run_godogen_loop(
             "Run dotnet build, import and launch Godot, drive meaningful gameplay input, "
             "record a 15-20 second game clip at screenshots/proof.mp4 and review the clip. "
             "If a step fails, report false; never invent proof. Keep proof_video project-relative.\n"
+            + (
+                "MGSF State-to-Frame contract: instrument the generated playable C# scene "
+                "to accept --mgsf-trace, --mgsf-run-id, --mgsf-mission-id via Godot's "
+                "GetCmdlineUserArgs; drive the exact mission state_checks using Godot "
+                "Input.ActionPress/ActionRelease on the declared tick windows; serialize "
+                "JSON with schema_version=1, engine=godot, mission_id, run_id, and "
+                "samples [{tick,input,state:{x,y}}] to --mgsf-trace while the SAME game "
+                "process is being captured. Visually render one clearly colored player "
+                "matching the mission frame_probe.color_rgb and its world dimensions. "
+                "The independent capture runner will replay these actions later; do "
+                "not add a hand-authored MGSF fixture marker or invent telemetry.\n"
+                if mission.get("state_checks") and mission.get("frame_probe") else ""
+            )
             + json.dumps(mission, ensure_ascii=False) + "\nPrior feedback: "
             + json.dumps(prior, ensure_ascii=False)
         )
@@ -391,7 +406,12 @@ def run_godogen_loop(
             "godot_import": _run_step([godot, "--headless", "--path", str(project), "--import"], project, 120),
             "godot_launch": _run_step([godot, "--headless", "--path", str(project), "--quit-after", "5"], project, 120),
         } if code == 0 else {}
+        try:
+            generated_source = fingerprint_project(project)
+        except SourceFingerprintError:
+            generated_source = None
         runner = {
+            "generated_source": generated_source,
             "runner": "codex-exec", "returncode": code, "started_at": started,
             "finished_at": datetime.now(timezone.utc).isoformat(),
             "command": command, "cwd": str(project),

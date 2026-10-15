@@ -93,6 +93,16 @@ The M0.9.1 verifier turns scripted Godot Input actions into signed motion checks
 
 Runtime state PASS proves that the hand-authored GYRO fixture responded to injected input in the actual engine. **Autonomous Godogen/Codex generation remains HOLD** until separately demonstrated. All prior services continue unchanged.
 
+## MGSF-M0.9.2 Decoded frame proof + Codex generation provenance (incubation)
+
+The frame verifier independently decodes five real Godot movie frames and compares their player-colored pixel centroid to the time-aligned engine trace. The autonomy gate separately links a pinned Godogen/Codex runner and generated source SHA to the independent state/video evidence.
+
+- `mgsf godogen-frame-proof <project> <mission> --trace screenshots/state-trace.json --video screenshots/proof.mp4 --state-evidence <state-evaluation.json>`
+- `mgsf godogen-generated-capture <staged-godogen-project> <mission> --execute --godot <Godot.NET binary>`
+- `mgsf godogen-autonomy-gate <staged-godogen-project> <mission> --frame-proof <frame-proof.json> --state-evidence <state-evaluation.json> --godogen-evaluation <evaluation.json> --codex-runner <runner.json>`
+
+The public Godot fixture CI proves engine state and pixels, **not Godogen autonomous generation**. No Codex credentials are used by CI. A true autonomous PASS requires a real local Codex game-build and independent generated-game replay. [Contract](docs/MGSF_M0_9_2_AUTONOMOUS_GENERATION_FRAME_PROOF.md).
+
 ## Windows product preview
 
 Product:

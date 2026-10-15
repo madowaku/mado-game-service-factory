@@ -82,6 +82,13 @@ Do not call reconstructed SEGA slide values a live network measurement.
 - Independently check build, engine import and launch; hash and preserve verified proof media.
 - No autonomous publishing, paid generation, or promotion based on media presence alone.
 
+## MGSF-M0.9.2 generated-source and frame-proof safety
+- Separate hand-authored engine proof from actual Codex-generated game evidence.
+- A pixel-based PASS needs real decoded frames, same-run engine state, bounded color tracking and matching SHA-256.
+- No fixture, self-reported agent claim, changed generated source or missing Codex runner can satisfy autonomy promotion.
+- Running Codex and newly generated Godot C# always requires an explicit --execute in an isolated expendable workspace.
+- Never add API credentials or paid asset calls to the public CI; no autonomous publishing or commercial readiness assertion.
+
 ## Deferred boundary
 External Tester Preview remains important and moves to the next unallocated milestone after M0.5.
 

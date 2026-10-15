@@ -10,6 +10,10 @@ on:
       - "src/mgsf/cli.py"
       - "fixtures/godogen/**"
       - "tests/test_godogen_state_verification.py"
+      - "src/mgsf/godogen_frame_proof.py"
+      - "src/mgsf/godogen_generation_proof.py"
+      - "src/mgsf/godogen_source_fingerprint.py"
+      - "tests/test_godogen_frame_proof.py"
 
 permissions:
   contents: read
@@ -80,8 +84,27 @@ jobs:
           print("real Godot engine gameplay state PASS; Godogen autonomous proof HOLD")
           PY
 
+      - name: Decode real movie frames and independently verify state-to-frame
+        shell: bash
+        run: |
+          set -euo pipefail
+          state_file="$(find ci-evidence/godogen-live-state -name state-evaluation.json -type f | head -1)"
+          test -n "$state_file"
+          mgsf godogen-frame-proof             fixtures/godogen/gyro-live fixtures/godogen/mission-gyro-live.json             --trace screenshots/state-trace.json             --video screenshots/proof.mp4             --state-evidence "$state_file"             --output-root ci-evidence/godogen-live-state
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          evidence = list(Path("ci-evidence/godogen-live-state").glob("*/live-*/frame-proof.json"))
+          assert len(evidence) == 1, evidence
+          frame = json.loads(evidence[0].read_text(encoding="utf-8"))
+          assert frame["status"] == "PASS", frame
+          assert frame["autonomous_status"] == "HOLD", frame
+          assert len(frame["checks"]) == 5 and all(item["pass"] for item in frame["checks"])
+          print("independent decoded state-to-frame proof PASS 5/5; autonomy HOLD")
+          PY
+
       - name: Run verifier contract tests
-        run: pytest -q tests/test_godogen_state_verification.py
+        run: pytest -q tests/test_godogen_state_verification.py tests/test_godogen_frame_proof.py
 
       - uses: actions/upload-artifact@v4
         if: always()
