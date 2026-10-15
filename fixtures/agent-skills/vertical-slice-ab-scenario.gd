@@ -38,7 +38,7 @@ func _run_scenario() -> void:
 	print("MGSF_SEED:%d" % test_seed)
 	var any_failure := false
 	for assertion_id in ["playfeel", "blind_privacy", "sensor_logic"]:
-		var suite := (SUITES[assertion_id] as Script).new()
+		var suite = (SUITES[assertion_id] as Script).new()
 		var result: Dictionary = suite.run()
 		var suite_ok := result.has("failures") and (result["failures"] as Array).is_empty() \
 			and result.has("passed") and int(result["passed"]) > 0
