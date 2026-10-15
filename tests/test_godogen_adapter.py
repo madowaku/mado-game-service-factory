@@ -73,6 +73,7 @@ def test_intake_previews_without_writing_and_stages_pinned_docs(tmp_path: Path) 
 
     staged = adapter.intake_godogen(source, target, sha, dry_run=False)
     assert staged["status"] == "STAGED"
+    assert (target / ".git").is_dir()
     assert (target / "AGENTS.md").read_text() == "Build Godot using $asset-gen and godot.md"
     assert ".agents/skills/asset-gen" in (
         target / ".agents/skills/asset-gen/SKILL.md"
