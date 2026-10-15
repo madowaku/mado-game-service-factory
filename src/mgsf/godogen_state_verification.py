@@ -246,7 +246,9 @@ def live_dogfood(
         _write(debug / "godot-capture.json", checks["godot_capture"])
         raise StateVerificationError(
             "real Godot capture did not produce state trace: "
-            + str(checks["godot_capture"].get("stderr_tail", checks["godot_capture"].get("error", "")))
+            + "stdout=" + str(checks["godot_capture"].get("stdout_tail", ""))[-1800:]
+            + " stderr=" + str(checks["godot_capture"].get("stderr_tail", ""))[-1800:]
+            + " rc=" + str(checks["godot_capture"].get("returncode"))
         )
     frames = list(frames_dir.glob("frame*.png"))
     if len(frames) < 400:
