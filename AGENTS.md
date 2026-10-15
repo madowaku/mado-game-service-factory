@@ -73,6 +73,15 @@ Prioritize:
 
 Do not call reconstructed SEGA slide values a live network measurement.
 
+## MGSF-M0.9 Godogen boundary
+- Godogen adapter is incubation and supports Codex + Godot 4 .NET/C# only.
+- Never run upstream publish.sh, enable a force overwrite, or modify an existing game repo during intake.
+- Pin and verify source SHA and clean tree before copying a restricted source subset into a fresh directory.
+- Running Codex requires explicit opt-in; default environment must not forward paid image/3D generation keys.
+- A fixture or uncorroborated agent claim cannot establish live visual proof.
+- Independently check build, engine import and launch; hash and preserve verified proof media.
+- No autonomous publishing, paid generation, or promotion based on media presence alone.
+
 ## Deferred boundary
 External Tester Preview remains important and moves to the next unallocated milestone after M0.5.
 
