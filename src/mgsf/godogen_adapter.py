@@ -70,7 +70,7 @@ def _plain_files(directory: Path) -> list[Path]:
         if entry.is_symlink() or (not entry.is_file() and not entry.is_dir()):
             raise GodogenError("symlinks and special files are forbidden in upstream")
         if entry.is_file():
-            if entry.relative_to(directory).parts[0].startswith("."):
+            if any(part.startswith(".") for part in entry.relative_to(directory).parts):
                 raise GodogenError("hidden upstream files are not allowed")
             found.append(entry)
     if not any(p.name == "SKILL.md" and p.parent == directory for p in found):
@@ -93,6 +93,16 @@ def intake_godogen(
         raise GodogenError("target already exists; refusing to overwrite")
     if _git(src, "rev-parse", "--show-toplevel") != str(src):
         raise GodogenError("source must be the Godogen repository root")
+    origin = _git(src, "remote", "get-url", "origin")
+    trusted_origins = {
+        "https://github.com/htdt/godogen",
+        "https://github.com/htdt/godogen.git",
+        "git@github.com:htdt/godogen",
+        "git@github.com:htdt/godogen.git",
+        "ssh://git@github.com/htdt/godogen.git",
+    }
+    if origin not in trusted_origins:
+        raise GodogenError("upstream origin must be htdt/godogen")
     head = _git(src, "rev-parse", "HEAD")
     if head.lower() != expected_sha.lower():
         raise GodogenError("upstream HEAD is not the pinned expected_sha")
@@ -154,6 +164,10 @@ def intake_godogen(
                 dest.write_text(text, encoding="utf-8")
         if not (staging / ".agents/skills/asset-gen/SKILL.md").is_file():
             raise GodogenError("asset skill was not staged")
+        manifest["staged_files"] = {
+            name: _sha(staging / name) for name in
+            ("AGENTS.md", "godot.md", ".agents/skills/asset-gen/SKILL.md")
+        }
         _json(staging / ".mgsf/godogen-intake.json", manifest)
         if dst.exists():
             raise GodogenError("target appeared during intake; refusing overwrite")
@@ -276,8 +290,11 @@ def evaluate_godogen(
         media = [{"path": "proof.mp4", "sha256": _sha(preserved), "bytes": preserved.stat().st_size,
                   "source_relative_path": artifact.relative_to(root_project).as_posix(),
                   "probe": video_info}]
+    provenance_file = root_project / ".mgsf/godogen-intake.json"
+    provenance = json.loads(provenance_file.read_text(encoding="utf-8")) if provenance_file.is_file() else {}
     _json(root / "evaluation.json", {
         "schema_version": 1, "service": "godogen-adapter",
+        "upstream_sha": provenance.get("upstream_sha"),
         "mission_id": mission["mission_id"], "engine": ENGINE, "iteration": iteration,
         "evaluated_at": datetime.now(timezone.utc).isoformat(),
         "evidence_class": "deterministic_godogen_fixture" if fixture else "recorded_godogen_codex_run",
@@ -312,6 +329,15 @@ def run_godogen_loop(
     manifest = json.loads(manifest_file.read_text(encoding="utf-8"))
     if manifest.get("upstream") != "htdt/godogen" or manifest.get("engine") != ENGINE:
         raise GodogenError("invalid Godogen intake manifest")
+    staged_hashes = manifest.get("staged_files")
+    if not isinstance(staged_hashes, dict) or not staged_hashes:
+        raise GodogenError("missing staged-file provenance")
+    for relative, digest in staged_hashes.items():
+        if relative not in ("AGENTS.md", "godot.md", ".agents/skills/asset-gen/SKILL.md"):
+            raise GodogenError("unexpected staged-file entry")
+        file = project / relative
+        if not file.is_file() or file.is_symlink() or _sha(file) != digest:
+            raise GodogenError("staged Godogen instructions changed after intake")
     if not 1 <= timeout_seconds <= 7200:
         raise GodogenError("timeout_seconds must be between 1 and 7200")
     mission = load_mission(mission_path)
@@ -363,10 +389,16 @@ def run_godogen_loop(
             "engine_checks": checks,
         }
         _json(run_root / "runner.json", runner)
-        if not answer_path.exists():
+        try:
+            output = json.loads(answer_path.read_text(encoding="utf-8"))
+            if not isinstance(output, dict) or output.get("mission_id") != mission["mission_id"]:
+                raise ValueError("Codex result has an incorrect mission id")
+        except (OSError, ValueError, json.JSONDecodeError):
+            if answer_path.is_file():
+                (run_root / "invalid-answer.txt").write_bytes(answer_path.read_bytes())
             _json(answer_path, {
                 "mission_id": mission["mission_id"], **{key: False for key in RESULT_FIELDS},
-                "runtime_errors": ["codex did not produce a structured result"],
+                "runtime_errors": ["Codex did not produce a valid structured mission result"],
                 "observations": [], "proof_video": "",
             })
         last = evaluate_godogen(project, mission, answer_path, runner, output_root,
