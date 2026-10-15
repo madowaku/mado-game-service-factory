@@ -170,3 +170,18 @@ The previously planned External Tester Preview moves to the next unallocated mil
 
 
 Parallel agent-native boundary: run the first real EdenSpark dogfood mission on a local EdenSpark project with its generated MCP configuration. The target proof is one recorded Codex run that inspects the scene, compiles, plays, simulates input, preserves a screenshot or equivalent artifact, checks logs, and earns PASS.
+
+## MGSF-M0.9 - Adaptive Godot Expert Router
+
+Choose one narrowly scoped Godot skill from a pinned, offline-curated external registry.
+This advisory selection does **not** auto-install, run third-party code, or count as successful gameplay evidence.
+
+```bash
+mgsf validate-agent-skills
+mgsf skill-route fixtures/agent-skills/gyro-lab-puzzle.json --output-root evidence/agent-skills
+```
+
+Outputs `skill-route.json` (deterministic ranking, source pin, SHA-256 provenance, HOLD eval)
+and `CODEX_TASK.md` (human-reviewable Codex handoff). Godot below 4.7 returns HOLD without a skill.
+
+See [MGSF-M0.9 contract](docs/MGSF_M0_9_GAME_AGENT_SKILL_ROUTER.md).

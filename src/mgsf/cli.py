@@ -4,6 +4,7 @@ import argparse
 from pathlib import Path
 
 from .catalog import load_catalog
+from .agent_skill_router import load_skill_registry, run_skill_route
 from .edenspark_agent_adapter import (
     create_mission_pack,
     evaluate_result as evaluate_edenspark_result,
@@ -216,7 +217,39 @@ def main() -> int:
         help="root directory for promotion decisions",
     )
 
+    agent_skills = sub.add_parser(
+        "validate-agent-skills", help="Validate the curated external Godot skill registry"
+    )
+    agent_skills.add_argument(
+        "--registry", type=Path, default=Path("catalog/agent-skills.yaml")
+    )
+
+    skill_route = sub.add_parser(
+        "skill-route", help="Select one pinned Godot expert skill; never installs or executes"
+    )
+    skill_route.add_argument("request", type=Path, help="skill routing task JSON or YAML")
+    skill_route.add_argument(
+        "--registry", type=Path, default=Path("catalog/agent-skills.yaml")
+    )
+    skill_route.add_argument(
+        "--output-root", type=Path, default=Path("evidence/agent-skills")
+    )
+
     args = parser.parse_args()
+
+    if args.command == "validate-agent-skills":
+        registry = load_skill_registry(args.registry)
+        print(f"skill registry ok: {len(registry['skills'])} pinned Godot skills")
+        return 0
+
+    if args.command == "skill-route":
+        result = run_skill_route(args.request, args.registry, args.output_root)
+        print(f"Skill routing evidence: {result.root}")
+        print(
+            f"service=game-agent-skill-router status={result.status} "
+            f"skill={result.selected_skill or 'none'} eval=HOLD"
+        )
+        return 0 if result.status in {"ROUTED", "HOLD"} else 1
 
     if args.command in {"validate-catalog", "list"}:
         catalog = load_catalog(_catalog_path(args.path))

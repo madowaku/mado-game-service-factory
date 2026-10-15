@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "mission_id": "gyro-lab-puzzle-m09",
+  "engine": "godot",
+  "engine_version": "4.7.2",
+  "phase": "build",
+  "genre": "puzzle",
+  "task": "Implement a deterministic grid puzzle with undo and observable winning state.",
+  "capabilities": ["grid", "undo"]
+}

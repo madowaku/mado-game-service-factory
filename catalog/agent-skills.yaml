@@ -1,0 +1,65 @@
+schema_version: 1
+source_repository: thedivergentai/Game-Dev-Agentic-Skills
+source_commit: 002d004c50b865406e58b3ec86508adab926d7f4
+license: LGPL-3.0
+skills:
+  - id: godot-master
+    path: skills/godot-master/SKILL.md
+    description: General Godot hub fallback for 4.7+ projects.
+    phases: [design, build, verify, playtest]
+    genres: []
+    capabilities: []
+  - id: godot-version-migration
+    path: skills/godot-version-migration/SKILL.md
+    description: Guide explicit engine migration planning.
+    phases: [migration]
+    genres: []
+    capabilities: [migration, upgrade]
+  - id: godot-genre-puzzle
+    path: skills/godot-genre-puzzle/SKILL.md
+    description: Grid puzzle, undo, and tutorial design patterns.
+    phases: [design, build]
+    genres: [puzzle]
+    capabilities: [grid, undo, puzzle, tutorial]
+  - id: godot-genre-platformer
+    path: skills/godot-genre-platformer/SKILL.md
+    description: Platformer game feel and movement patterns.
+    phases: [design, build]
+    genres: [platformer]
+    capabilities: [jump, platformer, coyote-time]
+  - id: godot-genre-racing
+    path: skills/godot-genre-racing/SKILL.md
+    description: Vehicle/racing patterns and progression.
+    phases: [design, build]
+    genres: [racing]
+    capabilities: [racing, vehicle, lap]
+  - id: godot-game-loop-time-trial
+    path: skills/godot-game-loop-time-trial/SKILL.md
+    description: Time trials, checkpoints, and ghost replay loops.
+    phases: [design, build]
+    genres: []
+    capabilities: [time-trial, ghost, checkpoint]
+  - id: godot-testing-patterns
+    path: skills/godot-testing-patterns/SKILL.md
+    description: Regression testing and Godot CI patterns.
+    phases: [verify, playtest]
+    genres: []
+    capabilities: [test, regression, headless, unit-test]
+  - id: godot-agent-vision
+    path: skills/godot-agent-vision/SKILL.md
+    description: Screenshot-based visual QA for agent workflows.
+    phases: [verify, playtest]
+    genres: []
+    capabilities: [visual, screenshot, typography, ui]
+  - id: godot-monte-carlo-balancer
+    path: skills/godot-monte-carlo-balancer/SKILL.md
+    description: Simulation-driven balancing patterns.
+    phases: [verify, playtest]
+    genres: []
+    capabilities: [balance, monte-carlo, economy]
+  - id: godot-ui-theming
+    path: skills/godot-ui-theming/SKILL.md
+    description: Theme resources and UI styling.
+    phases: [design, build]
+    genres: []
+    capabilities: [theme, ui, skin]
