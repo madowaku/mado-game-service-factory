@@ -10,6 +10,12 @@ from .edenspark_agent_adapter import (
     load_mission as load_edenspark_mission,
     run_autonomous_loop as run_edenspark_loop,
 )
+from .godogen_adapter import (
+    evaluate_godogen,
+    intake_godogen,
+    load_mission as load_godogen_mission,
+    run_godogen_loop,
+)
 from .gameplay_capture import run_capture_playtest, run_gameplay_capture
 from .godot_capture_adapter import run_godot_capture_adapter
 from .playtest_report import run_playtest_report
@@ -198,6 +204,39 @@ def main() -> int:
         help="root directory for runner and evaluation evidence",
     )
 
+    godogen_intake = sub.add_parser(
+        "godogen-intake",
+        help="Preview or stage a pinned clean Godogen source into a fresh Codex/Godot directory",
+    )
+    godogen_intake.add_argument("source", type=Path, help="local Godogen source checkout")
+    godogen_intake.add_argument("target", type=Path, help="new isolated game directory")
+    godogen_intake.add_argument("--expected-sha", required=True, help="pinned upstream Git commit SHA")
+    godogen_intake.add_argument("--apply", action="store_true", help="create target (default: preview only)")
+
+    godogen_eval = sub.add_parser(
+        "godogen-eval", help="Evaluate a Godogen result with media and runner provenance checks",
+    )
+    godogen_eval.add_argument("project", type=Path)
+    godogen_eval.add_argument("mission", type=Path)
+    godogen_eval.add_argument("result", type=Path)
+    godogen_eval.add_argument("--runner-record", type=Path)
+    godogen_eval.add_argument("--fixture", action="store_true", help="fixture-only evidence always HOLD")
+    godogen_eval.add_argument("--ffprobe", default="ffprobe")
+    godogen_eval.add_argument("--output-root", type=Path, default=Path("evidence/godogen"))
+
+    godogen_loop = sub.add_parser(
+        "godogen-loop", help="Explicitly run a bounded Codex/Godogen build and visual proof loop",
+    )
+    godogen_loop.add_argument("project", type=Path)
+    godogen_loop.add_argument("mission", type=Path)
+    godogen_loop.add_argument("--execute", action="store_true", help="required to launch Codex and engine tools")
+    godogen_loop.add_argument("--codex", default="codex")
+    godogen_loop.add_argument("--godot", default="godot")
+    godogen_loop.add_argument("--dotnet", default="dotnet")
+    godogen_loop.add_argument("--ffprobe", default="ffprobe")
+    godogen_loop.add_argument("--timeout-seconds", type=int, default=1800)
+    godogen_loop.add_argument("--output-root", type=Path, default=Path("evidence/godogen"))
+
     promotion = sub.add_parser(
         "prototype-promote",
         help="Promote, iterate, or hold a prototype from one or more evidence bundles",
@@ -281,6 +320,35 @@ def main() -> int:
             f"iterations={result.iterations} best_score={result.best_score:.4f}"
         )
         return 0 if result.status == "PASS" else 1
+
+    if args.command == "godogen-intake":
+        manifest = intake_godogen(
+            args.source, args.target, args.expected_sha, dry_run=not args.apply,
+        )
+        print(f"Godogen intake: {manifest['status']} target={manifest['target']}")
+        return 0
+
+    if args.command == "godogen-eval":
+        import json
+
+        runner = json.loads(args.runner_record.read_text(encoding="utf-8")) if args.runner_record else None
+        evaluation = evaluate_godogen(
+            args.project, load_godogen_mission(args.mission), args.result,
+            runner, args.output_root, fixture=args.fixture, ffprobe=args.ffprobe,
+        )
+        print(f"Godogen evidence: {evaluation.root} status={evaluation.status}")
+        return 0 if evaluation.status in {"PASS", "HOLD"} else 1
+
+    if args.command == "godogen-loop":
+        if not args.execute:
+            parser.error("godogen-loop requires --execute; Codex may edit the isolated project")
+        evaluation = run_godogen_loop(
+            args.project, args.mission, args.output_root,
+            codex=args.codex, godot=args.godot, dotnet=args.dotnet,
+            ffprobe=args.ffprobe, timeout_seconds=args.timeout_seconds,
+        )
+        print(f"Godogen evidence: {evaluation.root} status={evaluation.status}")
+        return 0 if evaluation.status == "PASS" else 1
 
     if args.command == "prototype-promote":
         result = promote_prototype(args.evidence, args.output_root, engine=args.engine)
