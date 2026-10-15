@@ -323,7 +323,7 @@ def _run_step(argv: list[str], cwd: Path, timeout: int) -> dict[str, Any]:
         return {"command": argv, "returncode": p.returncode,
                 "stdout_sha256": sha256(p.stdout.encode()).hexdigest(),
                 "stderr_sha256": sha256(p.stderr.encode()).hexdigest(),
-                "stderr_tail": p.stderr[-1500:]}
+                "stdout_tail": p.stdout[-3000:], "stderr_tail": p.stderr[-3000:]}
     except (OSError, subprocess.TimeoutExpired) as exc:
         return {"command": argv, "returncode": 124, "error": str(exc)}
 
