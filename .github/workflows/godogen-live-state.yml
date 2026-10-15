@@ -1,14 +1,7 @@
 name: godogen-live-state
 
 on:
-  push:
-    paths:
-      - ".github/workflows/godogen-live-state.yml"
-      - "src/mgsf/godogen_state_verification.py"
-      - "src/mgsf/godogen_adapter.py"
-      - "src/mgsf/cli.py"
-      - "fixtures/godogen/**"
-      - "tests/test_godogen_state_verification.py"
+  workflow_dispatch:
   pull_request:
     paths:
       - ".github/workflows/godogen-live-state.yml"
