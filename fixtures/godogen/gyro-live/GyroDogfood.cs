@@ -74,7 +74,27 @@ public partial class GyroDogfood : Node2D
                 state = new { x = _playerX, y = _playerY }
             });
         }
+        // Save before process exit too: --quit-after is controlled by the movie writer.
+        if (_tick == 420)
+            PersistTrace();
         QueueRedraw();
+    }
+
+    private void PersistTrace()
+    {
+        if (string.IsNullOrWhiteSpace(_tracePath))
+            return;
+        var payload = new {
+            schema_version = 1,
+            engine = "godot",
+            mission_id = _missionId,
+            run_id = _runId,
+            input_provenance = "godot_input_action_scripted",
+            samples = _samples,
+        };
+        Directory.CreateDirectory(Path.GetDirectoryName(_tracePath)!);
+        File.WriteAllText(_tracePath, JsonSerializer.Serialize(payload));
+        GD.Print($"MGSF_GYRO_STATE_TRACE_OK samples={_samples.Count} ticks={_tick}");
     }
 
     public override void _Draw()
@@ -92,18 +112,6 @@ public partial class GyroDogfood : Node2D
     {
         Input.ActionRelease("tilt_right");
         Input.ActionRelease("tilt_left");
-        if (string.IsNullOrWhiteSpace(_tracePath))
-            return;
-        var payload = new {
-            schema_version = 1,
-            engine = "godot",
-            mission_id = _missionId,
-            run_id = _runId,
-            input_provenance = "godot_input_action_scripted",
-            samples = _samples,
-        };
-        Directory.CreateDirectory(Path.GetDirectoryName(_tracePath)!);
-        File.WriteAllText(_tracePath, JsonSerializer.Serialize(payload));
-        GD.Print($"MGSF_GYRO_STATE_TRACE_OK samples={_samples.Count} ticks={_tick}");
+        PersistTrace();
     }
 }
