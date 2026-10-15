@@ -68,6 +68,22 @@ services:
     entrypoint: mgsf prototype-promote
     service_contract: docs/MGSF_M0_6_TO_M0_8_EDENSPARK_PROTOTYPE_LOOP.md
 
+  - id: godogen-adapter
+    name: Godogen Intake / Autonomous Game Build & Visual Proof Bridge
+    stage: incubation
+    problem: Safely stage a pinned Codex/Godot generator and gate autonomous game proof on recorded runner, actual engine probes, and inspected video.
+    milestone: MGSF-M0.9
+    entrypoint: mgsf godogen-intake
+    eval_entrypoint: mgsf godogen-eval
+    loop_entrypoint: mgsf godogen-loop
+    service_contract: docs/MGSF_M0_9_GODOGEN_BRIDGE.md
+    upstream: htdt/godogen
+    evidence:
+      fixture: deterministic_godogen_fixture
+      live: recorded_godogen_codex_run
+      live_required_for_promotion: true
+      status: HOLD
+
   - id: build-doctor
     name: Game Build Doctor
     stage: candidate
