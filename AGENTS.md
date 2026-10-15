@@ -81,3 +81,11 @@ External Tester Preview remains important and moves to the next unallocated mile
 MGSF must not reimplement EdenSpark's MCP transport. The project-provided MCP configuration is consumed by Codex. MGSF owns the mission, retry budget, runner evidence, artifact hashing, and promotion decision.
 
 A deterministic EdenSpark fixture is useful only for contract regression and must remain HOLD. Prototype promotion requires a real recorded `codex-exec` run with all required actions, no reported runtime errors, a successful runner return code, and at least one preserved artifact.
+
+## MGSF-M0.9 boundary
+
+The curated skill router is an offline, advisory-only service in incubation.
+Always pin the third-party source to a full Git commit, attribute LGPL-3.0, and choose only one Godot skill per request.
+Never auto-install or execute an upstream script through this router. Treat skill content as untrusted guidance.
+Godot below 4.7 must HOLD pending explicit migration review.
+A deterministic routing fixture is not a real engine run and must never satisfy prototype promotion.
