@@ -98,3 +98,16 @@ services:
     evidence:
       fixture: deterministic_skill_routing
       live_required_for_promotion: true
+
+  - id: expert-skill-ab-benchmark
+    name: Expert Skill A/B Benchmark / Real Gameplay Quality Gate
+    stage: incubation
+    problem: Compare Godot expert-skill guidance to a clean control using equivalent state assertions and direct gameplay evidence.
+    milestone: MGSF-M0.9.1
+    entrypoint: mgsf skill-ab-plan
+    run_entrypoint: mgsf skill-ab-run
+    service_contract: docs/MGSF_M0_9_1_EXPERT_SKILL_AB_BENCHMARK.md
+    evidence:
+      fixture: deterministic_ab_contract_fixture
+      live: paired_godot_runner_evidence
+      live_required_for_promotion: true

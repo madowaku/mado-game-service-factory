@@ -185,3 +185,23 @@ Outputs `skill-route.json` (deterministic ranking, source pin, SHA-256 provenanc
 and `CODEX_TASK.md` (human-reviewable Codex handoff). Godot below 4.7 returns HOLD without a skill.
 
 See [MGSF-M0.9 contract](docs/MGSF_M0_9_GAME_AGENT_SKILL_ROUTER.md).
+
+## MGSF-M0.9.1 - Expert Skill A/B Benchmark
+
+Run isolated Godot implementations of the *same* task with and without one reviewed,
+pinned expert skill. Preserve equivalent test scripts, Git baseline, seed, Godot binary,
+runner logs, objective assertions, and M0.3b **direct gameplay** capture evidence.
+
+```bash
+mgsf skill-ab-plan fixtures/agent-skills/gyro-puzzle-ab.json \
+  evidence/agent-skills/gyro-lab-puzzle-m09/skill-route.json
+mgsf skill-ab-run <experiment.json> <control-checkout> <treatment-checkout> \
+  --godot <Godot-binary> \
+  --control-capture-eval <control-adapter_eval.json> \
+  --treatment-capture-eval <treatment-adapter_eval.json>
+```
+
+The fixture provides a *plan only*, not two tested game variants.
+Without two valid direct Godot capture bundles, the evaluator returns HOLD.
+Complete paired evidence is labeled REVIEW, and prototype promotion remains HOLD.
+See [M0.9.1 evaluation contract](docs/MGSF_M0_9_1_EXPERT_SKILL_AB_BENCHMARK.md).

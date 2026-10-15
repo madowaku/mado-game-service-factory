@@ -5,6 +5,7 @@ from pathlib import Path
 
 from .catalog import load_catalog
 from .agent_skill_router import load_skill_registry, run_skill_route
+from .skill_ab_benchmark import prepare_skill_ab, run_skill_ab
 from .edenspark_agent_adapter import (
     create_mission_pack,
     evaluate_result as evaluate_edenspark_result,
@@ -235,7 +236,51 @@ def main() -> int:
         "--output-root", type=Path, default=Path("evidence/agent-skills")
     )
 
+    ab_plan = sub.add_parser(
+        "skill-ab-plan", help="Generate isolated control/treatment Godot benchmark prompts"
+    )
+    ab_plan.add_argument("experiment", type=Path, help="A/B experiment JSON")
+    ab_plan.add_argument("route", type=Path, help="M0.9 skill-route.json evidence")
+    ab_plan.add_argument(
+        "--output-root", type=Path, default=Path("evidence/skill-ab")
+    )
+
+    ab_run = sub.add_parser(
+        "skill-ab-run", help="Execute paired Godot assertions with direct capture proof"
+    )
+    ab_run.add_argument("plan", type=Path, help="generated experiment.json")
+    ab_run.add_argument("control", type=Path, help="control Godot Git checkout")
+    ab_run.add_argument("treatment", type=Path, help="treatment Godot Git checkout")
+    ab_run.add_argument("--godot", type=Path, required=True, help="Godot executable path")
+    ab_run.add_argument("--control-capture-eval", type=Path)
+    ab_run.add_argument("--treatment-capture-eval", type=Path)
+    ab_run.add_argument("--timeout-seconds", type=int, default=120)
+    ab_run.add_argument(
+        "--output-root", type=Path, default=Path("evidence/skill-ab-runs")
+    )
+
     args = parser.parse_args()
+
+    if args.command == "skill-ab-plan":
+        root = prepare_skill_ab(args.experiment, args.route, args.output_root)
+        print(f"A/B experiment plan: {root}")
+        print("service=expert-skill-ab-benchmark evidence=plan gate=HOLD")
+        return 0
+
+    if args.command == "skill-ab-run":
+        result = run_skill_ab(
+            args.plan, args.control, args.treatment, args.godot,
+            args.output_root,
+            control_capture_eval=args.control_capture_eval,
+            treatment_capture_eval=args.treatment_capture_eval,
+            timeout_seconds=args.timeout_seconds,
+        )
+        print(f"A/B Godot evidence: {result.root}")
+        print(
+            f"service=expert-skill-ab-benchmark status={result.status} "
+            f"verdict={result.verdict} promotion=HOLD"
+        )
+        return 0 if result.status in {"HOLD", "REVIEW"} else 1
 
     if args.command == "validate-agent-skills":
         registry = load_skill_registry(args.registry)

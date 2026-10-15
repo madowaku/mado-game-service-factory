@@ -89,6 +89,10 @@ jobs:
           mgsf skill-route fixtures/agent-skills/gyro-lab-puzzle.json --output-root ci-evidence/agent-skills
           grep -q '"selected_skill": "godot-genre-puzzle"' ci-evidence/agent-skills/gyro-lab-puzzle-m09/skill-route.json
           grep -q '"evaluation_status": "HOLD"' ci-evidence/agent-skills/gyro-lab-puzzle-m09/skill-route.json
+          mgsf skill-ab-plan fixtures/agent-skills/gyro-puzzle-ab.json \
+            ci-evidence/agent-skills/gyro-lab-puzzle-m09/skill-route.json \
+            --output-root ci-evidence/skill-ab
+          grep -q '"promotion_status": "HOLD"' ci-evidence/skill-ab/gyro-puzzle-ab-001/experiment.json
 
       - run: pytest -q
 
