@@ -75,8 +75,10 @@ and render a character in the declared color. An external MGSF runner then
 replays the generated game separately and verifies its visual behavior.
 
 The generated runner refuses the hand-authored GYRO fixture marker, altered
-staged instructions, pre-existing screenshots, absent engine artifacts, and
-source changes during replay. Running untrusted code remains risky: Codex
+staged instructions, absent engine artifacts, and source changes during replay.
+It stores independent replays in a unique new path under
+.mgsf/generated-captures/<run-id>/ without overwriting the Codex-produced
+screenshots/proof.mp4. Running untrusted code remains risky: Codex
 workspace-write is not an OS-security boundary. Never run on a machine with
 secrets or sensitive source files.
 
