@@ -63,15 +63,19 @@ def capture_generated_game(
     if "frame_probe" not in mission:
         raise StateVerificationError("generated capture requires a frame_probe mission")
     run_id = "gen-" + uuid4().hex
-    screenshots = project / "screenshots"
-    frames = screenshots / "frames"
-    if screenshots.is_symlink() or frames.is_symlink():
-        raise StateVerificationError("capture directory cannot be a symlink")
-    if screenshots.exists() and any(screenshots.iterdir()):
-        raise StateVerificationError("generated capture refuses existing screenshots")
-    frames.mkdir(parents=True, exist_ok=False)
-    trace = screenshots / "state-trace.json"
-    video = screenshots / "proof.mp4"
+    # The Codex construction loop may already own screenshots/proof.mp4.
+    # Never overwrite its movie: capture into a NEW per-run directory.
+    capture_base = project / ".mgsf" / "generated-captures"
+    if capture_base.is_symlink():
+        raise StateVerificationError("generated capture directory cannot be a symlink")
+    capture_dir = capture_base / run_id
+    capture_dir.mkdir(parents=True, exist_ok=False)
+    frames = capture_dir / "frames"
+    frames.mkdir()
+    trace = capture_dir / "state-trace.json"
+    video = capture_dir / "proof.mp4"
+    trace_rel = trace.relative_to(project).as_posix()
+    video_rel = video.relative_to(project).as_posix()
     checks: dict = {}
     for name, args, timeout in (
         ("dotnet_build", [dotnet, "build", "--nologo"], 240),
@@ -108,14 +112,14 @@ def capture_generated_game(
         "engine_checks": checks, "trace_sha256": _sha(trace), "video_sha256": _sha(video),
     }
     state = verify_state(
-        project, mission_path, trace_path="screenshots/state-trace.json",
-        video_path="screenshots/proof.mp4", runner_record=runner,
+        project, mission_path, trace_path=trace_rel,
+        video_path=video_rel, runner_record=runner,
         output_root=output_root, ffprobe=ffprobe,
     )
     _write(state.root / "runner.json", runner)
     frame = verify_frame_proof(
-        project, mission_path, trace_path="screenshots/state-trace.json",
-        video_path="screenshots/proof.mp4",
+        project, mission_path, trace_path=trace_rel,
+        video_path=video_rel,
         state_evidence_path=state.root / "state-evaluation.json",
         output_root=output_root, ffmpeg=ffmpeg, ffprobe=ffprobe,
     )
@@ -209,10 +213,12 @@ def verify_autonomous_generation(
         and generation.get("runner") == runner
         and isinstance(generation.get("video"), list) and bool(generation["video"])
     )
+    state_runner = state.get("runner") if isinstance(state.get("runner"), dict) else {}
+    state_runner_source = state_runner.get("generated_source") if isinstance(state_runner.get("generated_source"), dict) else {}
     checks["state_runner_same_generated_sources"] = bool(
-        state.get("runner", {}).get("source") == "staged-godogen-candidate"
-        and state.get("runner", {}).get("generated_source", {}).get("digest") == source.get("digest")
-        and state.get("runner", {}).get("returncode") == 0
+        state_runner.get("source") == "staged-godogen-candidate"
+        and state_runner_source.get("digest") == source.get("digest")
+        and state_runner.get("returncode") == 0
     )
     checks["independent_engine_state_pass"] = bool(
         state.get("service") == "godogen-gameplay-state-verification"
