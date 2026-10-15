@@ -25,6 +25,8 @@ def _upstream(tmp_path: Path) -> tuple[Path, str]:
     )
     (source / "asset-gen/tools/sample.py").write_text("print('never executed')", encoding="utf-8")
     subprocess.run(["git", "init", "-q", str(source)], check=True)
+    subprocess.run(["git", "-C", str(source), "remote", "add", "origin",
+                    "https://github.com/htdt/godogen.git"], check=True)
     subprocess.run(["git", "-C", str(source), "add", "."], check=True)
     subprocess.run(
         ["git", "-C", str(source), "-c", "user.name=Test", "-c", "user.email=test@example.com",
@@ -102,8 +104,17 @@ def test_intake_rejects_symlinks_and_overlapping_roots(tmp_path: Path) -> None:
     with pytest.raises(adapter.GodogenError, match="disjoint"):
         adapter.intake_godogen(source, source / "nested", sha)
     (source / "asset-gen/link").symlink_to(source / "LICENSE.md")
-    with pytest.raises(adapter.GodogenError, match="clean"):
-        adapter.intake_godogen(source, tmp_path / "target", sha)
+    subprocess.run(["git", "-C", str(source), "add", "."], check=True)
+    subprocess.run(
+        ["git", "-C", str(source), "-c", "user.name=Test", "-c", "user.email=test@example.com",
+         "commit", "-qm", "track link"], check=True,
+    )
+    linked_sha = subprocess.run(
+        ["git", "-C", str(source), "rev-parse", "HEAD"], capture_output=True,
+        text=True, check=True,
+    ).stdout.strip()
+    with pytest.raises(adapter.GodogenError, match="symlinks"):
+        adapter.intake_godogen(source, tmp_path / "target", linked_sha)
 
 
 def test_mission_schema_is_bounded(tmp_path: Path) -> None:
@@ -187,3 +198,44 @@ def test_complete_mocked_contract_passes_but_is_not_claimed_as_human_playtest(
     evidence = json.loads((evaluation.root / "evaluation.json").read_text(encoding="utf-8"))
     assert "not a human playtest" in evidence["provenance_note"]
     assert evidence["checks"]["independent_engine_checks"] is True
+
+
+def test_wrong_upstream_origin_cannot_be_misrepresented(tmp_path: Path) -> None:
+    source, sha = _upstream(tmp_path)
+    subprocess.run(["git", "-C", str(source), "remote", "set-url", "origin",
+                    "https://github.com/example/not-godogen.git"], check=True)
+    with pytest.raises(adapter.GodogenError, match="origin"):
+        adapter.intake_godogen(source, tmp_path / "target", sha)
+
+
+def test_loop_rejects_tampered_staged_instructions_before_launch(tmp_path: Path) -> None:
+    source, sha = _upstream(tmp_path)
+    target = tmp_path / "target"
+    adapter.intake_godogen(source, target, sha, dry_run=False)
+    (target / "AGENTS.md").write_text("Modified instructions", encoding="utf-8")
+    mission_path = tmp_path / "mission.json"
+    mission_path.write_text(json.dumps(_mission(tmp_path)), encoding="utf-8")
+    with pytest.raises(adapter.GodogenError, match="instructions changed"):
+        adapter.run_godogen_loop(target, mission_path, tmp_path / "evidence")
+
+
+def test_malformed_codex_answer_is_preserved_then_retried(tmp_path: Path, monkeypatch) -> None:
+    source, sha = _upstream(tmp_path)
+    target = tmp_path / "target"
+    adapter.intake_godogen(source, target, sha, dry_run=False)
+    mission_path = tmp_path / "mission.json"
+    mission_path.write_text(json.dumps(_mission(tmp_path)), encoding="utf-8")
+
+    def fake_run(command, **kwargs):
+        if command[0] == "fake-codex":
+            answer_path = Path(command[command.index("--output-last-message") + 1])
+            answer_path.write_text("{invalid-json", encoding="utf-8")
+        return subprocess.CompletedProcess(command, 0, "ok", "")
+
+    monkeypatch.setattr(adapter.subprocess, "run", fake_run)
+    evaluation = adapter.run_godogen_loop(
+        target, mission_path, tmp_path / "evidence", codex="fake-codex",
+    )
+    assert evaluation.status == "ITERATE"
+    assert (evaluation.root / "runner/invalid-answer.txt").read_text() == "{invalid-json"
+    assert (tmp_path / "evidence/godogen-mission/iteration-1/runner/invalid-answer.txt").exists()
