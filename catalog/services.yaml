@@ -68,6 +68,22 @@ services:
     entrypoint: mgsf prototype-promote
     service_contract: docs/MGSF_M0_6_TO_M0_8_EDENSPARK_PROTOTYPE_LOOP.md
 
+  - id: unity-official-agent-bridge
+    name: Unity Official Agent Bridge / Dual-Engine Game Factory
+    stage: incubation
+    problem: Qualify Unity official Codex plugin and Unity CLI without changing existing Godot evidence.
+    milestone: MGSF-M1.0
+    entrypoint: mgsf unity-probe
+    test_entrypoint: mgsf unity-test
+    adapter_registry: mgsf engine-adapters
+    service_contract: docs/MGSF_M1_0_UNITY_AGENT_BRIDGE.md
+    upstream_lock: integrations/unity-agent-plugin.lock.json
+    evidence:
+      preflight: recorded_unity_cli_preflight
+      test: recorded_unity_cli_test
+      live_gameplay_required_for_promotion: true
+      status: HOLD
+
   - id: build-doctor
     name: Game Build Doctor
     stage: candidate

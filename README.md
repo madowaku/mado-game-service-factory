@@ -170,3 +170,15 @@ The previously planned External Tester Preview moves to the next unallocated mil
 
 
 Parallel agent-native boundary: run the first real EdenSpark dogfood mission on a local EdenSpark project with its generated MCP configuration. The target proof is one recorded Codex run that inspects the scene, compiles, plays, simulates input, preserves a screenshot or equivalent artifact, checks logs, and earns PASS.
+
+
+## MGSF-M1.0 Unity Official Agent Bridge (incubation)
+
+Adds an **opt-in** Unity 6+ CLI diagnostic and test adapter alongside the existing Godot pipeline. The Unity official Codex agent plugin is tracked by a reviewable upstream lock but is not vendored or auto-installed.
+
+    mgsf engine-adapters
+    mgsf unity-probe <UnityProject>
+    mgsf unity-test <UnityProject> --mode EditMode
+    mgsf unity-test <UnityProject> --mode EditMode --execute
+
+The test command is dry-run unless --execute is set. Unity test PASS and Editor READY are not gameplay proof: the promotion status is always HOLD until real playtest evidence is supplied. See docs/MGSF_M1_0_UNITY_AGENT_BRIDGE.md.
