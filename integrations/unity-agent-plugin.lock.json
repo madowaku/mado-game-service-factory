@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "source": "https://github.com/Unity-Technologies/unity-agent-plugin",
+  "reviewed_commit": "cf6b2da24e424b0a60d560a57f39f676cb6f79f3",
+  "codex_plugin_version": "0.1.8-beta",
+  "license": "LicenseRef-Unity-Companion-License",
+  "license_url": "https://unity3d.com/legal/licenses/unity_companion_license",
+  "requires_local_executor": true,
+  "auto_install": false,
+  "gate": "HOLD",
+  "supported_engine": "Unity 6+",
+  "runner": "Unity CLI",
+  "notes": "Reference-only lock, no copied upstream code or automatic plugin execution"
+}

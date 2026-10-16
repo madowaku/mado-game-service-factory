@@ -81,3 +81,8 @@ External Tester Preview remains important and moves to the next unallocated mile
 MGSF must not reimplement EdenSpark's MCP transport. The project-provided MCP configuration is consumed by Codex. MGSF owns the mission, retry budget, runner evidence, artifact hashing, and promotion decision.
 
 A deterministic EdenSpark fixture is useful only for contract regression and must remain HOLD. Prototype promotion requires a real recorded `codex-exec` run with all required actions, no reported runtime errors, a successful runner return code, and at least one preserved artifact.
+
+
+## MGSF-M1.0 Unity boundary
+
+Keep Godot service commands and evidence unchanged. The Unity adapter is incubation and opt-in; do not silently install the Unity official plugin, Unity CLI, Editor or Pipeline package. Never copy Unity Companion License upstream skills without explicit license review. Do not perform arbitrary C# eval, deploy, monetize, or publish. Unity CLI test PASS / Editor READY is not gameplay proof and may not promote this adapter. Real gameplay, progressing frames, inputs, screenshots and console evidence remain required.

@@ -16,6 +16,7 @@ from .playtest_report import run_playtest_report
 from .prototype_promotion import promote_prototype
 from .real_game_bridge import run_real_game_bridge, run_real_game_dogfood
 from .transport_probe import run_fixture as run_transport_fixture
+from .unity_agent_bridge import engine_adapters, probe_unity, run_unity_tests
 
 
 def _catalog_path(value: str | None) -> Path:
@@ -216,7 +217,48 @@ def main() -> int:
         help="root directory for promotion decisions",
     )
 
+
+    adapters = sub.add_parser("engine-adapters", help="List verified engine adapter entrypoints")
+
+    unity_probe = sub.add_parser("unity-probe", help="Read-only Unity CLI/Editor connectivity evidence")
+    unity_probe.add_argument("project", type=Path)
+    unity_probe.add_argument("--unity", default="unity", help="Unity CLI executable")
+    unity_probe.add_argument("--timeout-seconds", type=int, default=30)
+    unity_probe.add_argument("--output-root", type=Path, default=Path("evidence"))
+
+    unity_test = sub.add_parser("unity-test", help="Plan or opt in to a Unity NUnit test run")
+    unity_test.add_argument("project", type=Path)
+    unity_test.add_argument("--unity", default="unity", help="Unity CLI executable")
+    unity_test.add_argument("--mode", choices=["EditMode", "PlayMode"], default="EditMode")
+    unity_test.add_argument("--execute", action="store_true", help="Explicitly run Unity CLI")
+    unity_test.add_argument("--timeout-seconds", type=int, default=600)
+    unity_test.add_argument("--output-root", type=Path, default=Path("evidence"))
+
     args = parser.parse_args()
+
+
+    if args.command == "engine-adapters":
+        import json
+        print(json.dumps(engine_adapters(), ensure_ascii=False, indent=2))
+        return 0
+
+    if args.command == "unity-probe":
+        result = probe_unity(
+            args.project, args.output_root, unity=args.unity,
+            timeout_seconds=args.timeout_seconds,
+        )
+        print(f"Unity probe evidence: {result.evidence_path}")
+        print(f"adapter=unity status={result.status} verdict={result.verdict}")
+        return 0 if result.verdict == "READY" else 1
+
+    if args.command == "unity-test":
+        result = run_unity_tests(
+            args.project, args.output_root, unity=args.unity, mode=args.mode,
+            execute=args.execute, timeout_seconds=args.timeout_seconds,
+        )
+        print(f"Unity test evidence: {result.evidence_path}")
+        print(f"adapter=unity status={result.status} verdict={result.verdict}")
+        return 1 if result.verdict == "FAIL" else 0
 
     if args.command in {"validate-catalog", "list"}:
         catalog = load_catalog(_catalog_path(args.path))
