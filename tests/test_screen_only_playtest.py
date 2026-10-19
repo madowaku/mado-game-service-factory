@@ -209,3 +209,11 @@ def test_mission_bounds_are_strict(tmp_path: Path):
         load_screen_mission(mission(tmp_path, stall_threshold=1))
     with pytest.raises(ScreenPlaytestError, match="rethink_budget"):
         load_screen_mission(mission(tmp_path, rethink_budget=-1))
+
+
+def test_tampered_mission_snapshot_fails_audit(tmp_path: Path):
+    result = run(mission(tmp_path), tmp_path, Port([png(1), png(2)]),
+                 Policy(), Judge(["PASS"]))
+    snapshot = result.root / "mission.json"
+    snapshot.write_text('{"changed": true}', encoding="utf-8")
+    assert verify_screen_evidence(result.root)["status"] == "FAIL"

@@ -36,6 +36,7 @@ Allowed gamepad commands: A, B, X, Y, UP, DOWN, LEFT, RIGHT, START, SELECT. Each
 
 Each run has a unique directory at evidence/screen-only-autonomous-playtest/<mission-id>/<run-id>:
 
+- mission.json: preserved mission snapshot whose SHA is bound into evaluation.json
 - evaluation.json: mission goal and SHA, engine name, separate actor IDs, declared source class, screen-only assertion, supported/not-supported result and promotion HOLD
 - input_evidence.jsonl: ordered gamepad presses, PNG/JPEG screenshot paths and SHA-256 hashes, changed-frame flag, independent judge verdict, Rethink triggers
 - frames/: preserved input screenshots; no base64 prompts or secrets in the JSON

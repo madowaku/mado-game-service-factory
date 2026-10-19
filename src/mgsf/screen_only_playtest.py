@@ -177,6 +177,7 @@ def run_screen_playtest(
     port and independently operated judge, not a fabricated model receipt.
     """
     mission = load_screen_mission(mission_path)
+    mission_bytes = Path(mission_path).read_bytes()
     if not policy_id.strip() or not judge_id.strip() or policy_id == judge_id or policy is judge:
         raise ScreenPlaytestError("policy and independent judge identities must differ")
     if evidence_class not in {"deterministic_mock_screen_fixture", "recorded_screen_port_run"}:
@@ -185,6 +186,7 @@ def run_screen_playtest(
     root.mkdir(parents=True, exist_ok=False)
     frames = root / "frames"
     frames.mkdir()
+    (root / "mission.json").write_bytes(mission_bytes)
     history: list[dict[str, Any]] = []
     failure: str | None = None
     status, pending_rethink, evidence_needed = "HOLD", False, False
@@ -246,7 +248,6 @@ def run_screen_playtest(
         "".join(json.dumps(item, sort_keys=True, ensure_ascii=False) + "\n" for item in history),
         encoding="utf-8",
     )
-    mission_bytes = Path(mission_path).read_bytes()
     record = {
         "schema_version": 1, "service": SERVICE,
         "mission": {"id": mission.mission_id, "goal": mission.goal, "engine": mission.engine,
@@ -262,7 +263,7 @@ def run_screen_playtest(
     }
     evidence_path = root / "evaluation.json"
     _json(evidence_path, record)
-    files = [evidence_path, trace_path, *sorted(frames.iterdir())]
+    files = [evidence_path, trace_path, root / "mission.json", *sorted(frames.iterdir())]
     _json(root / "manifest.json", {
         "schema_version": 1,
         "artifacts": [{"path": path.relative_to(root).as_posix(), "sha256": _hash(path.read_bytes()),
@@ -289,7 +290,8 @@ def verify_screen_evidence(root: str | Path) -> dict[str, Any]:
                 break
             seen.add(rel)
             valid &= path.stat().st_size == item["bytes"] and _hash(path.read_bytes()) == item["sha256"]
-        expected = {"evaluation.json", "input_evidence.jsonl"}
+        expected = {"evaluation.json", "input_evidence.jsonl", "mission.json"}
+        valid &= _hash((root / "mission.json").read_bytes()) == record["mission"]["sha256"]
         for i, entry in enumerate(trace, 1):
             valid &= entry["step"] == i
             for key in ("before", "after"):
