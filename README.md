@@ -182,3 +182,12 @@ Adds an **opt-in** Unity 6+ CLI diagnostic and test adapter alongside the existi
     mgsf unity-test <UnityProject> --mode EditMode --execute
 
 The test command is dry-run unless --execute is set. Unity test PASS and Editor READY are not gameplay proof: the promotion status is always HOLD until real playtest evidence is supplied. See docs/MGSF_M1_0_UNITY_AGENT_BRIDGE.md.
+
+## MGSF-M1.1 Screen-only Playtest / Evidence & Rethink Gate (incubation)
+
+Reusable screenshot-only virtual gamepad loop: bounded actions, independent judge contract, evidence-needed retry, finite stall-triggered Rethink, PNG/JPEG hashes, integrity manifest and fail-closed HOLD promotion.
+
+    python scripts/demo_screen_only.py --output-root evidence/m1-1-demo
+    mgsf screen-evidence-verify <bundle-dir>
+
+The demo uses **synthetic PNGs and a mock gamepad**, not a live game or deployed AI models. Real Godot/Unity capture/input ports and separate policy/judge providers must be connected and independently verified before any runtime claim. See docs/MGSF_M1_1_SCREEN_ONLY_PLAYTEST.md.

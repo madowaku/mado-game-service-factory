@@ -86,3 +86,7 @@ A deterministic EdenSpark fixture is useful only for contract regression and mus
 ## MGSF-M1.0 Unity boundary
 
 Keep Godot service commands and evidence unchanged. The Unity adapter is incubation and opt-in; do not silently install the Unity official plugin, Unity CLI, Editor or Pipeline package. Never copy Unity Companion License upstream skills without explicit license review. Do not perform arbitrary C# eval, deploy, monetize, or publish. Unity CLI test PASS / Editor READY is not gameplay proof and may not promote this adapter. Real gameplay, progressing frames, inputs, screenshots and console evidence remain required.
+
+## MGSF-M1.1 screen-only QA boundary
+
+Keep game controller/capture ports and policy/judge model adapters separate. The core screen-only loop may observe PNG/JPEG bytes and issue allowlisted, bounded gamepad presses only. Never infer game success from agent prose, unchanged screenshots or synthetic fixtures. Store each input and screenshot SHA-256 with a verification manifest, trigger finite Rethink on repeated unchanged frames, request extra evidence on INSUFFICIENT, and maintain promotion HOLD until real independently validated Godot/Unity runtime receipts and human review exist. Do not turn a local bundle's internal hash consistency into an authenticity claim.

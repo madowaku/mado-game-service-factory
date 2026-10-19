@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "mission_id": "checkpoint-demo",
+  "goal": "Reach the checkpoint and verify the on-screen result",
+  "engine": "godot",
+  "max_steps": 6,
+  "stall_threshold": 2,
+  "rethink_budget": 1,
+  "allowed_buttons": [
+    "A",
+    "B",
+    "UP",
+    "RIGHT"
+  ]
+}
