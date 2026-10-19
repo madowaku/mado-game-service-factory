@@ -217,3 +217,11 @@ def test_tampered_mission_snapshot_fails_audit(tmp_path: Path):
     snapshot = result.root / "mission.json"
     snapshot.write_text('{"changed": true}', encoding="utf-8")
     assert verify_screen_evidence(result.root)["status"] == "FAIL"
+
+
+def test_exhausted_capture_port_leaves_auditable_failure(tmp_path: Path):
+    result = run(mission(tmp_path), tmp_path, Port([png(1)]),
+                 Policy(), Judge(["PASS"]))
+    assert result.status == "ADAPTER_FAILURE"
+    assert result.promotion_status == "HOLD"
+    assert verify_screen_evidence(result.root)["status"] == "PASS"

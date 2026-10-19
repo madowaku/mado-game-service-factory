@@ -238,7 +238,7 @@ def run_screen_playtest(
                 entry["rethink_triggered"] = True
                 pending_rethink = True
                 stagnant = 0
-        except (ValueError, TypeError, OSError, RuntimeError) as exc:
+        except Exception as exc:  # adapter/runtime exhaustion must still leave auditable HOLD evidence
             failure = f"{type(exc).__name__}: {str(exc)[:300]}"
             status = "ADAPTER_FAILURE"
             break
