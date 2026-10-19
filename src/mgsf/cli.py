@@ -17,6 +17,7 @@ from .prototype_promotion import promote_prototype
 from .real_game_bridge import run_real_game_bridge, run_real_game_dogfood
 from .transport_probe import run_fixture as run_transport_fixture
 from .unity_agent_bridge import engine_adapters, probe_unity, run_unity_tests
+from .screen_only_playtest import verify_screen_evidence
 
 
 def _catalog_path(value: str | None) -> Path:
@@ -234,8 +235,17 @@ def main() -> int:
     unity_test.add_argument("--timeout-seconds", type=int, default=600)
     unity_test.add_argument("--output-root", type=Path, default=Path("evidence"))
 
+    screen_verify = sub.add_parser("screen-evidence-verify", help="Audit M1.1 screenshot/controller Evidence Bundle hashes")
+    screen_verify.add_argument("bundle", type=Path)
+
     args = parser.parse_args()
 
+
+    if args.command == "screen-evidence-verify":
+        import json
+        result = verify_screen_evidence(args.bundle)
+        print(json.dumps(result, indent=2, ensure_ascii=False))
+        return 0 if result["status"] == "PASS" else 1
 
     if args.command == "engine-adapters":
         import json

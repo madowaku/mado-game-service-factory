@@ -84,6 +84,19 @@ services:
       live_gameplay_required_for_promotion: true
       status: HOLD
 
+  - id: screen-only-autonomous-playtest
+    name: Screen-only Autonomous Playtest / Evidence and Rethink Gate
+    stage: incubation
+    problem: Drive bounded virtual gamepad loops from screenshots and withhold success without independently checked visual evidence.
+    milestone: MGSF-M1.1
+    entrypoint: mgsf screen-evidence-verify
+    service_contract: docs/MGSF_M1_1_SCREEN_ONLY_PLAYTEST.md
+    evidence:
+      fixture: deterministic_mock_screen_fixture
+      live: recorded_screen_port_run
+      live_required_for_promotion: true
+      status: HOLD
+
   - id: build-doctor
     name: Game Build Doctor
     stage: candidate
