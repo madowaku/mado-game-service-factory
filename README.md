@@ -42,6 +42,19 @@ run game
   -> ship sample + docs + release manifest in a ZIP
 ```
 
+## MGSF-M1.2 Gua semantic/visual QA (experimental)
+
+An opt-in local Gua MCP bridge combines semantic UI/World state, explicitly confirmed UI click completion, and hashed before/after screenshots. Unlike M1.1's pure screen-only loop, this uses debug/test game semantics and never claims to be a vision-only agent.
+
+    mgsf gua-probe fixtures/gua/mission.json --execute
+    mgsf gua-verify <evidence-directory>
+
+The supplied mission IDs are placeholders; they must match a Gua-enabled **running** Godot/Unity test game. The default mock demo needs no engine:
+
+    python scripts/demo_gua_contract.py --output-root evidence/gua-mock
+
+No real Gua-enabled game has yet been tested by this branch. All evidence remains promotion HOLD. See [M1.2 Gua Hybrid QA](docs/MGSF_M1_2_GUA_HYBRID_QA.md).
+
 ## EdenSpark prototype loop
 
 The agent-native path keeps engine control inside the EdenSpark project's own MCP configuration and uses Codex as the MCP client:

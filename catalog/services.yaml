@@ -97,6 +97,20 @@ services:
       live_required_for_promotion: true
       status: HOLD
 
+  - id: gua-hybrid-semantic-proof
+    name: Gua Semantic Game QA Bridge / Hybrid Visual Proof
+    stage: incubation
+    problem: Combine Gua MCP UI/World observations with independently preserved PNG evidence without trusting enqueue-only agent claims.
+    milestone: MGSF-M1.2
+    entrypoint: mgsf gua-probe
+    verify_entrypoint: mgsf gua-verify
+    service_contract: docs/MGSF_M1_2_GUA_HYBRID_QA.md
+    evidence:
+      fixture: deterministic_mock_gua_mcp
+      live: recorded_gua_native_mcp
+      live_required_for_promotion: true
+      status: HOLD
+
   - id: build-doctor
     name: Game Build Doctor
     stage: candidate

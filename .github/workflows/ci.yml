@@ -101,6 +101,24 @@ jobs:
       - run: mgsf validate-catalog
       - run: mgsf engine-adapters
 
+  gua-hybrid-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -e ".[dev]"
+      - run: pytest -q tests/test_gua_semantic_bridge.py tests/test_screen_only_playtest.py tests/test_catalog.py
+      - run: mgsf validate-catalog
+      - name: Run local-only synthetic Gua MCP evidence contract
+        run: python scripts/demo_gua_contract.py --output-root ci-evidence/gua-mock
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mgsf-gua-mock-evidence
+          path: ci-evidence/gua-mock/
+          retention-days: 14
+
   screen-only-contract:
     runs-on: ubuntu-latest
     steps:

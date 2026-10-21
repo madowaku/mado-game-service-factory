@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "mission_id": "m1-2-gua-title-button",
+  "engine": "godot",
+  "action": {
+    "tool": "click_node",
+    "nodeId": "Start"
+  },
+  "expected_after": {
+    "tree": "ui",
+    "id": "Gameplay",
+    "field": "visible",
+    "equals": true
+  }
+}
