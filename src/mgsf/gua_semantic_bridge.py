@@ -361,7 +361,7 @@ def verify_gua_evidence(root: str | Path) -> dict[str, Any]:
                 "screenshot_changed": changed,
             }
             valid &= all(a[k] is actual[k] for k in actual)
-            valid &= all(actual.values())
+            valid &= all(actual[k] for k in ("action_completion_confirmed", "same_ui_session", "expected_semantic_condition", "precondition_was_false"))
             if status == "SEMANTIC_EVIDENCE_ONLY":
                 valid &= not changed
             else:
