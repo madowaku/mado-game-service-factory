@@ -165,3 +165,81 @@ def test_screenshot_mismatch_not_misrepresented_as_screen_only_success(tmp_path)
     evaluation = json.loads(run.evidence_path.read_text())
     assert run.status == "HOLD"
     assert evaluation["result"]["success_is_not_gameplay_proof"] is True
+
+
+def test_predicate_already_true_before_click_is_not_success(tmp_path):
+    class AlreadyVisible(FakeGua):
+        def call(self, name, arguments=None):
+            value = super().call(name, arguments)
+            if name == "get_ui_tree":
+                value["nodes"][1]["visible"] = True
+            return value
+    run = run_gua_probe(mission(tmp_path), AlreadyVisible(), tmp_path)
+    assert run.status == "HOLD"
+
+
+def test_rehashed_assessment_forgery_is_detected(tmp_path):
+    import hashlib
+    run = run_gua_probe(mission(tmp_path), FakeGua(), tmp_path)
+    assessment = run.root / "assessment.json"
+    data = json.loads(assessment.read_text())
+    data["action_completion_confirmed"] = False
+    assessment.write_text(json.dumps(data))
+    ledger_path = run.root / "manifest.json"
+    ledger = json.loads(ledger_path.read_text())
+    for item in ledger["artifacts"]:
+        if item["path"] == "assessment.json":
+            blob = assessment.read_bytes()
+            item["sha256"] = hashlib.sha256(blob).hexdigest()
+            item["bytes"] = len(blob)
+    ledger_path.write_text(json.dumps(ledger))
+    assert verify_gua_evidence(run.root)["status"] == "FAIL"
+
+
+def test_real_jsonrpc_stdio_transport_with_fake_local_server(tmp_path):
+    """Exercises the complete handshake and tool result envelopes, not a real engine."""
+    exe = tmp_path / "fake-gui-mcp"
+    source = r'''#!/usr/bin/env python3
+import json
+import sys
+
+clicked = False
+for line in sys.stdin:
+    message = json.loads(line)
+    if "id" not in message:
+        continue
+    method = message["method"]
+    if method == "initialize":
+        result = {"protocolVersion":"2024-11-05","capabilities":{"tools":{}}}
+    elif method == "tools/list":
+        result = {"tools":[{"name":x} for x in ("get_ui_tree","get_world_object_tree","get_screenshot","click_node")]}
+    elif method == "tools/call":
+        tool = message["params"]["name"]
+        if tool == "get_ui_tree":
+            data = {"sessionEpoch":1,"nodes":[{"id":"Start","visible":not clicked},
+                                                   {"id":"Next","visible":clicked}]}
+        elif tool == "get_world_object_tree":
+            data = {"objects":[]}
+        elif tool == "get_screenshot":
+            data = {"dataUri":"data:image/png;base64," + ("__AFTER__" if clicked else "__BEFORE__")}
+        elif tool == "click_node":
+            assert message["params"]["arguments"] == {"nodeId":"Start"}
+            clicked = True
+            data = {"ok":True,"requestId":11,"completion":{"requestId":11,"succeeded":True}}
+        else:
+            raise AssertionError("unexpected tool")
+        result = {"content":[{"type":"text","text":json.dumps(data)}]}
+    else:
+        raise AssertionError("unexpected method")
+    print(json.dumps({"jsonrpc":"2.0","id":message["id"],"result":result}), flush=True)
+'''
+    source = source.replace("__BEFORE__", base64.b64encode(png(2)).decode())
+    source = source.replace("__AFTER__", base64.b64encode(png(180)).decode())
+    exe.write_text(source, encoding="utf-8")
+    exe.chmod(0o755)
+    with StdioGuaMcp(str(exe)) as port:
+        with pytest.raises(GuaEvidenceError, match="allowlisted"):
+            port.call("press_physical_key")
+        result = run_gua_probe(mission(tmp_path), port, tmp_path)
+    assert result.status == "HYBRID_EVIDENCE_SUPPORTED"
+    assert verify_gua_evidence(result.root)["status"] == "PASS"
