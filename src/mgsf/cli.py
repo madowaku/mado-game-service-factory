@@ -16,6 +16,7 @@ from .playtest_report import run_playtest_report
 from .prototype_promotion import promote_prototype
 from .real_game_bridge import run_real_game_bridge, run_real_game_dogfood
 from .transport_probe import run_fixture as run_transport_fixture
+from .musmus_bgm import MusMusIntakeError, run_musmus_intake
 
 
 def _catalog_path(value: str | None) -> Path:
@@ -32,6 +33,20 @@ def main() -> int:
     listing = sub.add_parser("list", help="List services")
     listing.add_argument("--path")
     listing.add_argument("--stage")
+
+    musmus = sub.add_parser(
+        "musmus-intake",
+        help="Make a license-aware plan from human-curated MusMus BGM metadata (no media is read)",
+    )
+    musmus.add_argument("manifest", type=Path, help="human-curated JSON manifest")
+    musmus.add_argument(
+        "--project-root", type=Path, default=Path("."),
+        help="existing game root used only to check relative audio file presence",
+    )
+    musmus.add_argument(
+        "--output-root", type=Path, default=Path("evidence/musmus-intake"),
+        help="metadata-only HOLD evidence bundle output",
+    )
 
     playtest = sub.add_parser(
         "playtest-report",
@@ -217,6 +232,15 @@ def main() -> int:
     )
 
     args = parser.parse_args()
+
+    if args.command == "musmus-intake":
+        try:
+            out = run_musmus_intake(args.manifest, args.project_root, args.output_root)
+        except MusMusIntakeError as exc:
+            parser.error(str(exc))
+        print(f"MusMus intake: {out}")
+        print("service=musmus-bgm-intake evidence=human_metadata release_gate=HOLD")
+        return 0
 
     if args.command in {"validate-catalog", "list"}:
         catalog = load_catalog(_catalog_path(args.path))
