@@ -87,3 +87,15 @@ services:
     name: Release Doctor
     stage: candidate
     problem: Run evidence-backed pre-release checks for game projects.
+
+  - id: musmus-bgm-intake
+    name: MusMus BGM Intake / License-Safe Audio Bridge
+    stage: incubation
+    problem: Plan game BGM use from human-selected official MusMus tracks without distributing audio or sending it to AI.
+    milestone: MGSF-M1.2-MusMus (parallel track)
+    entrypoint: mgsf musmus-intake
+    service_contract: docs/MGSF_M1_2_MUSMUS_BGM_INTAKE.md
+    evidence:
+      fixture: human_authored_metadata_and_local_file_presence
+      promotion_gate: HOLD
+      manual_license_and_playback_review_required: true

@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "project": "Your Game (metadata-only demo)",
+  "tracks": [
+    {
+      "id": "sample-town-bgm",
+      "title": "Replace with an actual human-selected MusMus title",
+      "source_page": "https://musmus.main.jp/",
+      "audio_path": "assets/audio/musmus/town.ogg",
+      "selected_by_human": false,
+      "license_reviewed": false,
+      "loop_mode": "unknown"
+    }
+  ]
+}

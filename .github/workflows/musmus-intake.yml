@@ -1,0 +1,23 @@
+name: musmus-intake-contract
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  metadata-only:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -e ".[dev]"
+      - run: mgsf validate-catalog
+      - run: python -m pytest -q tests/test_musmus_bgm.py
+      - name: Run offline metadata-only MusMus demo (must HOLD)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mgsf musmus-intake fixtures/musmus/intake-example.json --project-root . --output-root evidence/musmus-intake
+          python -c 'import json; d=json.load(open("evidence/musmus-intake/intake-report.json")); assert d["release_gate"]=="HOLD"; assert d["audio_copied_or_downloaded"] is False'
