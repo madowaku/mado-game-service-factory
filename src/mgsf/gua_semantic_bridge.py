@@ -208,6 +208,18 @@ def _screenshot(port: ToolPort) -> bytes:
     return blob
 
 
+def _host_completed(action: Any) -> bool:
+    if not isinstance(action, dict) or action.get("ok") is not True:
+        return False
+    receipt_id = action.get("requestId")
+    completion = action.get("completion")
+    return (type(receipt_id) is int and receipt_id > 0
+            and isinstance(completion, dict)
+            and completion.get("succeeded") is True
+            and type(completion.get("requestId")) is int
+            and completion["requestId"] == receipt_id)
+
+
 def _matches(tree: dict[str, Any], expectation: dict[str, Any]) -> bool:
     key = "nodes" if expectation["tree"] == "ui" else "objects"
     objects = tree.get(key, [])
@@ -252,9 +264,7 @@ def run_gua_probe(mission_path: str | Path, port: ToolPort, output_root: str | P
         (root / "before.png").write_bytes(before_png)
         action = port.call("click_node", {"nodeId": mission["action"]["nodeId"]})
         # A mere enqueue receipt is not proof of host-side execution.
-        completed = (isinstance(action, dict) and action.get("ok") is True
-                     and isinstance(action.get("completion"), dict)
-                     and action["completion"].get("succeeded") is True)
+        completed = _host_completed(action)
         results["action_receipt"] = action
         after_ui = _snapshot(port, "get_ui_tree", "nodes")
         after_world = _snapshot(port, "get_world_object_tree", "objects")
@@ -266,17 +276,20 @@ def run_gua_probe(mission_path: str | Path, port: ToolPort, output_root: str | P
                         and before_ui.get("sessionEpoch") == after_ui.get("sessionEpoch"))
         target = after_ui if mission["expected_after"]["tree"] == "ui" else after_world
         semantic_ok = _matches(target, mission["expected_after"])
+        pre_target = before_ui if mission["expected_after"]["tree"] == "ui" else before_world
+        precondition_false = not _matches(pre_target, mission["expected_after"])
         changed = _hash(before_png) != _hash(after_png)
         results["assessment"] = {
             "action_completion_confirmed": completed,
             "same_ui_session": same_session,
             "expected_semantic_condition": semantic_ok,
+            "precondition_was_false": precondition_false,
             "screenshot_changed": changed,
             "snapshot_and_pixels_not_atomic": True,
         }
-        if completed and same_session and semantic_ok and changed:
+        if completed and same_session and semantic_ok and precondition_false and changed:
             status = "HYBRID_EVIDENCE_SUPPORTED"
-        elif completed and same_session and semantic_ok:
+        elif completed and same_session and semantic_ok and precondition_false:
             status = "SEMANTIC_EVIDENCE_ONLY"
     except Exception as exc:
         failure = f"{type(exc).__name__}: {str(exc)[:180]}"
@@ -329,15 +342,31 @@ def verify_gua_evidence(root: str | Path) -> dict[str, Any]:
             required |= {"before_ui.json", "after_ui.json", "before_world.json", "after_world.json",
                          "before.png", "after.png", "action_receipt.json", "assessment.json"}
             a = _read_json((root / "assessment.json").read_bytes())
-            valid &= (a["action_completion_confirmed"] is True and a["same_ui_session"] is True
-                      and a["expected_semantic_condition"] is True)
-            valid &= (a["screenshot_changed"] is (status == "HYBRID_EVIDENCE_SUPPORTED"))
+            before_ui = _read_json((root / "before_ui.json").read_bytes())
+            after_ui = _read_json((root / "after_ui.json").read_bytes())
+            expected = _read_json(mission_bytes)["expected_after"]
+            tree_name = "ui" if expected["tree"] == "ui" else "world"
+            before_tree = _read_json((root / ("before_" + tree_name + ".json")).read_bytes())
+            after_tree = _read_json((root / ("after_" + tree_name + ".json")).read_bytes())
+            receipt = _read_json((root / "action_receipt.json").read_bytes())
             before = (root / "before.png").read_bytes()
             after = (root / "after.png").read_bytes()
-            valid &= (a["screenshot_changed"] is (_hash(before) != _hash(after)))
-            expected = _read_json(mission_bytes)["expected_after"]
-            after_tree = _read_json((root / ("after_ui.json" if expected["tree"] == "ui" else "after_world.json")).read_bytes())
-            valid &= _matches(after_tree, expected)
+            changed = _hash(before) != _hash(after)
+            actual = {
+                "action_completion_confirmed": _host_completed(receipt),
+                "same_ui_session": (before_ui.get("sessionEpoch") is not None
+                                    and before_ui.get("sessionEpoch") == after_ui.get("sessionEpoch")),
+                "expected_semantic_condition": _matches(after_tree, expected),
+                "precondition_was_false": not _matches(before_tree, expected),
+                "screenshot_changed": changed,
+            }
+            valid &= all(a[k] is actual[k] for k in actual)
+            valid &= all(actual.values())
+            if status == "SEMANTIC_EVIDENCE_ONLY":
+                valid &= not changed
+            else:
+                valid &= changed
+            valid &= _image(before) == _image(after) == ".png"
         valid &= seen == {p.name for p in root.iterdir() if p.is_file() and p.name != "manifest.json"}
         valid &= required <= seen
     except (OSError, ValueError, KeyError, TypeError, IndexError, AttributeError):
