@@ -33,11 +33,14 @@ def _label(value: object, field: str) -> str:
 
 def _source_url(value: object) -> str:
     url = _label(value, "source_page")
-    parts = urlsplit(url)
+    try:
+        parts = urlsplit(url)
+        safe_host = parts.hostname == "musmus.main.jp" and parts.port in (None, 443)
+    except ValueError as exc:
+        raise MusMusIntakeError("source_page is not a valid URL") from exc
     if (
         parts.scheme != "https"
-        or parts.hostname != "musmus.main.jp"
-        or parts.port not in (None, 443)
+        or not safe_host
         or parts.username is not None
         or parts.password is not None
         or parts.path.lower().endswith((".ogg", ".mp3", ".wav", ".zip"))
@@ -54,6 +57,7 @@ def _audio_path(root: Path, value: object) -> tuple[str, bool]:
     relative = PurePosixPath(value)
     if (
         relative.is_absolute()
+        or ":" in relative.parts[0]
         or ".." in relative.parts
         or "." in relative.parts
         or relative.suffix.lower() not in {".ogg", ".mp3"}
@@ -83,7 +87,7 @@ def _track(value: object, root: Path) -> dict:
     if type(selected) is not bool or type(reviewed) is not bool:
         raise MusMusIntakeError("selection and license review flags must be booleans")
     mode = value.get("loop_mode", "unknown")
-    if mode not in _MODES:
+    if not isinstance(mode, str) or mode not in _MODES:
         raise MusMusIntakeError(f"invalid loop_mode for {track_id}")
     offset = value.get("loop_offset_seconds")
     if offset is not None:
@@ -188,6 +192,8 @@ def run_musmus_intake(manifest: Path, project_root: Path, output_root: Path) -> 
     tracks = [_track(value, root) for value in raw_tracks]
     if len({track["id"] for track in tracks}) != len(tracks):
         raise MusMusIntakeError("duplicate track IDs")
+    if output_root.is_symlink():
+        raise MusMusIntakeError("output_root cannot be a symbolic link")
     out = output_root.resolve()
     if out.is_symlink():
         raise MusMusIntakeError("output_root cannot be a symbolic link")
