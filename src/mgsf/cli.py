@@ -18,6 +18,7 @@ from .real_game_bridge import run_real_game_bridge, run_real_game_dogfood
 from .transport_probe import run_fixture as run_transport_fixture
 from .unity_agent_bridge import engine_adapters, probe_unity, run_unity_tests
 from .screen_only_playtest import verify_screen_evidence
+from .gua_semantic_bridge import StdioGuaMcp, run_gua_probe, verify_gua_evidence
 
 
 def _catalog_path(value: str | None) -> Path:
@@ -238,8 +239,36 @@ def main() -> int:
     screen_verify = sub.add_parser("screen-evidence-verify", help="Audit M1.1 screenshot/controller Evidence Bundle hashes")
     screen_verify.add_argument("bundle", type=Path)
 
+    gua_verify = sub.add_parser("gua-verify", help="Audit M1.2 Gua hybrid Evidence Bundle")
+    gua_verify.add_argument("bundle", type=Path)
+
+    gua_probe = sub.add_parser("gua-probe", help="Opt-in local Gua MCP semantic/visual test")
+    gua_probe.add_argument("mission", type=Path)
+    gua_probe.add_argument("--execute", action="store_true", help="Explicitly click the mission's allowlisted game UI node")
+    gua_probe.add_argument("--mcp-executable", default="gui-mcp")
+    gua_probe.add_argument("--bridge-url", default="ws://127.0.0.1:8765")
+    gua_probe.add_argument("--output-root", type=Path, default=Path("evidence"))
+
     args = parser.parse_args()
 
+
+    if args.command == "gua-verify":
+        import json
+        result = verify_gua_evidence(args.bundle)
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0 if result["status"] == "PASS" else 1
+
+    if args.command == "gua-probe":
+        if not args.execute:
+            print("Gua probe HOLD: --execute is required for an in-game click")
+            return 2
+        with StdioGuaMcp(args.mcp_executable, bridge_url=args.bridge_url) as port:
+            result = run_gua_probe(
+                args.mission, port, args.output_root, evidence_class="recorded_gua_native_mcp",
+            )
+        print(f"Gua evidence: {result.root}")
+        print(f"status={result.status} promotion=HOLD")
+        return 0 if result.status in {"HYBRID_EVIDENCE_SUPPORTED", "SEMANTIC_EVIDENCE_ONLY"} else 1
 
     if args.command == "screen-evidence-verify":
         import json
