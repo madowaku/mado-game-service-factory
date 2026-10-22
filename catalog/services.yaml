@@ -68,6 +68,19 @@ services:
     entrypoint: mgsf prototype-promote
     service_contract: docs/MGSF_M0_6_TO_M0_8_EDENSPARK_PROTOTYPE_LOOP.md
 
+  - id: godotenv-reproducible-environment
+    name: GodotEnv Reproducible Environment Bridge
+    stage: incubation
+    problem: Audit Godot version pins and pinned add-ons before opt-in host-wide environment changes.
+    milestone: MGSF-M1.2
+    entrypoint: mgsf godotenv-audit
+    prepare_entrypoint: mgsf godotenv-prepare
+    service_contract: docs/MGSF_M1_2_GODOTENV_REPRODUCIBLE_ENVIRONMENT_BRIDGE.md
+    evidence:
+      fixture: static_project_audit
+      live: live_environment_probe
+      live_required_for_promotion: true
+
   - id: build-doctor
     name: Game Build Doctor
     stage: candidate

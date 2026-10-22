@@ -154,6 +154,19 @@ The product executable has no intentional telemetry or automatic cloud upload in
 - Keep downloaded product behavior local unless a future network feature is explicitly disclosed.
 - Do not call the preview paid-release-ready until external-user and final legal/third-party review gates pass.
 
+## GodotEnv reproducible environment bridge (MGSF-M1.2)
+
+Opt-in GodotEnv 2.17.0 integration keeps existing Godot capture CI intact.
+
+    mgsf godotenv-audit fixtures/godotenv/sample --output-root evidence
+    mgsf godotenv-audit /path/to/game --probe --output-root evidence
+    mgsf godotenv-prepare /path/to/game --allow-global-switch --output-root evidence
+
+Static audits are always HOLD until real engine evidence exists. The prepare command
+changes a user-wide symlink, so it requires explicit consent. Remote addons
+must be Git commit-pinned; addon installation is separately opted in.
+See docs/MGSF_M1_2_GODOTENV_REPRODUCIBLE_ENVIRONMENT_BRIDGE.md.
+
 ## Next boundary
 
 **MGSF-M0.5: QUIC Transport Probe / Network Evidence Harness**

@@ -1,0 +1,44 @@
+name: godotenv-live-smoke
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  engine-smoke:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Install pinned GodotEnv
+        shell: pwsh
+        run: |
+          python -m pip install -e '.[dev]'
+          dotnet tool install Chickensoft.GodotEnv --version 2.17.0 --tool-path .godotenv-tools
+      - name: Prepare and verify disposable fixture
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $tool = (Resolve-Path .godotenv-tools/godotenv* | Select-Object -First 1).Path
+          mgsf godotenv-prepare fixtures/godotenv/sample --allow-global-switch --godotenv $tool --output-root ci-evidence
+          if ($LASTEXITCODE -ne 0) { throw "prepare failed" }
+          mgsf godotenv-audit fixtures/godotenv/sample --probe --godotenv $tool --output-root ci-evidence
+          if ($LASTEXITCODE -ne 0) { throw "probe failed" }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: godotenv-live-${{ matrix.os }}-${{ github.run_id }}
+          path: ci-evidence/
+          retention-days: 14

@@ -11,6 +11,7 @@ from .edenspark_agent_adapter import (
     run_autonomous_loop as run_edenspark_loop,
 )
 from .gameplay_capture import run_capture_playtest, run_gameplay_capture
+from .godotenv_bridge import audit_project, prepare_project
 from .godot_capture_adapter import run_godot_capture_adapter
 from .playtest_report import run_playtest_report
 from .prototype_promotion import promote_prototype
@@ -216,6 +217,19 @@ def main() -> int:
         help="root directory for promotion decisions",
     )
 
+    env_audit = sub.add_parser("godotenv-audit", help="Read-only GodotEnv project audit")
+    env_audit.add_argument("project", type=Path)
+    env_audit.add_argument("--probe", action="store_true")
+    env_audit.add_argument("--godotenv", default="godotenv")
+    env_audit.add_argument("--output-root", type=Path, default=Path("evidence"))
+
+    env_prepare = sub.add_parser("godotenv-prepare", help="Opt-in GodotEnv install/use")
+    env_prepare.add_argument("project", type=Path)
+    env_prepare.add_argument("--allow-global-switch", action="store_true")
+    env_prepare.add_argument("--install-addons", action="store_true")
+    env_prepare.add_argument("--godotenv", default="godotenv")
+    env_prepare.add_argument("--output-root", type=Path, default=Path("evidence"))
+
     args = parser.parse_args()
 
     if args.command in {"validate-catalog", "list"}:
@@ -230,6 +244,20 @@ def main() -> int:
         for service in services:
             print(f"{service['id']}\t{service['stage']}\t{service['name']}")
         return 0
+
+    if args.command == "godotenv-audit":
+        audit = audit_project(args.project, args.output_root, probe=args.probe, executable=args.godotenv)
+        print(f"GodotEnv evidence: {audit.evidence_path}")
+        print(f"adapter=godotenv status={audit.status}")
+        return 1 if audit.status == "FAIL" else 0
+
+    if args.command == "godotenv-prepare":
+        audit = prepare_project(args.project, args.output_root,
+            allow_global_switch=args.allow_global_switch,
+            install_addons=args.install_addons, executable=args.godotenv)
+        print(f"GodotEnv evidence: {audit.evidence_path}")
+        print(f"adapter=godotenv status={audit.status}")
+        return 0 if audit.status == "PASS" else 1
 
     if args.command == "transport-probe":
         evidence_path = run_transport_fixture(args.fixture, args.output_root)
