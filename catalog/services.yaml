@@ -87,3 +87,14 @@ services:
     name: Release Doctor
     stage: candidate
     problem: Run evidence-backed pre-release checks for game projects.
+
+  - id: gameplay-mechanics-intelligence
+    name: Gameplay Mechanics Intelligence Bridge
+    stage: incubation
+    problem: Recommend provenance-aware game mechanics and prototype hints from experience prompts without copying third-party assets.
+    milestone: MGSF-M1.4
+    entrypoint: python -m mgsf.gameplay_intelligence
+    service_contract: docs/MGSF_M1_4_GAMEPLAY_MECHANICS_INTELLIGENCE_BRIDGE.md
+    evidence:
+      fixture: curated_manual_reference
+      live_required_for_promotion: true
