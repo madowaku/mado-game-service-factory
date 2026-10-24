@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "description": "Hand-curated original summaries, not a scrape. Verify source links and rights before production.",
+  "mechanics": [
+    {
+      "id": "disguise-access",
+      "name": "Disguise permissions",
+      "summary": "Use disguise states to change which areas or actions are permitted. A stealth prototype can switch access permissions based on costume.",
+      "source_url": "https://gameplayatlas.loopyhop.com/mechanic/stealth-disguise-access/",
+      "provenance": "manual_reference_unverified",
+      "tags": [
+        "stealth",
+        "disguise",
+        "access",
+        "潜入",
+        "変装",
+        "探索"
+      ],
+      "style_tags": [
+        "readable-silhouettes",
+        "isometric"
+      ],
+      "engines": [
+        "godot",
+        "littlejs"
+      ],
+      "prototype_hint": {
+        "godot": "Use an Area2D gate and a disguise enum; log denied/allowed transitions.",
+        "littlejs": "Use a region trigger and actor disguise state; log access decisions."
+      }
+    },
+    {
+      "id": "flow-splitting",
+      "name": "Flow splitting and ratios",
+      "summary": "Split resource flow across multiple destinations and let players experiment with throughput and bottlenecks.",
+      "source_url": "https://gameplayatlas.loopyhop.com/mechanic/automation-flow-splitting/",
+      "provenance": "manual_reference_unverified",
+      "tags": [
+        "automation",
+        "logistics",
+        "ratio",
+        "factory",
+        "資源",
+        "自動化",
+        "分岐"
+      ],
+      "style_tags": [
+        "clean-grid",
+        "functional-ui"
+      ],
+      "engines": [
+        "godot",
+        "littlejs"
+      ],
+      "prototype_hint": {
+        "godot": "Model sources, splitters and sinks as nodes; test conserved input totals.",
+        "littlejs": "Simulate fixed-timestep item flow and render branching tracks."
+      }
+    },
+    {
+      "id": "shared-vehicle",
+      "name": "Crew a shared vehicle",
+      "summary": "Give multiple players different controls on a single vehicle; coordination becomes the core challenge.",
+      "source_url": "https://gameplayatlas.loopyhop.com/mechanic/cooperation-shared-vehicle/",
+      "provenance": "manual_reference_unverified",
+      "tags": [
+        "co-op",
+        "coordination",
+        "vehicle",
+        "roles",
+        "協力",
+        "役割",
+        "乗り物"
+      ],
+      "style_tags": [
+        "high-contrast",
+        "readable-ui"
+      ],
+      "engines": [
+        "godot",
+        "littlejs"
+      ],
+      "prototype_hint": {
+        "godot": "Create independent steering and power inputs on one CharacterBody2D; record cooperation events.",
+        "littlejs": "Map two controls to steering and thrust on one shared entity; record input timing."
+      }
+    }
+  ]
+}
