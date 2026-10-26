@@ -1,0 +1,48 @@
+{
+  "width": 1536,
+  "height": 1024,
+  "bbox_coord_space": "abs",
+  "bbox_format": "xyxy",
+  "summary": {
+    "meta": [
+      "game key visual",
+      "store capsule"
+    ],
+    "canvas": "single",
+    "caption": "Original mechanical puzzle-game promotional artwork; tactile brass maze and luminous cube on the left, strong cobalt/copper palette, Japanese title with deliberate negative space on the right."
+  },
+  "items": [
+    {
+      "label": "object",
+      "caption": "Copper mechanical labyrinth seen in perspective; tiny warm glowing cube approaching an exit.",
+      "bbox": [
+        64,
+        128,
+        1000,
+        952
+      ]
+    },
+    {
+      "label": "text",
+      "caption": "Large sharp white Japanese title on right, legible at small scale.",
+      "text": "歯車の庭",
+      "bbox": [
+        1030,
+        216,
+        1470,
+        432
+      ]
+    },
+    {
+      "label": "text",
+      "caption": "Readable two-line Japanese subtitle below title.",
+      "text": "ひらめきで\n世界をまわそう",
+      "bbox": [
+        1030,
+        508,
+        1470,
+        700
+      ]
+    }
+  ]
+}

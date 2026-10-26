@@ -1,0 +1,48 @@
+{
+  "width": 1536,
+  "height": 1024,
+  "bbox_coord_space": "abs",
+  "bbox_format": "xyxy",
+  "summary": {
+    "meta": [
+      "game title screen",
+      "stylized 2D"
+    ],
+    "canvas": "single",
+    "caption": "A thoughtful puzzle-game title screen at dusk; an illuminated window over an original whimsical village. Deep indigo palette, legible ivory Japanese lettering, crisp visual hierarchy."
+  },
+  "items": [
+    {
+      "label": "object",
+      "caption": "A large open wooden window and soft glowing cityscape, strongly silhouetted.",
+      "bbox": [
+        224,
+        80,
+        1312,
+        900
+      ]
+    },
+    {
+      "label": "text",
+      "caption": "Large ivory title at upper center without a backing plate.",
+      "text": "まどのむこう",
+      "bbox": [
+        364,
+        132,
+        1172,
+        294
+      ]
+    },
+    {
+      "label": "text",
+      "caption": "Small clear call to action near bottom center.",
+      "text": "はじめる",
+      "bbox": [
+        620,
+        842,
+        920,
+        934
+      ]
+    }
+  ]
+}
