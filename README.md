@@ -170,3 +170,12 @@ The previously planned External Tester Preview moves to the next unallocated mil
 
 
 Parallel agent-native boundary: run the first real EdenSpark dogfood mission on a local EdenSpark project with its generated MCP configuration. The target proof is one recorded Codex run that inspects the scene, compiles, plays, simulates input, preserves a screenshot or equivalent artifact, checks logs, and earns PASS.
+
+## MGSF-M1.5 MOSS Visual Asset Intelligence (incubation)
+
+Offline Layout prompt compilation for three Japanese game key-visual samples, using the pinned upstream MOSS-Image compiler. A separate candidate gate verifies PNG structure/dimensions and hash-bound human text, composition and style review. No model weights, downloads, ComfyUI execution, MAF provider, Godot changes or automatic publishing.
+
+    mgsf moss-visual-plan fixtures/moss-visual/store-capsule.json --output-root evidence/moss-visual
+    mgsf moss-visual-eval evidence/moss-visual/store-capsule
+
+See docs/MGSF_M1_5_MOSS_VISUAL_ASSET_INTELLIGENCE.md for review schema and opt-in generation handoff.

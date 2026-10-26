@@ -81,3 +81,6 @@ External Tester Preview remains important and moves to the next unallocated mile
 MGSF must not reimplement EdenSpark's MCP transport. The project-provided MCP configuration is consumed by Codex. MGSF owns the mission, retry budget, runner evidence, artifact hashing, and promotion decision.
 
 A deterministic EdenSpark fixture is useful only for contract regression and must remain HOLD. Prototype promotion requires a real recorded `codex-exec` run with all required actions, no reported runtime errors, a successful runner return code, and at least one preserved artifact.
+
+## MGSF-M1.5 visual-asset boundary
+MOSS-Image Layout planning is offline and incubation-only. Fixture output is not a real render. Even a candidate-review PASS does not verify inference provider, human identity or legal release rights. MADO Asset Foundry owns future executable image providers; no automatic downloads, inference or publishing in MGSF.
