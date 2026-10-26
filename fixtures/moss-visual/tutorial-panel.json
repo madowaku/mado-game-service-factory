@@ -1,0 +1,58 @@
+{
+  "width": 1024,
+  "height": 1024,
+  "bbox_coord_space": "abs",
+  "bbox_format": "xyxy",
+  "summary": {
+    "meta": [
+      "game tutorial",
+      "manga style"
+    ],
+    "canvas": "multi_panel",
+    "caption": "Clean original game tutorial diagram with two vertical scenes, limited colors and clear reading order, ample legibility, no logos or watermarks."
+  },
+  "items": [
+    {
+      "label": "object",
+      "caption": "Top-down puzzle with tiny green block near luminous blue target tile.",
+      "bbox": [
+        76,
+        130,
+        948,
+        438
+      ]
+    },
+    {
+      "label": "text",
+      "caption": "High contrast concise Japanese instruction at top.",
+      "text": "① 光るマスを探そう",
+      "bbox": [
+        132,
+        28,
+        898,
+        114
+      ]
+    },
+    {
+      "label": "object",
+      "caption": "Green block sliding onto luminous tile with gentle motion lines.",
+      "bbox": [
+        76,
+        526,
+        948,
+        866
+      ]
+    },
+    {
+      "label": "text",
+      "caption": "High contrast second Japanese instruction near bottom.",
+      "text": "② ブロックを動かそう",
+      "bbox": [
+        132,
+        870,
+        914,
+        986
+      ]
+    }
+  ]
+}

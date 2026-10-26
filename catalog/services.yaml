@@ -68,6 +68,20 @@ services:
     entrypoint: mgsf prototype-promote
     service_contract: docs/MGSF_M0_6_TO_M0_8_EDENSPARK_PROTOTYPE_LOOP.md
 
+  - id: moss-visual-asset-intelligence
+    name: MOSS Visual Asset Intelligence
+    stage: incubation
+    problem: Generate reviewable Japanese image-layout prompts and gate independently rendered game key visuals.
+    related_repo: madowaku/mado-asset-foundry
+    milestone: MGSF-M1.5
+    entrypoint: mgsf moss-visual-plan
+    eval_entrypoint: mgsf moss-visual-eval
+    service_contract: docs/MGSF_M1_5_MOSS_VISUAL_ASSET_INTELLIGENCE.md
+    evidence:
+      fixture: deterministic_prompt_compilation
+      live: self_reported_human_review_plus_png_integrity
+      live_required_for_promotion: true
+
   - id: build-doctor
     name: Game Build Doctor
     stage: candidate

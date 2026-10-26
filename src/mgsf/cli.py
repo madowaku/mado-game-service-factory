@@ -11,6 +11,7 @@ from .edenspark_agent_adapter import (
     run_autonomous_loop as run_edenspark_loop,
 )
 from .gameplay_capture import run_capture_playtest, run_gameplay_capture
+from .moss_visual_asset import evaluate_visual_asset, plan_visual_asset
 from .godot_capture_adapter import run_godot_capture_adapter
 from .playtest_report import run_playtest_report
 from .prototype_promotion import promote_prototype
@@ -216,6 +217,16 @@ def main() -> int:
         help="root directory for promotion decisions",
     )
 
+    moss_plan = sub.add_parser("moss-visual-plan", help="Compile offline MOSS-Image Layout prompt")
+    moss_plan.add_argument("draft", type=Path, help="MOSS absolute-pixel Layout JSON")
+    moss_plan.add_argument("--model", choices=["base", "sft"], default="sft")
+    moss_plan.add_argument("--output-root", type=Path, default=Path("evidence/moss-visual"))
+
+    moss_eval = sub.add_parser("moss-visual-eval", help="Review a local render and provenance")
+    moss_eval.add_argument("bundle", type=Path, help="moss-visual-plan output directory")
+    moss_eval.add_argument("--image", type=Path, help="locally generated PNG (optional)")
+    moss_eval.add_argument("--review", type=Path, help="human review JSON (optional)")
+
     args = parser.parse_args()
 
     if args.command in {"validate-catalog", "list"}:
@@ -230,6 +241,18 @@ def main() -> int:
         for service in services:
             print(f"{service['id']}\t{service['stage']}\t{service['name']}")
         return 0
+
+    if args.command == "moss-visual-plan":
+        root = plan_visual_asset(args.draft, args.output_root, model=args.model)
+        print(f"MOSS visual handoff: {root}")
+        print("service=moss-visual-asset-intelligence inference=not_run gate=HOLD")
+        return 0
+
+    if args.command == "moss-visual-eval":
+        result = evaluate_visual_asset(args.bundle, image=args.image, review=args.review)
+        print(f"MOSS visual evaluation: {args.bundle / 'evaluation.json'}")
+        print(f"service=moss-visual-asset-intelligence status={result['status']}")
+        return 0 if result["status"] in {"PASS", "HOLD"} else 1
 
     if args.command == "transport-probe":
         evidence_path = run_transport_fixture(args.fixture, args.output_root)
