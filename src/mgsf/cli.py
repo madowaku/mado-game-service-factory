@@ -4,6 +4,7 @@ import argparse
 from pathlib import Path
 
 from .catalog import load_catalog
+from .creative_lab import CreativeLabError, run_creative_qa
 from .edenspark_agent_adapter import (
     create_mission_pack,
     evaluate_result as evaluate_edenspark_result,
@@ -146,6 +147,10 @@ def main() -> int:
         help="output directory for transport evidence",
     )
 
+    creative_qa = sub.add_parser("creative-qa", help="Inspect offline GLB and render evidence")
+    creative_qa.add_argument("run_root", type=Path, help="run directory containing run.json")
+    creative_qa.add_argument("--output-root", type=Path, default=Path("evidence"))
+
     edenspark_plan = sub.add_parser(
         "edenspark-plan",
         help="Compile a game hypothesis into an EdenSpark/Codex mission pack",
@@ -229,6 +234,15 @@ def main() -> int:
             services = [s for s in services if s["stage"] == args.stage]
         for service in services:
             print(f"{service['id']}\t{service['stage']}\t{service['name']}")
+        return 0
+
+    if args.command == "creative-qa":
+        try:
+            result = run_creative_qa(args.run_root, args.output_root)
+        except (CreativeLabError, OSError) as exc:
+            parser.error(f"creative-qa: {exc}")
+        print(f"Creative QA evidence: {result.evidence_path}")
+        print(f"service=creative-3d-motion-qa structural={result.structural_status} promotion={result.promotion_status}")
         return 0
 
     if args.command == "transport-probe":
