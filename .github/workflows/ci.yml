@@ -81,6 +81,20 @@ jobs:
           sha256sum ci-evidence/godot-capture-adapter/vertical-slice-c6-direct/raw-capture/*.png
           file ci-evidence/godot-capture-adapter/vertical-slice-c6-direct/raw-capture/*.png
 
+      - name: Creative 3D and motion fixture contract (HOLD, no paid APIs)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/make_creative_lab_fixture.py "$RUNNER_TEMP/mgsf-creative-fixture"
+          mgsf creative-qa "$RUNNER_TEMP/mgsf-creative-fixture" --output-root ci-evidence
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          data = json.loads(Path("ci-evidence/creative-qa/fixture-triangle-001/creative-qa-evidence.json").read_text())
+          assert data["structural_status"] == "PASS"
+          assert data["promotion_gate"]["status"] == "HOLD"
+          PY
+
       - run: pytest -q
 
       - uses: actions/upload-artifact@v4

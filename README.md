@@ -170,3 +170,17 @@ The previously planned External Tester Preview moves to the next unallocated mil
 
 
 Parallel agent-native boundary: run the first real EdenSpark dogfood mission on a local EdenSpark project with its generated MCP configuration. The target proof is one recorded Codex run that inspects the scene, compiles, plays, simulates input, preserves a screenshot or equivalent artifact, checks logs, and earns PASS.
+
+## MGSF-M1.5 Creative 3D & Motion Lab (incubation)
+
+A zero-paid-API, offline evidence checker for operator-exported GLB and PNG render frames.
+It records hashes, scene structure and frame consistency, while **always HOLDing promotion**
+until real Godot import, human visual review and license checks are complete.
+The tool does not run img2threejs, Remotion or third-party code.
+
+```bash
+python scripts/make_creative_lab_fixture.py /tmp/mgsf-creative-fixture
+mgsf creative-qa /tmp/mgsf-creative-fixture --output-root /tmp/mgsf-creative-evidence
+```
+
+See [MGSF-M1.5 3D & Motion Creative Lab](docs/MGSF_M1_5_3D_MOTION_CREATIVE_LAB.md).

@@ -87,3 +87,15 @@ services:
     name: Release Doctor
     stage: candidate
     problem: Run evidence-backed pre-release checks for game projects.
+
+  - id: creative-3d-motion-qa
+    name: Creative 3D and Motion Evidence Lab
+    stage: incubation
+    problem: Validate local GLB and rendered frames with provenance before visual and engine QA.
+    milestone: MGSF-M1.5-proposed
+    entrypoint: mgsf creative-qa
+    service_contract: docs/MGSF_M1_5_3D_MOTION_CREATIVE_LAB.md
+    evidence:
+      fixture: deterministic_fixture
+      local: operator_supplied_local_render
+      live_engine_and_human_review_required_for_promotion: true
