@@ -98,6 +98,12 @@ jobs:
           --project ci-evidence/sound-runtime-fixture/project
           --out ci-evidence/sound-timeline-fixture
 
+      - name: Preserve synthetic Sound Director motif and review evidence
+        run: >-
+          python scripts/ci_sound_director.py
+          --project ci-evidence/sound-runtime-fixture/project
+          --out ci-evidence/sound-director-fixture
+
       - uses: actions/upload-artifact@v4
         with:
           name: mgsf-evidence-${{ github.sha }}
