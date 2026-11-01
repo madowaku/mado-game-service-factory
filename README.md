@@ -43,6 +43,10 @@ mgsf sound-director /path/to/godot path/to/brief.json --output-root evidence/sou
 
 See [M0.5 Sound Director contract](docs/MGSF_SOUND_DIRECTOR_M0_5.md). Promotion remains HOLD.
 
+## Real Sound Experience Lab M0.6 (stacked Draft)
+
+M0.6 adds an **optional manually installed Godot Master bus PCM recorder** and an offline `mgsf sound-experience` integrity / RMS / clipping / silence / marker analysis pipeline. Recording starts only with explicit consent and a non-Dummy driver; sample evidence does not independently prove audible speaker output. CI remains synthetic, and promotion stays HOLD. See [M0.6 contract](docs/MGSF_SOUND_EXPERIENCE_M0_6.md).
+
 ## Current milestone
 
 **MGSF-M0.5: QUIC Transport Probe / Network Evidence Harness - incubation**, with **MGSF-M0.6 to M0.8: EdenSpark Agent-Native Prototype Loop - incubation** in parallel.
