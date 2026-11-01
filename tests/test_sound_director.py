@@ -159,6 +159,34 @@ class SoundDirectorTests(unittest.TestCase):
         with self.assertRaises(SoundDirectorError):
             self.run_director()
 
+    def test_missing_end_of_track_rejected(self):
+        payload = bytearray(midi([60, 64, 67, 72]))
+        payload[-2] = 0x01  # replace FF 2F EOT with FF 01 empty text event
+        self.m1.write_bytes(payload)
+        with self.assertRaisesRegex(SoundDirectorError, "missing end-of-track"):
+            self.run_director()
+
+    def test_unsupported_format_two_rejected(self):
+        payload = bytearray(midi([60, 64, 67, 72]))
+        payload[8:10] = b"\\x00\\x02"
+        self.m1.write_bytes(payload)
+        with self.assertRaisesRegex(SoundDirectorError, "unsupported MIDI format"):
+            self.run_director()
+
+    def test_partial_human_review_does_not_complete(self):
+        review = self.inputs / "partial-review.json"
+        review.write_text(json.dumps({"schema": "mgsf.sound_identity.human_review.v0.5",
+                                       "reviewer": "local listener",
+                                       "assessments": [{
+                                           "destination": self.title["destination"],
+                                           "scene_fit": 3, "motif_recognizability": 3,
+                                           "loop_naturalness": 4, "mix_balance": 4,
+                                           "notes": "Listened to title only"}]}))
+        result = self.run_director(review=review)
+        self.assertFalse(result["human_review"]["complete"])
+        self.assertIn("human_listening_review_incomplete", result["flags"])
+        self.assertEqual(result["promotion_gate"], "HOLD")
+
     def test_midi_traversal_rejected(self):
         self.brief["tracks"][0]["midi"] = "../secret.mid"
         self.save()
