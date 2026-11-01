@@ -49,6 +49,13 @@ A service may move backward if evidence degrades.
 - `edenspark-autonomous-playtest`
 - `prototype-promotion-gate`
 
+## Sound Identity Lab (incubation)
+
+- Keep WAV import opt-in and default dry-run. Do not write into Godot scenes or existing assets.
+- Never promote from synthetic audio or static quality checks alone; technical PASS != live promotion.
+- Do not reverse-engineer third-party audio editors or misrepresent license provenance.
+- Contract: `docs/MGSF_SOUND_IDENTITY_M0_2.md`.
+
 ## Product preview
 `MADO Playtest Evidence 0.4.0` builds as a single-file Windows x64 executable and is distributed with an offline sample, privacy statement, preview license, third-party notices, support instructions, sample report, and per-file release hashes.
 
