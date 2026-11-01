@@ -14,7 +14,7 @@ from mgsf.sound_timeline import SoundTimelineError, run_sound_timeline
 FIXTURE = Path(__file__).resolve().parents[1] / "fixtures/gameplay-capture/vertical-slice-reconstruction"
 
 
-def pcm(tone: bool = True, *, clipping: bool = False, duration: float = 2.5) -> bytes:
+def pcm(tone: bool = True, *, clipping: bool = False, duration: float = 2.5, hz: int = 200) -> bytes:
     out = io.BytesIO()
     with wave.open(out, "wb") as f:
         f.setnchannels(1)
@@ -22,7 +22,7 @@ def pcm(tone: bool = True, *, clipping: bool = False, duration: float = 2.5) -> 
         f.setframerate(16000)
         amplitude = 32767 if clipping else (9000 if tone else 0)
         f.writeframes(b"".join(
-            int(amplitude * math.sin(2 * math.pi * 200 * i / 16000)).to_bytes(2, "little", signed=True)
+            int(amplitude * math.sin(2 * math.pi * hz * i / 16000)).to_bytes(2, "little", signed=True)
             for i in range(int(duration * 16000))
         ))
     return out.getvalue()
@@ -39,10 +39,11 @@ class TimelineTests(unittest.TestCase):
         export = self.root / "export.zip"
         with zipfile.ZipFile(export, "w") as z:
             z.writestr("title.wav", pcm(duration=0.5))
-            z.writestr("battle.wav", pcm(duration=0.5).replace(b"unused", b"unused"))
+            z.writestr("battle.wav", pcm(duration=0.5, hz=320))
         run_sound_identity(export, self.project, self.root / "import.json", apply=True)
         records = json.loads((self.project / "audio/mgsf_sound_identity/sound_map.json").read_text())["tracks"]
         self.hash = records[0]["sha256"]
+        self.other_hash = records[1]["sha256"]
         self.trace = self.root / "audio-events.json"
         self.out = self.root / "evaluation"
         self.data = {
@@ -52,9 +53,9 @@ class TimelineTests(unittest.TestCase):
             "events": [
                 {"event_id": "sound-1", "kind": "start", "at_ms": 1420, "track_sha256": self.hash,
                  "capture_event_id": "capture-event-002"},
-                {"event_id": "sound-2", "kind": "switch", "at_ms": 1615, "track_sha256": self.hash,
+                {"event_id": "sound-2", "kind": "switch", "at_ms": 1615, "track_sha256": self.other_hash,
                  "capture_event_id": "capture-event-003"},
-                {"event_id": "sound-3", "kind": "stop", "at_ms": 1825, "track_sha256": self.hash,
+                {"event_id": "sound-3", "kind": "stop", "at_ms": 1825, "track_sha256": self.other_hash,
                  "capture_event_id": "capture-event-004"},
             ],
         }
@@ -143,6 +144,18 @@ class TimelineTests(unittest.TestCase):
         self.data["events"][1]["event_id"] = "sound-1"
         self.save_trace()
         with self.assertRaisesRegex(SoundTimelineError, "duplicate"):
+            self.evaluate()
+
+    def test_switch_same_track_rejected(self):
+        self.data["events"][1]["track_sha256"] = self.hash
+        self.save_trace()
+        with self.assertRaisesRegex(SoundTimelineError, "switch must change"):
+            self.evaluate()
+
+    def test_stop_wrong_track_rejected(self):
+        self.data["events"][2]["track_sha256"] = self.hash
+        self.save_trace()
+        with self.assertRaisesRegex(SoundTimelineError, "active track"):
             self.evaluate()
 
     def test_bad_transition(self):
