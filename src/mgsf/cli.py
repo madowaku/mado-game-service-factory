@@ -14,6 +14,7 @@ from .gameplay_capture import run_capture_playtest, run_gameplay_capture
 from .godot_capture_adapter import run_godot_capture_adapter
 from .playtest_report import run_playtest_report
 from .prototype_promotion import promote_prototype
+from .sound_identity import run_sound_identity
 from .real_game_bridge import run_real_game_bridge, run_real_game_dogfood
 from .transport_probe import run_fixture as run_transport_fixture
 
@@ -216,7 +217,35 @@ def main() -> int:
         help="root directory for promotion decisions",
     )
 
+    sound = sub.add_parser(
+        "sound-identity",
+        help="Inspect user-exported WAV ZIP and optionally copy safe audio into Godot",
+    )
+    sound.add_argument("archive", type=Path, help="user-exported ZIP")
+    sound.add_argument("project", type=Path, help="Godot 4 project directory")
+    sound.add_argument("--out", type=Path, default=Path("evidence/sound-identity/report.json"))
+    sound.add_argument("--scene-map", type=Path, help="optional scene-to-WAV JSON")
+    sound.add_argument("--apply", action="store_true", help="explicitly copy to project")
+    sound.add_argument("--allow-review", action="store_true", help="explicitly accept REVIEW after listening")
+
     args = parser.parse_args()
+
+    if args.command == "sound-identity":
+        import json
+        import zipfile
+        try:
+            result = run_sound_identity(
+                args.archive, args.project, args.out,
+                scene_map=args.scene_map, apply=args.apply, allow_review=args.allow_review,
+            )
+        except (ValueError, OSError, json.JSONDecodeError, zipfile.BadZipFile) as exc:
+            parser.error(str(exc))
+        print(f"Sound identity evidence: {args.out}")
+        print(
+            f"service=sound-identity technical={result['technical_status']} "
+            f"promotion={result['promotion_gate']} applied={result['applied']}"
+        )
+        return 0
 
     if args.command in {"validate-catalog", "list"}:
         catalog = load_catalog(_catalog_path(args.path))
