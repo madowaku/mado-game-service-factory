@@ -25,6 +25,10 @@ mgsf sound-identity export.zip /path/to/godot-project --scene-map scenes.json --
 
 The first command is always dry-run. `--apply` never overwrites existing files and is blocked for HOLD audio; technical PASS never overrides the live-evidence promotion HOLD. See [docs/MGSF_SOUND_IDENTITY_M0_2.md](docs/MGSF_SOUND_IDENTITY_M0_2.md).
 
+## Sound Runtime M0.3 (stacked Draft)
+
+`mgsf sound-runtime <godot-project> --godot <Godot-executable> --output-root evidence/sound-runtime --fixture` runs the bundled GDScript probe in a real headless engine, checks the exact imported WAV SHA-256 values against the M0.2 map, and stores engine-state observations, raw runner logs and hashed evaluation evidence. **Dummy audio is not audible audio; promotion stays HOLD.** See [M0.3 evidence contract](docs/MGSF_SOUND_RUNTIME_M0_3.md).
+
 ## Current milestone
 
 **MGSF-M0.5: QUIC Transport Probe / Network Evidence Harness - incubation**, with **MGSF-M0.6 to M0.8: EdenSpark Agent-Native Prototype Loop - incubation** in parallel.
