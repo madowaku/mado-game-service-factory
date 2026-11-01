@@ -110,5 +110,32 @@ class SoundIdentityTests(unittest.TestCase):
             analyze_package(self.archive, self.root)
 
 
+    def test_report_cannot_modify_project_on_dry_run(self):
+        self.make_zip({'title.wav': TONE})
+        with self.assertRaisesRegex(ValueError, 'outside'):
+            run_sound_identity(self.archive, self.project, self.project / 'report.json')
+        self.assertFalse((self.project / 'report.json').exists())
+
+    def test_review_requires_human_override(self):
+        self.make_zip({'boundary.wav': wav([0] + [12000] * 1000)})
+        report, _ = analyze_package(self.archive, self.project)
+        self.assertEqual(report['technical_status'], 'REVIEW')
+        with self.assertRaisesRegex(ValueError, 'REVIEW'):
+            run_sound_identity(self.archive, self.project, self.report, apply=True)
+        self.assertFalse((self.project / 'audio').exists())
+        result = run_sound_identity(self.archive, self.project, self.report, apply=True, allow_review=True)
+        self.assertTrue(result['applied'])
+        self.assertEqual(result['promotion_gate'], 'HOLD')
+
+    def test_zip_symlink_rejected(self):
+        info = zipfile.ZipInfo('linked.wav')
+        info.create_system = 3
+        info.external_attr = 0o120777 << 16
+        with zipfile.ZipFile(self.archive, 'w') as z:
+            z.writestr(info, 'anytarget')
+        with self.assertRaisesRegex(ValueError, 'symlink'):
+            analyze_package(self.archive, self.project)
+
+
 if __name__ == '__main__':
     unittest.main()
