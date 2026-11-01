@@ -56,6 +56,13 @@ A service may move backward if evidence degrades.
 - Do not reverse-engineer third-party audio editors or misrepresent license provenance.
 - Contract: `docs/MGSF_SOUND_IDENTITY_M0_2.md`.
 
+## Sound Runtime M0.3 boundary
+
+- Real headless Godot tests can establish only engine state, not audible playback or music quality.
+- Always preserve input/runner/engine evidence hashes and verify track identity independently.
+- Never claim `AudioStreamPlayer.playing` is waveform capture or actual scene integration.
+- Any M0.3 success remains incubation/HOLD until real-project gameplay capture and listening evidence.
+
 ## Product preview
 `MADO Playtest Evidence 0.4.0` builds as a single-file Windows x64 executable and is distributed with an offline sample, privacy statement, preview license, third-party notices, support instructions, sample report, and per-file release hashes.
 
