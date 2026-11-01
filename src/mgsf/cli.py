@@ -15,6 +15,7 @@ from .godot_capture_adapter import run_godot_capture_adapter
 from .playtest_report import run_playtest_report
 from .prototype_promotion import promote_prototype
 from .sound_identity import run_sound_identity
+from .sound_runtime import run_sound_runtime, SoundRuntimeError
 from .real_game_bridge import run_real_game_bridge, run_real_game_dogfood
 from .transport_probe import run_fixture as run_transport_fixture
 
@@ -228,7 +229,31 @@ def main() -> int:
     sound.add_argument("--apply", action="store_true", help="explicitly copy to project")
     sound.add_argument("--allow-review", action="store_true", help="explicitly accept REVIEW after listening")
 
+    sound_runtime = sub.add_parser(
+        "sound-runtime", help="Observe sound playback state through a real headless Godot process"
+    )
+    sound_runtime.add_argument("project", type=Path, help="Godot project with imported M0.2 sound_map.json")
+    sound_runtime.add_argument("--godot", required=True, help="Godot 4 executable")
+    sound_runtime.add_argument("--output-root", type=Path, default=Path("evidence/sound-runtime"))
+    sound_runtime.add_argument("--fixture", action="store_true", help="mark input as generated fixture audio")
+    sound_runtime.add_argument("--timeout-seconds", type=int, default=60)
+
     args = parser.parse_args()
+
+    if args.command == "sound-runtime":
+        try:
+            report = run_sound_runtime(
+                args.project, args.godot, args.output_root,
+                fixture=args.fixture, timeout=args.timeout_seconds,
+            )
+        except (SoundRuntimeError, OSError) as exc:
+            parser.error(str(exc))
+        print(f"Sound runtime evidence: {args.output_root / 'evaluation.json'}")
+        print(
+            f"service=sound-runtime technical={report['technical_status']} "
+            f"promotion={report['promotion_gate']} observed_audio={report['observed_audio']}"
+        )
+        return 0 if report["technical_status"] == "PASS" else 1
 
     if args.command == "sound-identity":
         import json
