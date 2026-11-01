@@ -112,6 +112,13 @@ class ExperienceTests(unittest.TestCase):
         self.assertIn("possible_loop_transition_click", report["flags"])
         self.assertEqual(report["promotion_gate"], "HOLD")
 
+    def test_marker_beyond_samples_is_flagged(self):
+        self.data["markers"][1]["ticks_usec"] = 3_000_000
+        self.save()
+        report = self.analyze()
+        self.assertIn("audio_event_marker_outside_recording", report["flags"])
+        self.assertEqual(report["promotion_gate"], "HOLD")
+
     def test_overflow_flag(self):
         self.data["discarded_frames"] = 10
         self.save()
