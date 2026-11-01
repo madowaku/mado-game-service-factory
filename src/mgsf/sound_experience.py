@@ -169,6 +169,8 @@ def run_sound_experience(manifest: str | Path, recording: str | Path, output: st
         flags.append("possible_clipping_in_capture")
     if any(m.get("kind") == "loop" and m.get("boundary_jump", 0) > 0.08 for m in wav["marker_windows"]):
         flags.append("possible_loop_transition_click")
+    if any(marker.get("in_audio_range") is False for marker in wav["marker_windows"]):
+        flags.append("audio_event_marker_outside_recording")
     if data["discarded_frames"] > 0:
         flags.append("audio_capture_ring_buffer_overflow")
     if origin == "external_loopback":
