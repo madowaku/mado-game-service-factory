@@ -18,6 +18,7 @@ from .sound_identity import run_sound_identity
 from .sound_runtime import run_sound_runtime, SoundRuntimeError
 from .sound_timeline import run_sound_timeline, SoundTimelineError
 from .sound_director import run_sound_director, SoundDirectorError
+from .sound_experience import run_sound_experience, SoundExperienceError
 from .real_game_bridge import run_real_game_bridge, run_real_game_dogfood
 from .transport_probe import run_fixture as run_transport_fixture
 
@@ -259,7 +260,26 @@ def main() -> int:
     director.add_argument("--output-root", type=Path, default=Path("evidence/sound-director"))
     director.add_argument("--fixture", action="store_true", help="mark synthetic fixture input")
 
+    experience = sub.add_parser(
+        "sound-experience", help="Analyze consented Godot Master bus PCM and marker evidence"
+    )
+    experience.add_argument("manifest", type=Path, help="M0.6 capture-manifest.json")
+    experience.add_argument("recording", type=Path, help="M0.6 master-bus.wav")
+    experience.add_argument("--output-root", type=Path, default=Path("evidence/sound-experience"))
+    experience.add_argument("--fixture", action="store_true", help="explicitly identify synthetic fixture")
+
     args = parser.parse_args()
+
+    if args.command == "sound-experience":
+        try:
+            result = run_sound_experience(args.manifest, args.recording, args.output_root,
+                                          fixture=args.fixture)
+        except (SoundExperienceError, OSError) as exc:
+            parser.error(str(exc))
+        print(f"Sound experience evidence: {args.output_root / 'evaluation.json'}")
+        print(f"service=sound-experience integrity={result['integrity_status']} "
+              f"promotion={result['promotion_gate']} driver={result['driver_claim']}")
+        return 0
 
     if args.command == "sound-director":
         try:
