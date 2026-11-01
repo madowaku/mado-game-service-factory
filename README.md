@@ -33,6 +33,16 @@ The first command is always dry-run. `--apply` never overwrites existing files a
 
 `mgsf sound-timeline <capture-root> <godot-project> <audio-events.json> [--recording output.wav] [--fixture]` links audio-event instrumentation to the established MGSF gameplay-capture timeline, validates track hashes, and optionally inspects PCM windows for silence and clipping. It cannot independently establish audio synchronization, real recorded output, or subjective quality. `promotion_gate=HOLD` always. See [M0.4 contract](docs/MGSF_SOUND_TIMELINE_M0_4.md).
 
+## Sound Director M0.5 (stacked Draft)
+
+The local-first Sound Director analyzes source-verified Godot WAV loop boundary samples, compares transposition-invariant interval patterns from optional MIDI files, and creates a blank human listening review packet. No subjective scoring is invented; it does not perform actual playback, prove musical identity, or auto-promote.
+
+```bash
+mgsf sound-director /path/to/godot path/to/brief.json --output-root evidence/sound-director
+```
+
+See [M0.5 Sound Director contract](docs/MGSF_SOUND_DIRECTOR_M0_5.md). Promotion remains HOLD.
+
 ## Current milestone
 
 **MGSF-M0.5: QUIC Transport Probe / Network Evidence Harness - incubation**, with **MGSF-M0.6 to M0.8: EdenSpark Agent-Native Prototype Loop - incubation** in parallel.

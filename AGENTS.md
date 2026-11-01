@@ -71,6 +71,13 @@ A service may move backward if evidence degrades.
 - No automated external audio upload, scene rewrite, or promotion from fixtures.
 - Documentation: `docs/MGSF_SOUND_TIMELINE_M0_4.md`.
 
+## M0.5 Sound Director boundary
+
+- Machine-derived motif/seam numbers are review cues, not verified musical identity, legal attribution, or player enjoyment.
+- Human review fields must be blank unless a human submits them; supplied scores remain unverified claims.
+- No automatic scene modifications, audio uploads, external AI calls, or promotion from MIDI/WAV fixture success.
+- Contract: `docs/MGSF_SOUND_DIRECTOR_M0_5.md`.
+
 ## Product preview
 `MADO Playtest Evidence 0.4.0` builds as a single-file Windows x64 executable and is distributed with an offline sample, privacy statement, preview license, third-party notices, support instructions, sample report, and per-file release hashes.
 
