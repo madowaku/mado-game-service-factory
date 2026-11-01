@@ -92,6 +92,12 @@ jobs:
           --godot /tmp/godot/Godot_v4.7.2-stable_linux.x86_64
           --out ci-evidence/sound-runtime-fixture
 
+      - name: Preserve synthetic gameplay x audio timeline evidence
+        run: >-
+          python scripts/ci_sound_timeline.py
+          --project ci-evidence/sound-runtime-fixture/project
+          --out ci-evidence/sound-timeline-fixture
+
       - uses: actions/upload-artifact@v4
         with:
           name: mgsf-evidence-${{ github.sha }}
