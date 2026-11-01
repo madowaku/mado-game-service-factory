@@ -39,6 +39,17 @@ services:
       fixture: deterministic_pcm_wav_zip
       live_required_for_promotion: true
 
+  - id: sound-runtime
+    name: Audio Gameplay Evidence / Godot Engine-State Probe
+    stage: incubation
+    problem: Verify that a real Godot process loads and starts/stops hash-matched audio assets, without claiming audible or player evidence.
+    milestone: MGSF-SOUND-M0.3
+    entrypoint: mgsf sound-runtime
+    service_contract: docs/MGSF_SOUND_RUNTIME_M0_3.md
+    evidence:
+      fixture: synthetic_wav_real_engine_probe
+      live_required_for_promotion: true
+
   - id: quic-transport-probe
     name: QUIC Transport Probe / Network Evidence Harness
     stage: incubation
