@@ -29,6 +29,10 @@ The first command is always dry-run. `--apply` never overwrites existing files a
 
 `mgsf sound-runtime <godot-project> --godot <Godot-executable> --output-root evidence/sound-runtime --fixture` runs the bundled GDScript probe in a real headless engine, checks the exact imported WAV SHA-256 values against the M0.2 map, and stores engine-state observations, raw runner logs and hashed evaluation evidence. **Dummy audio is not audible audio; promotion stays HOLD.** See [M0.3 evidence contract](docs/MGSF_SOUND_RUNTIME_M0_3.md).
 
+## Sound Timeline M0.4 (stacked Draft)
+
+`mgsf sound-timeline <capture-root> <godot-project> <audio-events.json> [--recording output.wav] [--fixture]` links audio-event instrumentation to the established MGSF gameplay-capture timeline, validates track hashes, and optionally inspects PCM windows for silence and clipping. It cannot independently establish audio synchronization, real recorded output, or subjective quality. `promotion_gate=HOLD` always. See [M0.4 contract](docs/MGSF_SOUND_TIMELINE_M0_4.md).
+
 ## Current milestone
 
 **MGSF-M0.5: QUIC Transport Probe / Network Evidence Harness - incubation**, with **MGSF-M0.6 to M0.8: EdenSpark Agent-Native Prototype Loop - incubation** in parallel.
