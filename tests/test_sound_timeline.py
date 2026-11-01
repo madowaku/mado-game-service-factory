@@ -98,6 +98,29 @@ class TimelineTests(unittest.TestCase):
         result = self.evaluate(wav)
         self.assertIn("recording_window_out_of_range", result["flags"])
 
+    def test_expected_silence_after_stop_not_flagged(self):
+        wav = self.root / "stops.wav"
+        stream = io.BytesIO()
+        with wave.open(stream, "wb") as audio:
+            audio.setnchannels(1)
+            audio.setsampwidth(2)
+            audio.setframerate(16000)
+            audio.writeframes(b"".join(
+                int(9000 * math.sin(2 * math.pi * 200 * i / 16000) if i < 29280 else 0)
+                .to_bytes(2, "little", signed=True) for i in range(40000)
+            ))
+        wav.write_bytes(stream.getvalue())
+        result = self.evaluate(wav)
+        self.assertNotIn("possible_silence_near_audio_event", result["flags"])
+        self.assertTrue(result["recording"]["event_windows"][-1]["possible_silence"])
+        self.assertEqual(result["promotion_gate"], "HOLD")
+
+    def test_outside_correlation_window_rejected(self):
+        self.data["events"][0]["at_ms"] = 1700
+        self.save_trace()
+        with self.assertRaisesRegex(SoundTimelineError, "correlation"):
+            self.evaluate()
+
     def test_invalid_recording_rejected(self):
         wav = self.root / "bad.wav"
         wav.write_bytes(b"bad")
