@@ -179,6 +179,8 @@ def run_sound_identity(source: str | Path, project: str | Path, output: str | Pa
                        allow_review: bool = False) -> dict:
     """Create a reviewable report; only --apply copies non-HOLD audio to Godot."""
     project, output = Path(project), Path(output)
+    if output.resolve().is_relative_to(project.resolve()):
+        raise ValueError("evidence report must be outside the Godot project")
     report, payloads = analyze_package(source, project, scene_map)
     if apply:
         if report['technical_status'] == 'HOLD':
