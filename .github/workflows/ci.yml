@@ -81,7 +81,10 @@ jobs:
           sha256sum ci-evidence/godot-capture-adapter/vertical-slice-c6-direct/raw-capture/*.png
           file ci-evidence/godot-capture-adapter/vertical-slice-c6-direct/raw-capture/*.png
 
-      - run: pytest -q
+      - name: Run pytest including actual headless Godot audio-state probe
+        env:
+          MGSF_GODOT_EXECUTABLE: /tmp/godot/Godot_v4.7.2-stable_linux.x86_64
+        run: pytest -q
 
       - uses: actions/upload-artifact@v4
         with:
