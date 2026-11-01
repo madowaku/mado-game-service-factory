@@ -17,6 +17,7 @@ from .prototype_promotion import promote_prototype
 from .sound_identity import run_sound_identity
 from .sound_runtime import run_sound_runtime, SoundRuntimeError
 from .sound_timeline import run_sound_timeline, SoundTimelineError
+from .sound_director import run_sound_director, SoundDirectorError
 from .real_game_bridge import run_real_game_bridge, run_real_game_dogfood
 from .transport_probe import run_fixture as run_transport_fixture
 
@@ -249,7 +250,31 @@ def main() -> int:
     audio_timeline.add_argument("--output-root", type=Path, default=Path("evidence/sound-timeline"))
     audio_timeline.add_argument("--fixture", action="store_true", help="mark synthetic/reconstructed test evidence")
 
+    director = sub.add_parser(
+        "sound-director", help="Inspect MIDI motif overlap and WAV loop seams; create listening review packet"
+    )
+    director.add_argument("project", type=Path, help="Godot project with imported M0.2 sound map")
+    director.add_argument("brief", type=Path, help="versioned scene/role/MIDI JSON brief")
+    director.add_argument("--review", type=Path, help="optional completed human listening review JSON")
+    director.add_argument("--output-root", type=Path, default=Path("evidence/sound-director"))
+    director.add_argument("--fixture", action="store_true", help="mark synthetic fixture input")
+
     args = parser.parse_args()
+
+    if args.command == "sound-director":
+        try:
+            result = run_sound_director(
+                args.project, args.brief, args.output_root,
+                review=args.review, fixture=args.fixture,
+            )
+        except (SoundDirectorError, OSError, ValueError) as exc:
+            parser.error(str(exc))
+        print(f"Sound director evidence: {args.output_root / 'evaluation.json'}")
+        print(
+            f"service=sound-director technical={result['technical_status']} "
+            f"promotion={result['promotion_gate']} tracks={result['track_count']}"
+        )
+        return 0
 
     if args.command == "sound-timeline":
         try:
