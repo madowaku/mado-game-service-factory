@@ -100,6 +100,9 @@ func _finish() -> void:
         push_error("MGSF could not create output directory")
         return
     var wav_path: String = _dest.path_join("master-bus.wav")
+    if FileAccess.file_exists(wav_path) or FileAccess.file_exists(_dest.path_join("capture-manifest.json")):
+        push_error("MGSF refuses to overwrite capture files")
+        return
     var file: FileAccess = FileAccess.open(wav_path, FileAccess.WRITE)
     if file == null:
         push_error("MGSF could not create WAV")
