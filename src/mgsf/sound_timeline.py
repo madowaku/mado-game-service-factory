@@ -119,7 +119,7 @@ def run_sound_timeline(capture_root: str | Path, project: str | Path,
     if type(recorded_from) is not int or recorded_from < 0:
         raise SoundTimelineError("invalid recording clock offset")
     capture_events = {x["event_id"]: x for x in capture["timeline"]}
-    seen, last_ms, last_kind, linked = set(), -1, None, []
+    seen, last_ms, last_kind, active_sha, linked = set(), -1, None, None, []
     for item in raw["events"]:
         if not isinstance(item, dict):
             raise SoundTimelineError("audio event must be an object")
@@ -143,6 +143,14 @@ def run_sound_timeline(capture_root: str | Path, project: str | Path,
             raise SoundTimelineError("switch without active audio")
         if not isinstance(sha, str) or not HASH_RE.fullmatch(sha) or sha not in track_hashes:
             raise SoundTimelineError("event references unknown WAV SHA-256")
+        if kind == "switch" and sha == active_sha:
+            raise SoundTimelineError("switch must change the active track")
+        if kind == "stop" and sha != active_sha:
+            raise SoundTimelineError("stop must reference the active track")
+        if kind == "stop":
+            active_sha = None
+        else:
+            active_sha = sha
         if not isinstance(source_id, str) or source_id not in capture_events:
             raise SoundTimelineError("event references unknown capture event")
         source = capture_events[source_id]
