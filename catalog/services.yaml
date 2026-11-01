@@ -28,6 +28,17 @@ services:
       evidence_class: recorded_gameplay_capture
       status: PASS
 
+  - id: sound-identity
+    name: Sound Identity Lab / Godot Safe Audio Import
+    stage: incubation
+    problem: Inspect exported music archives, preserve source hashes, and safely stage WAV for Godot.
+    milestone: MGSF-SOUND-M0.2
+    entrypoint: mgsf sound-identity
+    service_contract: docs/MGSF_SOUND_IDENTITY_M0_2.md
+    evidence:
+      fixture: deterministic_pcm_wav_zip
+      live_required_for_promotion: true
+
   - id: quic-transport-probe
     name: QUIC Transport Probe / Network Evidence Harness
     stage: incubation

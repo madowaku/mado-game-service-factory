@@ -14,6 +14,17 @@ DISCOVER
   -> IMPROVE / RETIRE
 ```
 
+## Sound Identity Lab (M0.2, incubation)
+
+Offline, review-first audio export inspection and an opt-in Godot 4 import:
+
+```bash
+mgsf sound-identity export.zip /path/to/godot-project --out evidence/sound-identity/report.json
+mgsf sound-identity export.zip /path/to/godot-project --scene-map scenes.json --apply
+```
+
+The first command is always dry-run. `--apply` never overwrites existing files and is blocked for HOLD audio; technical PASS never overrides the live-evidence promotion HOLD. See [docs/MGSF_SOUND_IDENTITY_M0_2.md](docs/MGSF_SOUND_IDENTITY_M0_2.md).
+
 ## Current milestone
 
 **MGSF-M0.5: QUIC Transport Probe / Network Evidence Harness - incubation**, with **MGSF-M0.6 to M0.8: EdenSpark Agent-Native Prototype Loop - incubation** in parallel.
