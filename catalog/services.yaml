@@ -72,6 +72,17 @@ services:
       fixture: synthetic_midi_and_wav_motif_review
       live_required_for_promotion: true
 
+  - id: sound-experience
+    name: Real Sound Experience Lab / Opt-in Master Bus Capture
+    stage: incubation
+    problem: Inspect consent-gated non-Dummy Godot bus PCM, recording integrity, clock markers and waveform anomalies without claiming speaker output.
+    milestone: MGSF-SOUND-M0.6
+    entrypoint: mgsf sound-experience
+    service_contract: docs/MGSF_SOUND_EXPERIENCE_M0_6.md
+    evidence:
+      fixture: synthetic_pcm_capture_fixture
+      live_required_for_promotion: true
+
   - id: quic-transport-probe
     name: QUIC Transport Probe / Network Evidence Harness
     stage: incubation
