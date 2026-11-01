@@ -228,7 +228,7 @@ def _review(review: Path | None, required: set[str]) -> dict:
         raise SoundDirectorError("invalid review assessments")
     seen = set()
     for item in assessments:
-        if not isinstance(item, dict) or item.get("destination") not in required:
+        if not isinstance(item, dict) or not isinstance(item.get("destination"), str) or item["destination"] not in required:
             raise SoundDirectorError("review references unknown destination")
         dest = item["destination"]
         if dest in seen:
@@ -247,8 +247,8 @@ def _review(review: Path | None, required: set[str]) -> dict:
 def run_sound_director(project: str | Path, brief: str | Path, output_root: str | Path,
                        *, review: str | Path | None = None, fixture: bool = False) -> dict:
     project, brief, output = Path(project), Path(brief), Path(output_root)
-    if output.resolve().is_relative_to(project.resolve()) or output.resolve().is_relative_to(brief.parent.resolve()):
-        raise SoundDirectorError("output must be outside project and brief directory")
+    if output.resolve().is_relative_to(project.resolve()):
+        raise SoundDirectorError("output must be outside project")
     imported = load_verified_audio_map(project)
     lookup = {item["destination"]: item for item in imported}
     data = _read_json(brief, MAX_BRIEF)
