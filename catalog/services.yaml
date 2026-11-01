@@ -50,6 +50,17 @@ services:
       fixture: synthetic_wav_real_engine_probe
       live_required_for_promotion: true
 
+  - id: sound-timeline
+    name: Audio Gameplay Timeline Evidence Bridge
+    stage: incubation
+    problem: Join gameplay and sound events by verified source hashes and shared-clock claims, with bounded PCM heuristics.
+    milestone: MGSF-SOUND-M0.4
+    entrypoint: mgsf sound-timeline
+    service_contract: docs/MGSF_SOUND_TIMELINE_M0_4.md
+    evidence:
+      fixture: reconstructed_gameplay_plus_synthetic_audio
+      live_required_for_promotion: true
+
   - id: quic-transport-probe
     name: QUIC Transport Probe / Network Evidence Harness
     stage: incubation
