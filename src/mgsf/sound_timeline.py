@@ -165,10 +165,11 @@ def run_sound_timeline(capture_root: str | Path, project: str | Path,
     flags = []
     if recording is not None:
         recording_info = _recording_windows(Path(recording), raw["events"], recorded_from)
+        linked_index_kind = {event["event_id"]: event["kind"] for event in raw["events"]}
         for item in recording_info["event_windows"]:
             if item.get("window_available") is False:
                 flags.append("recording_window_out_of_range")
-            if item.get("possible_silence"):
+            if item.get("possible_silence") and linked_index_kind[item["event_id"]] in ("start", "switch"):
                 flags.append("possible_silence_near_audio_event")
             if item.get("possible_clipping"):
                 flags.append("possible_clipping_near_audio_event")
