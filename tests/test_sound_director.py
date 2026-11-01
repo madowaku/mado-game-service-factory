@@ -168,7 +168,7 @@ class SoundDirectorTests(unittest.TestCase):
 
     def test_unsupported_format_two_rejected(self):
         payload = bytearray(midi([60, 64, 67, 72]))
-        payload[8:10] = b"\\x00\\x02"
+        payload[8:10] = bytes([0, 2])
         self.m1.write_bytes(payload)
         with self.assertRaisesRegex(SoundDirectorError, "unsupported MIDI format"):
             self.run_director()
