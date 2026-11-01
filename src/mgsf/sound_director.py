@@ -99,6 +99,7 @@ def _midi_motifs(path: Path) -> dict:
         running = None
         clock = 0
         events = 0
+        end_seen = False
         while pos < end:
             delta, pos = _varlen(data, pos, end)
             clock += delta
@@ -130,6 +131,7 @@ def _midi_motifs(path: Path) -> dict:
                 if kind == 0x2F:
                     if size != 0 or pos != end:
                         raise SoundDirectorError("invalid MIDI end-of-track")
+                    end_seen = True
                     break
             elif status in (0xF0, 0xF7):
                 size, pos = _varlen(data, pos, end)
@@ -149,6 +151,8 @@ def _midi_motifs(path: Path) -> dict:
                     groups.setdefault((track_id, channel), []).append((clock, pitch))
             else:
                 raise SoundDirectorError("unsupported MIDI system event")
+        if not end_seen:
+            raise SoundDirectorError("MIDI track missing end-of-track event")
         pos = end
     # Deterministic selection, not true polyphonic voice extraction.
     if not groups:
