@@ -105,11 +105,15 @@ jobs:
           --out ci-evidence/sound-director-fixture
 
       - name: Parse Godot Master bus capture adapter (no recording in CI)
-        run: >-
-          /tmp/godot/Godot_v4.7.2-stable_linux.x86_64
-          --headless --check-only
-          --path vendor/vertical-slice
-          --script adapters/godot/mgsf_sound_capture.gd
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ci-evidence/sound-runtime-fixture/project/addons/mgsf
+          cp adapters/godot/mgsf_sound_capture.gd ci-evidence/sound-runtime-fixture/project/addons/mgsf/sound_capture.gd
+          /tmp/godot/Godot_v4.7.2-stable_linux.x86_64 \
+            --headless --check-only \
+            --path ci-evidence/sound-runtime-fixture/project \
+            --script res://addons/mgsf/sound_capture.gd
 
       - name: Preserve synthetic M0.6 capture evidence
         run: python scripts/ci_sound_experience.py
