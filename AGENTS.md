@@ -78,6 +78,14 @@ A service may move backward if evidence degrades.
 - No automatic scene modifications, audio uploads, external AI calls, or promotion from MIDI/WAV fixture success.
 - Contract: `docs/MGSF_SOUND_DIRECTOR_M0_5.md`.
 
+## M0.6 Real Sound Experience Lab evidence boundary
+
+- Recording must be consent-gated, short, local, manually integrated into trusted Godot projects; never activate unattended.
+- Dummy driver / generated PCM cannot be called actual captured game audio or speaker output.
+- Distinguish engine bus sample assertions from independently verified hardware playback and human listening.
+- Never auto-promote from synthesized fixtures or self-reported capture metadata.
+- Contract: `docs/MGSF_SOUND_EXPERIENCE_M0_6.md`.
+
 ## Product preview
 `MADO Playtest Evidence 0.4.0` builds as a single-file Windows x64 executable and is distributed with an offline sample, privacy statement, preview license, third-party notices, support instructions, sample report, and per-file release hashes.
 
