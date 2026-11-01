@@ -63,6 +63,14 @@ A service may move backward if evidence degrades.
 - Never claim `AudioStreamPlayer.playing` is waveform capture or actual scene integration.
 - Any M0.3 success remains incubation/HOLD until real-project gameplay capture and listening evidence.
 
+## M0.4 Sound Timeline evidence boundary
+
+- Treat declared audio callback clocks as claims; reported differences are not measured audible latency.
+- Never label constructed PCM, reconstructed frames, or Godot Dummy as captured game sound.
+- Require verified imported WAV hashes and matching MGSF capture/session/event IDs.
+- No automated external audio upload, scene rewrite, or promotion from fixtures.
+- Documentation: `docs/MGSF_SOUND_TIMELINE_M0_4.md`.
+
 ## Product preview
 `MADO Playtest Evidence 0.4.0` builds as a single-file Windows x64 executable and is distributed with an offline sample, privacy statement, preview license, third-party notices, support instructions, sample report, and per-file release hashes.
 

@@ -16,6 +16,7 @@ from .playtest_report import run_playtest_report
 from .prototype_promotion import promote_prototype
 from .sound_identity import run_sound_identity
 from .sound_runtime import run_sound_runtime, SoundRuntimeError
+from .sound_timeline import run_sound_timeline, SoundTimelineError
 from .real_game_bridge import run_real_game_bridge, run_real_game_dogfood
 from .transport_probe import run_fixture as run_transport_fixture
 
@@ -238,7 +239,32 @@ def main() -> int:
     sound_runtime.add_argument("--fixture", action="store_true", help="mark input as generated fixture audio")
     sound_runtime.add_argument("--timeout-seconds", type=int, default=60)
 
+    audio_timeline = sub.add_parser(
+        "sound-timeline", help="Cross-check audio event trace against gameplay and optional PCM WAV"
+    )
+    audio_timeline.add_argument("capture_root", type=Path, help="MGSF gameplay-capture input directory")
+    audio_timeline.add_argument("project", type=Path, help="Godot project containing imported audio map")
+    audio_timeline.add_argument("trace", type=Path, help="shared-clock instrumented audio events JSON")
+    audio_timeline.add_argument("--recording", type=Path, help="optional manually supplied PCM WAV")
+    audio_timeline.add_argument("--output-root", type=Path, default=Path("evidence/sound-timeline"))
+    audio_timeline.add_argument("--fixture", action="store_true", help="mark synthetic/reconstructed test evidence")
+
     args = parser.parse_args()
+
+    if args.command == "sound-timeline":
+        try:
+            result = run_sound_timeline(
+                args.capture_root, args.project, args.trace, args.output_root,
+                recording=args.recording, fixture=args.fixture,
+            )
+        except (SoundTimelineError, ValueError, OSError) as exc:
+            parser.error(str(exc))
+        print(f"Sound timeline evidence: {args.output_root / 'evaluation.json'}")
+        print(
+            f"service=sound-timeline technical={result['technical_status']} "
+            f"promotion={result['promotion_gate']} events={result['event_count']}"
+        )
+        return 0
 
     if args.command == "sound-runtime":
         try:
