@@ -86,6 +86,12 @@ jobs:
           MGSF_GODOT_EXECUTABLE: /tmp/godot/Godot_v4.7.2-stable_linux.x86_64
         run: pytest -q
 
+      - name: Preserve synthetic two-track real-Godot sound evidence
+        run: >-
+          python scripts/ci_sound_runtime.py
+          --godot /tmp/godot/Godot_v4.7.2-stable_linux.x86_64
+          --out ci-evidence/sound-runtime-fixture
+
       - uses: actions/upload-artifact@v4
         with:
           name: mgsf-evidence-${{ github.sha }}
