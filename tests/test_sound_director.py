@@ -42,7 +42,7 @@ def midi(notes, transpose=0, *, running=False, corrupt=False):
         # Each note starts after preceding note-off, using 120 PPQ.
         events.extend(b"\x00" + (b"\x90" if i == 0 or not running else b""))
         events.extend(bytes([(pitch + transpose) % 128, 90]))
-        events.extend(vlq(120) + bytes([0x80, (pitch + transpose) % 128, 0]))
+        events.extend(vlq(120) + bytes([0x90 if running else 0x80, (pitch + transpose) % 128, 0]))
     events.extend(b"\x00\xff\x2f\x00")
     if corrupt:
         events = events[:-2]
