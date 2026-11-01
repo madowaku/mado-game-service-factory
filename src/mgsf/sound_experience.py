@@ -132,6 +132,8 @@ def run_sound_experience(manifest: str | Path, recording: str | Path, output: st
         raise SoundExperienceError("invalid monotonic capture clock range")
     if data.get("recording_sha256") is None or not isinstance(data["recording_sha256"], str):
         raise SoundExperienceError("recording SHA-256 required")
+    if recording.is_symlink() or not recording.is_file() or not 0 < recording.stat().st_size <= MAX_AUDIO:
+        raise SoundExperienceError("missing, symlinked or oversized recorded WAV")
     if data["recording_sha256"] != _sha(recording):
         raise SoundExperienceError("recorded audio hash mismatch")
     if data.get("consent") is not True:
