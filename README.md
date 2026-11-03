@@ -188,6 +188,25 @@ mgsf godot-neural-bridge evidence/neural-behavior/godot-handoff.json --godot god
 
 Outputs `evidence/godot-neural-bridge/` including `godot-neural-bridge-evidence.json`, `godot-trace.json`, `before.png`, `after.png`, runtime logs, and cryptographic file hashes. The tested game is a standalone Godot fixture, **not the existing vertical-slice or another shipped game**. Its runtime validation can PASS while the independent promotion gate stays `HOLD`. See [M0.3 contract](docs/MGSF_NEURAL_GAME_AGENT_BRIDGE_M0_3.md).
 
+## Neural Game Intelligence Benchmark (MGSF-WSP-M0.4, incubation)
+
+Real authored-game integration now targets [SHADOW SUM](https://github.com/madowaku/shadow-sum):
+the exact authored Godot `ShadowRules` module and the original 18-stage pack are
+loaded in an isolated Godot runtime. Two hand-designed policies are compared
+with the **same visible clues** and **equal post-placement budgets**, with solutions
+excluded from all policy observations.
+
+```bash
+mgsf neural-game-benchmark vendor/shadow-sum \
+  --godot /path/to/godot --output-root evidence
+```
+
+Development split: stages 1-6; evaluation split: 7-18. Both policies were
+specified in advance without learning/tuning, and the evaluation set is part
+of the known published stage pack (not independent hidden data). Full game UI
+and user-input automation are **not** tested. Engine verification may PASS but
+service promotion remains HOLD. See [M0.4 contract](docs/MGSF_NEURAL_GAME_INTELLIGENCE_BENCHMARK_M0_4.md).
+
 ## Next boundary
 
 **MGSF-M0.5: QUIC Transport Probe / Network Evidence Harness**
