@@ -201,6 +201,10 @@ mgsf neural-game-benchmark vendor/shadow-sum \
   --godot /path/to/godot --output-root evidence
 ```
 
+First pinned CI result: **6/6** each on development, **11/12** each on
+evaluation. **Zero differing action sequences across all 18 stages**; both
+failed stage 008. This establishes no neural performance advantage.
+
 Development split: stages 1-6; evaluation split: 7-18. Both policies were
 specified in advance without learning/tuning, and the evaluation set is part
 of the known published stage pack (not independent hidden data). Full game UI
