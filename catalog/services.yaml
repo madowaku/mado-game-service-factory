@@ -90,6 +90,17 @@ services:
       fixture: deterministic_neural_behavior_fixture
       live_required_for_promotion: true
 
+  - id: neural-game-agent-bridge
+    name: Neural Game Agent Bridge
+    stage: incubation
+    problem: Execute a directly written neural policy in Godot, compare engine traces with a Python oracle, and preserve direct viewport evidence.
+    milestone: MGSF-WSP-M0.3
+    entrypoint: mgsf godot-neural-bridge
+    service_contract: docs/MGSF_NEURAL_GAME_AGENT_BRIDGE_M0_3.md
+    evidence:
+      live_fixture: recorded_godot_neural_fixture_run
+      authored_game_required_for_promotion: true
+
   - id: build-doctor
     name: Game Build Doctor
     stage: candidate
