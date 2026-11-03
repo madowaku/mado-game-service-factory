@@ -236,6 +236,34 @@ def validate_game_trace(
     return problems, summaries
 
 
+def paired_outcomes(summaries: dict[str, dict[str, Any]]) -> dict[str, Any]:
+    """Honest paired comparison. Identical trajectories are *not* independent evidence."""
+    outcome: dict[str, Any] = {}
+    for split, policies in summaries.items():
+        rule = {x["stage_id"]: x for x in policies["rule_greedy"]["results"]}
+        weights = {x["stage_id"]: x for x in policies["direct_weights"]["results"]}
+        if set(rule) != set(weights):
+            raise ValueError("paired results have different stage ids")
+        compared = [rule[sid] for sid in sorted(rule)]
+        peer = [weights[sid] for sid in sorted(weights)]
+        total = len(compared)
+        outcome[split] = {
+            "stages": total,
+            "both_solved": sum(a["success"] and b["success"] for a, b in zip(compared, peer)),
+            "both_failed": sum(not a["success"] and not b["success"] for a, b in zip(compared, peer)),
+            "rule_only_solved": sum(a["success"] and not b["success"] for a, b in zip(compared, peer)),
+            "direct_weights_only_solved": sum(b["success"] and not a["success"] for a, b in zip(compared, peer)),
+            "different_action_sequences": sum(a["actions"] != b["actions"] for a, b in zip(compared, peer)),
+            "action_disagreement_rate": round(
+                sum(a["actions"] != b["actions"] for a, b in zip(compared, peer)) / total, 6
+            ) if total else None,
+            "shared_failure_stage_ids": [
+                a["stage_id"] for a, b in zip(compared, peer) if not a["success"] and not b["success"]
+            ],
+        }
+    return outcome
+
+
 def _exec(command: list[str], log: Path, *, timeout: int, env: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
     try:
         result = subprocess.run(command, text=True, capture_output=True, timeout=timeout, env=env)
@@ -340,6 +368,7 @@ def run_shadow_sum_benchmark(
             "direct_weights": {"features": FEATURES, "weights": WEIGHTS, "architecture": "hand_written_linear_candidate_scorer"},
         },
         "summaries": summaries,
+        "paired_outcomes": paired_outcomes(summaries) if summaries and not errors else {},
         "status": "PASS" if not errors else "FAIL",
         "errors": errors,
         "artifacts": artifacts,
