@@ -19,6 +19,7 @@ from .transport_probe import run_fixture as run_transport_fixture
 from .weight_space_game_ai import run_fixture as run_weight_space_fixture
 from .neural_behavior_intelligence import run_intelligence
 from .godot_neural_bridge import run_godot_neural_bridge
+from .neural_game_benchmark import run_shadow_sum_benchmark
 
 
 def _catalog_path(value: str | None) -> Path:
@@ -190,6 +191,17 @@ def main() -> int:
         help="root of the provenance-preserving Godot bridge evidence",
     )
 
+    neural_bench = sub.add_parser(
+        "neural-game-benchmark",
+        help="Compare hand-written neural weights vs rules on SHADOW SUM's original Godot puzzle logic",
+    )
+    neural_bench.add_argument("project", type=Path, help="pinned local SHADOW SUM checkout")
+    neural_bench.add_argument("--godot", required=True, help="Godot 4.x executable")
+    neural_bench.add_argument(
+        "--output-root", type=Path, default=Path("evidence"),
+        help="root directory for authored-rules benchmark evidence",
+    )
+
     edenspark_plan = sub.add_parser(
         "edenspark-plan",
         help="Compile a game hypothesis into an EdenSpark/Codex mission pack",
@@ -306,6 +318,20 @@ def main() -> int:
             f"matched={result.matched_episodes} gate=HOLD"
         )
         return 0 if result.status == "PASS" else 1
+
+    if args.command == "neural-game-benchmark":
+        result_path = run_shadow_sum_benchmark(
+            args.project, args.godot, args.output_root,
+            Path(__file__).resolve().parents[2] / "fixtures/shadow-sum-benchmark/run.gd",
+        )
+        import json
+        result = json.loads(result_path.read_text(encoding="utf-8"))
+        print(f"SHADOW SUM benchmark evidence: {result_path}")
+        for split, policies in result["summaries"].items():
+            for policy, metrics in policies.items():
+                print(f"{split}/{policy}: wins={metrics['wins']}/{metrics['stages']}")
+        print(f"service=neural-game-intelligence-benchmark status={result['status']} gate=HOLD")
+        return 0 if result["status"] == "PASS" else 1
 
     if args.command == "edenspark-plan":
         root = create_mission_pack(args.mission, args.output_root)

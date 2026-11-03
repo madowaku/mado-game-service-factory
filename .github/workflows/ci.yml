@@ -17,6 +17,13 @@ jobs:
           ref: f0514229d7f2036ec25646d09e3647c8d870dadb
           path: vendor/vertical-slice
 
+      - name: Checkout authored SHADOW SUM rules and stages (pinned)
+        uses: actions/checkout@v4
+        with:
+          repository: madowaku/shadow-sum
+          ref: 12655b88f8937698f832e9572fdfb8a4912358b7
+          path: vendor/shadow-sum
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -83,6 +90,36 @@ jobs:
           assert evidence["promotion_gate"]["status"] == "HOLD"
           assert evidence["artifacts"]["before.png"]["sha256"] != evidence["artifacts"]["after.png"]["sha256"]
           print("PASS: 6 Godot traces match Python and two distinct Godot viewport PNGs are present")
+          PY
+
+      - name: Compare both policies using SHADOW SUM authored Godot rules
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C vendor/shadow-sum rev-parse HEAD)" = "12655b88f8937698f832e9572fdfb8a4912358b7"
+          mgsf neural-game-benchmark vendor/shadow-sum \
+            --godot /tmp/godot/Godot_v4.7.2-stable_linux.x86_64 \
+            --output-root ci-evidence
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          out = Path("ci-evidence/shadow-sum-neural-benchmark/shadow-sum-neural-benchmark-evidence.json")
+          doc = json.loads(out.read_text(encoding="utf-8"))
+          assert doc["status"] == "PASS", doc["errors"]
+          assert doc["promotion_gate"]["status"] == "HOLD"
+          assert doc["full_game_ui_executed"] is False
+          assert doc["stage_solutions_used_by_policies"] is False
+          paired = doc["paired_outcomes"]
+          assert paired["development"]["different_action_sequences"] == 0
+          assert paired["evaluation"]["different_action_sequences"] == 0
+          assert paired["evaluation"]["shared_failure_stage_ids"] == [8]
+          assert paired["evaluation"]["both_solved"] == 11
+          for name in ("rule_greedy", "direct_weights"):
+              assert doc["summaries"]["development"][name]["stages"] == 6
+              assert doc["summaries"]["evaluation"][name]["stages"] == 12
+          plans = Path("ci-evidence/shadow-sum-neural-benchmark/policy-plans.json").read_text()
+          assert '"solution":' not in plans
+          print("PASS: 18 authored SHADOW SUM stages, paired Godot rule evaluation, no solution leakage")
           PY
 
       - run: mgsf playtest-report fixtures/playtest-report/mgel-session-001 --output-root ci-evidence
