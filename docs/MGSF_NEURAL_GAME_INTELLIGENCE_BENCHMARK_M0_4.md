@@ -59,6 +59,17 @@ Only a clean engine run with a valid result, exact source SHA, equal budgets, an
 
 `promotion_gate.status=HOLD` remains unconditional: a known authored stage pack, static hand-written weights and headless rules-only runtime do not demonstrate actual game UI play, out-of-distribution generalization, or improved player experience.
 
+## First CI observation (pinned 18-stage pack)
+
+After both fixed policies were executed under the original Godot rule kernel:
+
+| Split | Rule greedy solved | Direct weights solved | Placement-sequence disagreements |
+|---|---:|---:|---:|
+| Development 001–006 | 6/6 | 6/6 | 0/6 |
+| Evaluation 007–018 | 11/12 | 11/12 | 0/12 |
+
+Both fail **stage 008** with visible-clue L1 error **2**. Every selected post sequence was identical across all 18 stages. This benchmark therefore **does not establish any neural advantage or a distinct learned policy**. It validates a reproducible, paired evaluation and reveals that the hand-written linear scorer currently mimics the simple greedy rule. This observation motivated recording `paired_outcomes` and disagreement metrics.
+
 ## Roadmap
 
 Next step is an actual click/tap automation adapter to SHADOW SUM's authored UI with screenshots of the original scene, frame hashes, and runtime error monitoring. Also add a genuinely blind stage pack generated after policy freeze and a stronger search/backtracking baseline before asserting comparative intelligence. This service should remain incubation until then.
