@@ -9,7 +9,7 @@ import pytest
 from mgsf.neural_game_benchmark import (
     DEVELOPMENT_IDS, EVALUATION_IDS, FEATURES, POLICIES, WEIGHTS, Stage,
     _feature_vector, build_plan, choose_posts, load_public_stages, shadow,
-    validate_game_trace, visible_error,
+    validate_game_trace, visible_error, paired_outcomes,
 )
 
 
@@ -161,6 +161,34 @@ def test_missing_stage_rejected(tmp_path: Path) -> None:
     path.write_text(json.dumps(stages), encoding="utf-8")
     with pytest.raises(ValueError, match="eighteen"):
         load_public_stages(path)
+
+
+def test_paired_outcomes_report_identical_behavior_as_zero_divergence(tmp_path: Path) -> None:
+    plan = build_plan(load_public_stages(_sample_pack(tmp_path)), "source", "rules")
+    engine = _mock_verified_engine(plan)
+    errors, summary = validate_game_trace(plan, engine)
+    assert errors == []
+    paired = paired_outcomes(summary)
+    assert paired["development"]["stages"] == 6
+    assert paired["evaluation"]["stages"] == 12
+    assert paired["development"]["different_action_sequences"] == 0
+    assert paired["evaluation"]["different_action_sequences"] == 0
+    assert paired["evaluation"]["both_solved"] == 12
+
+
+def test_paired_outcomes_detect_policy_divergence() -> None:
+    base = [{"stage_id": 1, "actions": [[0, 0]], "success": True}]
+    different = [{"stage_id": 1, "actions": [[0, 1]], "success": False}]
+    output = paired_outcomes({
+        "evaluation": {
+            "rule_greedy": {"results": base},
+            "direct_weights": {"results": different},
+        }
+    })
+    assert output["evaluation"]["different_action_sequences"] == 1
+    assert output["evaluation"]["action_disagreement_rate"] == 1.0
+    assert output["evaluation"]["rule_only_solved"] == 1
+    assert output["evaluation"]["direct_weights_only_solved"] == 0
 
 
 def test_unknown_policy_rejected(tmp_path: Path) -> None:
