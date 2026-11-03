@@ -101,6 +101,17 @@ services:
       live_fixture: recorded_godot_neural_fixture_run
       authored_game_required_for_promotion: true
 
+  - id: neural-game-intelligence-benchmark
+    name: Neural Game Intelligence Benchmark
+    stage: incubation
+    problem: Compare explicit rule heuristics against hand-written neural weights using original authored Godot puzzle rules and stages.
+    milestone: MGSF-WSP-M0.4
+    entrypoint: mgsf neural-game-benchmark
+    service_contract: docs/MGSF_NEURAL_GAME_INTELLIGENCE_BENCHMARK_M0_4.md
+    evidence:
+      live_rules_kernel: recorded_authored_godot_rules_benchmark
+      full_game_ui_required_for_promotion: true
+
   - id: build-doctor
     name: Game Build Doctor
     stage: candidate
