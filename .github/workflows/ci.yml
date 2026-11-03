@@ -63,6 +63,28 @@ jobs:
           grep -q '"status": "HOLD"' ci-evidence/neural-behavior/neural-behavior-evidence.json
           grep -q '"execution_status": "not_executed"' ci-evidence/neural-behavior/godot-handoff.json
 
+      - name: Run real Godot neural agent and verify direct evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          mgsf godot-neural-bridge \
+            ci-evidence/neural-behavior/godot-handoff.json \
+            --project fixtures/godot-neural-bridge \
+            --godot /tmp/godot/Godot_v4.7.2-stable_linux.x86_64 \
+            --xvfb --count 6 --output-root ci-evidence
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          evidence = json.loads(Path("ci-evidence/godot-neural-bridge/godot-neural-bridge-evidence.json").read_text())
+          assert evidence["status"] == "PASS", evidence["errors"]
+          assert evidence["matched_episodes"] == 6
+          assert evidence["production_game_measurement"] is False
+          assert evidence["screenshots_are_direct_godot_viewport_capture"] is True
+          assert evidence["promotion_gate"]["status"] == "HOLD"
+          assert evidence["artifacts"]["before.png"]["sha256"] != evidence["artifacts"]["after.png"]["sha256"]
+          print("PASS: 6 Godot traces match Python and two distinct Godot viewport PNGs are present")
+          PY
+
       - run: mgsf playtest-report fixtures/playtest-report/mgel-session-001 --output-root ci-evidence
       - run: mgsf dogfood-playtest-report dogfood/vertical-slice-c6-near-miss/record.json dogfood/vertical-slice-c6-near-miss/runtime_log.txt --output-root ci-evidence
       - run: mgsf gameplay-capture fixtures/gameplay-capture/vertical-slice-reconstruction --output-root ci-evidence
