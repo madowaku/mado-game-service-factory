@@ -109,6 +109,11 @@ jobs:
           assert doc["promotion_gate"]["status"] == "HOLD"
           assert doc["full_game_ui_executed"] is False
           assert doc["stage_solutions_used_by_policies"] is False
+          paired = doc["paired_outcomes"]
+          assert paired["development"]["different_action_sequences"] == 0
+          assert paired["evaluation"]["different_action_sequences"] == 0
+          assert paired["evaluation"]["shared_failure_stage_ids"] == [8]
+          assert paired["evaluation"]["both_solved"] == 11
           for name in ("rule_greedy", "direct_weights"):
               assert doc["summaries"]["development"][name]["stages"] == 6
               assert doc["summaries"]["evaluation"][name]["stages"] == 12
