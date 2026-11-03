@@ -154,6 +154,19 @@ The product executable has no intentional telemetry or automatic cloud upload in
 - Keep downloaded product behavior local unless a future network feature is explicitly disclosed.
 - Do not call the preview paid-release-ready until external-user and final legal/third-party review gates pass.
 
+## Weight-Space Game AI Lab (incubation)
+
+MGSF-WSP-M0.1 tests direct neural-weight writing and five-coefficient repair on a tiny deterministic grid game, without gradient descent, LLM API calls, or a GPU. This is an independent demonstration inspired by the [Weight-Space Programming research](https://rikiyat.github.io/blog/weight-space-programming/), **not** a reproduction of its published game benchmarks.
+
+```bash
+mgsf weight-space-eval fixtures/weight-space/gridworld-v1.json --output-root evidence/weight-space
+pytest -q tests/test_weight_space_game_ai.py
+```
+
+The included 12 hand-selected scenarios show unrepaired 4/12 successes and repaired 12/12 successes. Every run records exact weights, changes, traces and provenance. Fixture evidence always remains `HOLD`; real-game integration and independent evaluation are not yet complete.
+
+See [the M0.1 experiment contract](docs/MGSF_WEIGHT_SPACE_GAME_AI_M0_1.md).
+
 ## Next boundary
 
 **MGSF-M0.5: QUIC Transport Probe / Network Evidence Harness**

@@ -68,6 +68,17 @@ services:
     entrypoint: mgsf prototype-promote
     service_contract: docs/MGSF_M0_6_TO_M0_8_EDENSPARK_PROTOTYPE_LOOP.md
 
+  - id: weight-space-game-ai-lab
+    name: Weight-Space Game AI Lab
+    stage: incubation
+    problem: Test direct neural-policy weight construction and controlled patching for game-playing behavior.
+    milestone: MGSF-WSP-M0.1
+    entrypoint: mgsf weight-space-eval
+    service_contract: docs/MGSF_WEIGHT_SPACE_GAME_AI_M0_1.md
+    evidence:
+      fixture: deterministic_weight_space_fixture
+      live_required_for_promotion: true
+
   - id: build-doctor
     name: Game Build Doctor
     stage: candidate

@@ -16,6 +16,7 @@ from .playtest_report import run_playtest_report
 from .prototype_promotion import promote_prototype
 from .real_game_bridge import run_real_game_bridge, run_real_game_dogfood
 from .transport_probe import run_fixture as run_transport_fixture
+from .weight_space_game_ai import run_fixture as run_weight_space_fixture
 
 
 def _catalog_path(value: str | None) -> Path:
@@ -146,6 +147,18 @@ def main() -> int:
         help="output directory for transport evidence",
     )
 
+    weight_space = sub.add_parser(
+        "weight-space-eval",
+        help="Evaluate a directly written neural policy and a five-weight repair in a grid fixture",
+    )
+    weight_space.add_argument("fixture", type=Path, help="weight-space gridworld fixture JSON")
+    weight_space.add_argument(
+        "--output-root",
+        type=Path,
+        default=Path("evidence/weight-space"),
+        help="output directory for deterministic weight-space evidence",
+    )
+
     edenspark_plan = sub.add_parser(
         "edenspark-plan",
         help="Compile a game hypothesis into an EdenSpark/Codex mission pack",
@@ -235,6 +248,12 @@ def main() -> int:
         evidence_path = run_transport_fixture(args.fixture, args.output_root)
         print(f"Transport evidence: {evidence_path}")
         print("service=quic-transport-probe evidence=fixture gate=HOLD")
+        return 0
+
+    if args.command == "weight-space-eval":
+        evidence_path = run_weight_space_fixture(args.fixture, args.output_root)
+        print(f"Weight-space evidence: {evidence_path}")
+        print("service=weight-space-game-ai-lab evidence=fixture gate=HOLD")
         return 0
 
     if args.command == "edenspark-plan":
