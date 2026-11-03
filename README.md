@@ -177,6 +177,17 @@ mgsf neural-behavior-eval fixtures/weight-space/gridworld-v1.json --seed 2026110
 
 The handoff has `execution_status=not_executed`: it is not evidence that a Godot game ran the policy. Every fixture-only result remains `HOLD`. See [the M0.2 contract](docs/MGSF_NEURAL_BEHAVIOR_INTELLIGENCE_M0_2.md).
 
+## Neural Game Agent Bridge (MGSF-WSP-M0.3, incubation)
+
+A self-contained **real Godot 4** grid game reads the M0.2 handoff, executes its affine policy, draws the actual board, and saves two direct Godot viewport PNGs. Python independently matches all action indices, coordinates, outcomes and numerical action scores to its own expected traces.
+
+```bash
+mgsf neural-behavior-eval fixtures/weight-space/gridworld-v1.json --output-root evidence/neural-behavior
+mgsf godot-neural-bridge evidence/neural-behavior/godot-handoff.json --godot godot --xvfb --output-root evidence
+```
+
+Outputs `evidence/godot-neural-bridge/` including `godot-neural-bridge-evidence.json`, `godot-trace.json`, `before.png`, `after.png`, runtime logs, and cryptographic file hashes. The tested game is a standalone Godot fixture, **not the existing vertical-slice or another shipped game**. Its runtime validation can PASS while the independent promotion gate stays `HOLD`. See [M0.3 contract](docs/MGSF_NEURAL_GAME_AGENT_BRIDGE_M0_3.md).
+
 ## Next boundary
 
 **MGSF-M0.5: QUIC Transport Probe / Network Evidence Harness**

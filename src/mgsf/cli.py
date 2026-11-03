@@ -18,6 +18,7 @@ from .real_game_bridge import run_real_game_bridge, run_real_game_dogfood
 from .transport_probe import run_fixture as run_transport_fixture
 from .weight_space_game_ai import run_fixture as run_weight_space_fixture
 from .neural_behavior_intelligence import run_intelligence
+from .godot_neural_bridge import run_godot_neural_bridge
 
 
 def _catalog_path(value: str | None) -> Path:
@@ -172,6 +173,23 @@ def main() -> int:
         help="output root for the evidence JSON, HTML viewer, and Godot contract",
     )
 
+    neural_bridge = sub.add_parser(
+        "godot-neural-bridge",
+        help="Run the M0.2 neural policy inside a real Godot grid fixture and verify engine evidence",
+    )
+    neural_bridge.add_argument("handoff", type=Path, help="generated M0.2 godot-handoff.json")
+    neural_bridge.add_argument(
+        "--project", type=Path, default=Path("fixtures/godot-neural-bridge"),
+        help="Godot project that executes and renders the neural grid game",
+    )
+    neural_bridge.add_argument("--godot", required=True, help="Godot 4.x executable")
+    neural_bridge.add_argument("--count", type=int, default=6, help="number of held-out episodes to execute")
+    neural_bridge.add_argument("--xvfb", action="store_true", help="render under Xvfb on Linux")
+    neural_bridge.add_argument(
+        "--output-root", type=Path, default=Path("evidence"),
+        help="root of the provenance-preserving Godot bridge evidence",
+    )
+
     edenspark_plan = sub.add_parser(
         "edenspark-plan",
         help="Compile a game hypothesis into an EdenSpark/Codex mission pack",
@@ -276,6 +294,18 @@ def main() -> int:
         print(f"Neural behavior evidence: {evidence_path}")
         print("service=neural-behavior-intelligence evidence=fixture gate=HOLD")
         return 0
+
+    if args.command == "godot-neural-bridge":
+        result = run_godot_neural_bridge(
+            args.handoff, args.project, args.godot, args.output_root,
+            count=args.count, xvfb=args.xvfb,
+        )
+        print(f"Godot neural bridge evidence: {result.evidence_path}")
+        print(
+            f"service=neural-game-agent-bridge status={result.status} "
+            f"matched={result.matched_episodes} gate=HOLD"
+        )
+        return 0 if result.status == "PASS" else 1
 
     if args.command == "edenspark-plan":
         root = create_mission_pack(args.mission, args.output_root)
