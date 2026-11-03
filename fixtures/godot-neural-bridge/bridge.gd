@@ -73,7 +73,8 @@ func _simulate(episode: Dictionary, policy: Dictionary) -> Dictionary:
     hazard = _at(episode["hazard"])
     display_status = "playing"
     current_step = 0
-    var visited: Dictionary = {_visited_key(agent): true}
+    var visited: Dictionary = {}
+    visited[_visited_key(agent)] = true
     var events: Array = []
     var outcome: String = "timeout"
     for step in range(1, int(episode["max_steps"]) + 1):
@@ -158,13 +159,13 @@ func _ready() -> void:
             hazard = _at(episode["hazard"])
             display_status = "initial"
             current_step = 0
-            if not await _screenshot(output_dir.path_join("before.png")):
+            if not (await _screenshot(output_dir.path_join("before.png"))):
                 _fail("could not capture before.png from Godot viewport")
                 return
         var result: Dictionary = _simulate(episode, policy)
         records.append(result)
         if i == 0:
-            if not await _screenshot(output_dir.path_join("after.png")):
+            if not (await _screenshot(output_dir.path_join("after.png"))):
                 _fail("could not capture after.png from Godot viewport")
                 return
     var evidence: Dictionary = {
