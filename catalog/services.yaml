@@ -79,6 +79,17 @@ services:
       fixture: deterministic_weight_space_fixture
       live_required_for_promotion: true
 
+  - id: neural-behavior-intelligence
+    name: Neural Behavior Intelligence
+    stage: incubation
+    problem: Audit action logits, test held-out grid layouts, and export a Godot handoff contract.
+    milestone: MGSF-WSP-M0.2
+    entrypoint: mgsf neural-behavior-eval
+    service_contract: docs/MGSF_NEURAL_BEHAVIOR_INTELLIGENCE_M0_2.md
+    evidence:
+      fixture: deterministic_neural_behavior_fixture
+      live_required_for_promotion: true
+
   - id: build-doctor
     name: Game Build Doctor
     stage: candidate
