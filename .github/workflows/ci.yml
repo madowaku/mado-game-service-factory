@@ -43,6 +43,15 @@ jobs:
           fi
 
       - run: mgsf validate-catalog
+      - name: Verify weight-space policy fixture and HOLD gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          mgsf weight-space-eval \
+            fixtures/weight-space/gridworld-v1.json \
+            --output-root ci-evidence/weight-space
+          grep -q '"status": "HOLD"' ci-evidence/weight-space/weight-space-game-ai-evidence.json
+
       - run: mgsf playtest-report fixtures/playtest-report/mgel-session-001 --output-root ci-evidence
       - run: mgsf dogfood-playtest-report dogfood/vertical-slice-c6-near-miss/record.json dogfood/vertical-slice-c6-near-miss/runtime_log.txt --output-root ci-evidence
       - run: mgsf gameplay-capture fixtures/gameplay-capture/vertical-slice-reconstruction --output-root ci-evidence
