@@ -167,6 +167,16 @@ The included 12 hand-selected scenarios show unrepaired 4/12 successes and repai
 
 See [the M0.1 experiment contract](docs/MGSF_WEIGHT_SPACE_GAME_AI_M0_1.md).
 
+## Neural Behavior Intelligence (MGSF-WSP-M0.2, incubation)
+
+Exact logit-level explanations, seeded held-out grid cases, a dependency-free HTML summary, and a JSON Godot handoff **contract** are available on the M0.2 branch:
+
+```bash
+mgsf neural-behavior-eval fixtures/weight-space/gridworld-v1.json --seed 20261103 --count 40 --output-root evidence/neural-behavior
+```
+
+The handoff has `execution_status=not_executed`: it is not evidence that a Godot game ran the policy. Every fixture-only result remains `HOLD`. See [the M0.2 contract](docs/MGSF_NEURAL_BEHAVIOR_INTELLIGENCE_M0_2.md).
+
 ## Next boundary
 
 **MGSF-M0.5: QUIC Transport Probe / Network Evidence Harness**

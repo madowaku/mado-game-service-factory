@@ -17,6 +17,7 @@ from .prototype_promotion import promote_prototype
 from .real_game_bridge import run_real_game_bridge, run_real_game_dogfood
 from .transport_probe import run_fixture as run_transport_fixture
 from .weight_space_game_ai import run_fixture as run_weight_space_fixture
+from .neural_behavior_intelligence import run_intelligence
 
 
 def _catalog_path(value: str | None) -> Path:
@@ -159,6 +160,18 @@ def main() -> int:
         help="output directory for deterministic weight-space evidence",
     )
 
+    behavior = sub.add_parser(
+        "neural-behavior-eval",
+        help="Analyze exact neural action scores on deterministic held-out grid layouts",
+    )
+    behavior.add_argument("fixture", type=Path, help="M0.1 gridworld fixture JSON")
+    behavior.add_argument("--seed", type=int, default=20261103)
+    behavior.add_argument("--count", type=int, default=40)
+    behavior.add_argument(
+        "--output-root", type=Path, default=Path("evidence/neural-behavior"),
+        help="output root for the evidence JSON, HTML viewer, and Godot contract",
+    )
+
     edenspark_plan = sub.add_parser(
         "edenspark-plan",
         help="Compile a game hypothesis into an EdenSpark/Codex mission pack",
@@ -254,6 +267,14 @@ def main() -> int:
         evidence_path = run_weight_space_fixture(args.fixture, args.output_root)
         print(f"Weight-space evidence: {evidence_path}")
         print("service=weight-space-game-ai-lab evidence=fixture gate=HOLD")
+        return 0
+
+    if args.command == "neural-behavior-eval":
+        evidence_path = run_intelligence(
+            args.fixture, args.output_root, seed=args.seed, count=args.count,
+        )
+        print(f"Neural behavior evidence: {evidence_path}")
+        print("service=neural-behavior-intelligence evidence=fixture gate=HOLD")
         return 0
 
     if args.command == "edenspark-plan":

@@ -52,6 +52,17 @@ jobs:
             --output-root ci-evidence/weight-space
           grep -q '"status": "HOLD"' ci-evidence/weight-space/weight-space-game-ai-evidence.json
 
+      - name: Verify neural behavior heldout contract and HOLD gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          mgsf neural-behavior-eval \
+            fixtures/weight-space/gridworld-v1.json \
+            --seed 20261103 --count 40 \
+            --output-root ci-evidence/neural-behavior
+          grep -q '"status": "HOLD"' ci-evidence/neural-behavior/neural-behavior-evidence.json
+          grep -q '"execution_status": "not_executed"' ci-evidence/neural-behavior/godot-handoff.json
+
       - run: mgsf playtest-report fixtures/playtest-report/mgel-session-001 --output-root ci-evidence
       - run: mgsf dogfood-playtest-report dogfood/vertical-slice-c6-near-miss/record.json dogfood/vertical-slice-c6-near-miss/runtime_log.txt --output-root ci-evidence
       - run: mgsf gameplay-capture fixtures/gameplay-capture/vertical-slice-reconstruction --output-root ci-evidence
