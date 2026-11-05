@@ -128,9 +128,7 @@ def build_pipeline_pack(mission: dict[str, Any]) -> dict[str, Any]:
             "argv": [
                 "mado-cockpit", "operator", "result", "<OPERATOR_ID>", "builder",
                 "--status", "completed", "--summary", "<VERIFIED_BUILDER_SUMMARY>",
-                "--evidence", "git_diff=<WORKTREE_RELATIVE_FILE>",
                 "--evidence", "test_result=<WORKTREE_RELATIVE_FILE>",
-                "--evidence", "session_trace=<COCKPIT_SESSION_ID>",
             ],
             "when": "after producing real evidence: replace all placeholders",
         },
