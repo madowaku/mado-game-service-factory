@@ -181,3 +181,64 @@ def test_invalid_sha_is_explicit_error(tmp_path: Path) -> None:
     project, adapter = _adapter(tmp_path)
     with pytest.raises(ValueError, match="full lowercase"):
         _result(tmp_path, project, mission, adapter, source_sha="HEAD")
+
+
+def test_optional_creative_workstreams_require_integrity_receipts(tmp_path: Path) -> None:
+    mission = _mission(tmp_path, tracks=["gameplay", "art", "audio"])
+    project, adapter = _adapter(tmp_path)
+    initial = _result(tmp_path, project, mission, adapter)
+    assert initial["status"] == "ITERATE"
+    assert any("missing creative output manifest" in x for x in initial["failures"])
+
+    art = _file(project / "assets" / "art-manifest.json", b'{"assets":[]}')
+    audio = _file(project / "audio" / "recipe-set.json", b'{"recipes":[]}')
+    manifest = {
+        "schema_version": 1,
+        "mission_id": "slice-smoke-001",
+        "art": {
+            "source": "mado-asset-foundry",
+            "path": art.relative_to(project).as_posix(),
+            "sha256": sha256(art.read_bytes()).hexdigest(),
+        },
+        "audio": {
+            "source": "mado-game-audio-loop",
+            "path": audio.relative_to(project).as_posix(),
+            "sha256": sha256(audio.read_bytes()).hexdigest(),
+        },
+    }
+    receipt_file = _file(tmp_path / "creative.json", json.dumps(manifest).encode())
+    report = evaluate_godot_pipeline(
+        project, mission, adapter, tmp_path / "final",
+        expected_source_sha=SHA, creative_manifest_path=receipt_file,
+    )
+    verdict = json.loads(report.read_text(encoding="utf-8"))
+    assert verdict["status"] == "READY_FOR_QA"
+    assert len(verdict["verified_creative_outputs"]) == 2
+    assert all(not item["semantic_review_completed"] for item in verdict["verified_creative_outputs"])
+    assert verdict["promotion_eligible"] is False
+
+    _file(art, b"tampered")
+    report = evaluate_godot_pipeline(
+        project, mission, adapter, tmp_path / "tampered",
+        expected_source_sha=SHA, creative_manifest_path=receipt_file,
+    )
+    verdict = json.loads(report.read_text(encoding="utf-8"))
+    assert verdict["status"] == "ITERATE"
+    assert "art: sha256 mismatch" in verdict["failures"]
+
+
+def test_creative_receipt_path_cannot_escape_project(tmp_path: Path) -> None:
+    mission = _mission(tmp_path, tracks=["gameplay", "art"])
+    project, adapter = _adapter(tmp_path)
+    manifest = {
+        "schema_version": 1, "mission_id": "slice-smoke-001",
+        "art": {"source": "mado-asset-foundry", "path": "../../outside.json", "sha256": "0" * 64},
+    }
+    receipt = _file(tmp_path / "creative.json", json.dumps(manifest).encode())
+    report = evaluate_godot_pipeline(
+        project, mission, adapter, tmp_path / "final",
+        expected_source_sha=SHA, creative_manifest_path=receipt,
+    )
+    verdict = json.loads(report.read_text(encoding="utf-8"))
+    assert verdict["status"] == "ITERATE"
+    assert "art: missing file or path escape" in verdict["failures"]
