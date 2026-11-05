@@ -81,6 +81,24 @@ jobs:
           sha256sum ci-evidence/godot-capture-adapter/vertical-slice-c6-direct/raw-capture/*.png
           file ci-evidence/godot-capture-adapter/vertical-slice-c6-direct/raw-capture/*.png
 
+      - name: Verify M0.2 Creative Pipeline with pinned real Godot capture
+        shell: bash
+        run: |
+          set -euo pipefail
+          mgsf studio-pipeline-pack \
+            fixtures/studio/mission-vertical-slice-smoke-001.json \
+            --output-root ci-evidence/studio-pipeline-pack
+          mgsf studio-pipeline-eval \
+            vendor/vertical-slice \
+            fixtures/studio/mission-vertical-slice-smoke-001.json \
+            ci-evidence/godot-capture-adapter/vertical-slice-c6-direct/adapter_eval.json \
+            --source-sha f0514229d7f2036ec25646d09e3647c8d870dadb \
+            --output-root ci-evidence/studio-pipeline
+          grep -q '"status": "READY_FOR_QA"' \
+            ci-evidence/studio-pipeline/vertical-slice-smoke-001/pipeline-eval.json
+          grep -q '"promotion_eligible": false' \
+            ci-evidence/studio-pipeline/vertical-slice-smoke-001/pipeline-eval.json
+
       - run: pytest -q
 
       - uses: actions/upload-artifact@v4
