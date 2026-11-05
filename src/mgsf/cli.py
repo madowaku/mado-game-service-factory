@@ -250,6 +250,7 @@ def main() -> int:
     pipeline_eval.add_argument("mission", type=Path, help="Studio mission JSON")
     pipeline_eval.add_argument("adapter_eval", type=Path, help="Godot adapter_eval.json")
     pipeline_eval.add_argument("--source-sha", required=True, help="expected pinned source commit")
+    pipeline_eval.add_argument("--creative-manifest", type=Path, help="optional art/audio receipt manifest")
     pipeline_eval.add_argument("--output-root", type=Path, default=Path("evidence/studio-pipeline"))
 
     args = parser.parse_args()
@@ -267,6 +268,7 @@ def main() -> int:
             args.adapter_eval,
             args.output_root,
             expected_source_sha=args.source_sha,
+            creative_manifest_path=args.creative_manifest,
         )
         status = loads(output.read_text(encoding="utf-8"))["status"]
         print(f"Studio pipeline evaluation: {output}")
