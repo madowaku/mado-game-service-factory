@@ -15,6 +15,8 @@ from .godot_capture_adapter import run_godot_capture_adapter
 from .playtest_report import run_playtest_report
 from .prototype_promotion import promote_prototype
 from .real_game_bridge import run_real_game_bridge, run_real_game_dogfood
+from .studio_orchestrator import create_studio_plan, evaluate_studio_evidence
+from json import loads
 from .transport_probe import run_fixture as run_transport_fixture
 
 
@@ -216,7 +218,36 @@ def main() -> int:
         help="root directory for promotion decisions",
     )
 
+    studio_plan = sub.add_parser(
+        "studio-plan",
+        help="Compile an advisory creative studio plan without invoking agents",
+    )
+    studio_plan.add_argument("mission", type=Path, help="studio mission JSON")
+    studio_plan.add_argument("--output-root", type=Path, default=Path("missions/studio"))
+
+    studio_gate = sub.add_parser(
+        "studio-gate",
+        help="Verify studio evidence receipts; never promote from receipts alone",
+    )
+    studio_gate.add_argument("project", type=Path, help="project root containing evidence files")
+    studio_gate.add_argument("mission", type=Path, help="studio mission JSON")
+    studio_gate.add_argument("manifest", type=Path, help="evidence receipt manifest JSON")
+    studio_gate.add_argument("--output-root", type=Path, default=Path("evidence/studio"))
+
     args = parser.parse_args()
+
+    if args.command == "studio-plan":
+        plan = create_studio_plan(args.mission, args.output_root)
+        print(f"Studio plan: {plan}")
+        print("execution=advisory_only promotion=HOLD")
+        return 0
+
+    if args.command == "studio-gate":
+        gate = evaluate_studio_evidence(args.project, args.mission, args.manifest, args.output_root)
+        status = loads(gate.read_text(encoding="utf-8"))["status"]
+        print(f"Studio gate: {gate}")
+        print(f"service=creative-studio-orchestrator status={status} promotion=HOLD")
+        return 0 if status in {"HOLD", "READY_FOR_REVIEW"} else 1
 
     if args.command in {"validate-catalog", "list"}:
         catalog = load_catalog(_catalog_path(args.path))
