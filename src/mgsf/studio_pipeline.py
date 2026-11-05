@@ -224,6 +224,57 @@ def _valid_png(path: Path) -> tuple[int, int] | None:
     return width, height
 
 
+def _creative_receipts(
+    project: Path, mission: dict[str, Any], manifest_path: str | Path | None,
+) -> tuple[list[dict[str, Any]], list[str]]:
+    """Verify optional production outputs by bytes; semantic QA is separate."""
+    required = [track for track in ("art", "audio") if track in mission["workstreams"]]
+    if not required:
+        return [], []
+    if manifest_path is None:
+        return [], [f"missing creative output manifest for: {', '.join(required)}"]
+    try:
+        manifest = json.loads(Path(manifest_path).read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        return [], [f"creative manifest cannot be read: {type(exc).__name__}"]
+    if not isinstance(manifest, dict) or manifest.get("schema_version") != 1 or manifest.get("mission_id") != mission["mission_id"]:
+        return [], ["creative manifest schema or mission_id mismatch"]
+    systems = {"art": "mado-asset-foundry", "audio": "mado-game-audio-loop"}
+    failures: list[str] = []
+    verified: list[dict[str, Any]] = []
+    for track in required:
+        receipt = manifest.get(track)
+        if not isinstance(receipt, dict):
+            failures.append(f"{track}: no output receipt")
+            continue
+        relative, digest = receipt.get("path"), receipt.get("sha256")
+        if receipt.get("source") != systems[track]:
+            failures.append(f"{track}: source system mismatch")
+            continue
+        if not isinstance(relative, str) or not relative or Path(relative).is_absolute():
+            failures.append(f"{track}: invalid path")
+            continue
+        source = (project / relative).resolve()
+        if not _within(project, source) or not source.is_file():
+            failures.append(f"{track}: missing file or path escape")
+            continue
+        actual = _digest(source)
+        if not isinstance(digest, str) or not re.fullmatch(r"[0-9a-f]{64}", digest) or digest != actual["sha256"]:
+            failures.append(f"{track}: sha256 mismatch")
+            continue
+        verified.append({
+            "track": track,
+            "source_system": systems[track],
+            "path": source.relative_to(project).as_posix(),
+            **actual,
+            "semantic_review_completed": False,
+        })
+    for track in ("art", "audio"):
+        if track not in required and track in manifest:
+            failures.append(f"unexpected unrequested creative track: {track}")
+    return verified, failures
+
+
 def evaluate_godot_pipeline(
     project: str | Path,
     mission_path: str | Path,
@@ -231,6 +282,7 @@ def evaluate_godot_pipeline(
     output_root: str | Path,
     *,
     expected_source_sha: str,
+    creative_manifest_path: str | Path | None = None,
 ) -> Path:
     """Verify actual capture adapter outputs, then require independent QA.
 
@@ -296,6 +348,8 @@ def evaluate_godot_pipeline(
         except (ValueError, AttributeError, TypeError):
             failure.append("capture metadata invalid")
 
+    creative_files, creative_failures = _creative_receipts(root, mission, creative_manifest_path)
+    failure.extend(creative_failures)
     status = "READY_FOR_QA" if not failure else "ITERATE"
     verdict = {
         "schema_version": 1,
@@ -310,9 +364,10 @@ def evaluate_godot_pipeline(
         "source_head_sha": expected_source_sha,
         "adapter_eval_sha256": _digest(path)["sha256"],
         "verified_files": files,
+        "verified_creative_outputs": creative_files,
         "failures": failure,
         "cockpit_qa_completed": False,
-        "creative_tracks_verified": False,
+        "creative_tracks_verified": not creative_failures,
         "promotion_eligible": False,
     }
     destination = Path(output_root) / mission["mission_id"]
