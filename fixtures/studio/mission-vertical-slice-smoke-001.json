@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "mission_id": "vertical-slice-smoke-001",
+  "title": "Verify an existing Godot vertical slice through direct capture",
+  "hypothesis": "Recorded gameplay frames and input timeline can be traced to a pinned Godot project revision.",
+  "engine": "godot",
+  "workstreams": [
+    "gameplay"
+  ],
+  "success_criteria": [
+    "Godot preflight and playable scene launch succeed.",
+    "Direct PNG frames and interaction timeline are captured.",
+    "Runtime logs and source SHA are preserved for independent Cockpit QA."
+  ]
+}
