@@ -78,6 +78,18 @@ mgsf studio-gate <project-root> <mission.json> <evidence-manifest.json>
 
 `studio-plan` generates a machine-readable advisory plan. `studio-gate` validates evidence file paths and SHA-256 hashes, returning `HOLD`, `ITERATE`, or `READY_FOR_REVIEW`. **None of these statuses promotes a game or proves an engine run.** See [MGSF-STUDIO-M0.1 contract](docs/MGSF_STUDIO_M0_1_CREATIVE_ORCHESTRATOR.md).
 
+## Creative Pipeline Integration M0.2 (incubation)
+
+The M0.1 Studio Orchestrator now has a **Cockpit command recipe** and a **real Godot evidence checker**, while keeping agent/model execution opt-in:
+
+```sh
+mgsf studio-pipeline-pack fixtures/studio/mission-isometric-room-001.json
+# After a real Godot direct capture, verify source-bound runtime evidence:
+mgsf studio-pipeline-eval <project> <mission.json> <adapter_eval.json> --source-sha <40-char-commit>
+```
+
+Cockpit handles Builder→QA worktrees and capability gates; the MGSF pack describes the supported CLI steps but **does not launch them**. Optional MADO Asset Foundry and MADO Game Audio Loop artifacts can be bound by project-local SHA-256 receipts. The existing CI's real Godot `vertical-slice` capture feeds this checker. `READY_FOR_QA` is **not** a game-complete or promotion status. See [M0.2 contract](docs/MGSF_STUDIO_M0_2_CREATIVE_PIPELINE_INTEGRATION.md).
+
 ## Windows product preview
 
 Product:

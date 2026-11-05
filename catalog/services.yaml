@@ -81,6 +81,20 @@ services:
       review_status: READY_FOR_REVIEW
       live_required_for_promotion: true
 
+  - id: creative-pipeline-integration
+    name: Creative Pipeline Integration
+    stage: incubation
+    problem: Compile Cockpit handoffs and verify direct Godot evidence and optional asset/audio receipts before independent QA.
+    milestone: MGSF-STUDIO-M0.2
+    entrypoint: mgsf studio-pipeline-pack
+    eval_entrypoint: mgsf studio-pipeline-eval
+    service_contract: docs/MGSF_STUDIO_M0_2_CREATIVE_PIPELINE_INTEGRATION.md
+    evidence:
+      live: recorded_godot_capture
+      next_gate: independent_cockpit_qa
+      status: READY_FOR_QA
+      live_required_for_promotion: true
+
   - id: build-doctor
     name: Game Build Doctor
     stage: candidate
