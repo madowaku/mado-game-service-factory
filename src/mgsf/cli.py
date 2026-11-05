@@ -16,6 +16,7 @@ from .playtest_report import run_playtest_report
 from .prototype_promotion import promote_prototype
 from .real_game_bridge import run_real_game_bridge, run_real_game_dogfood
 from .studio_orchestrator import create_studio_plan, evaluate_studio_evidence
+from .studio_pipeline import create_pipeline_pack, evaluate_godot_pipeline
 from json import loads
 from .transport_probe import run_fixture as run_transport_fixture
 
@@ -234,7 +235,43 @@ def main() -> int:
     studio_gate.add_argument("manifest", type=Path, help="evidence receipt manifest JSON")
     studio_gate.add_argument("--output-root", type=Path, default=Path("evidence/studio"))
 
+    pipeline_pack = sub.add_parser(
+        "studio-pipeline-pack",
+        help="Create non-executing Cockpit handoff recipe and creative briefs",
+    )
+    pipeline_pack.add_argument("mission", type=Path)
+    pipeline_pack.add_argument("--output-root", type=Path, default=Path("missions/studio-pipeline"))
+
+    pipeline_eval = sub.add_parser(
+        "studio-pipeline-eval",
+        help="Verify recorded Godot capture evidence; still requires separate QA",
+    )
+    pipeline_eval.add_argument("project", type=Path, help="Godot project root")
+    pipeline_eval.add_argument("mission", type=Path, help="Studio mission JSON")
+    pipeline_eval.add_argument("adapter_eval", type=Path, help="Godot adapter_eval.json")
+    pipeline_eval.add_argument("--source-sha", required=True, help="expected pinned source commit")
+    pipeline_eval.add_argument("--output-root", type=Path, default=Path("evidence/studio-pipeline"))
+
     args = parser.parse_args()
+
+    if args.command == "studio-pipeline-pack":
+        output = create_pipeline_pack(args.mission, args.output_root)
+        print(f"Studio pipeline pack: {output}")
+        print("execution=manual_or_cockpit_granted status=PLAN_ONLY")
+        return 0
+
+    if args.command == "studio-pipeline-eval":
+        output = evaluate_godot_pipeline(
+            args.project,
+            args.mission,
+            args.adapter_eval,
+            args.output_root,
+            expected_source_sha=args.source_sha,
+        )
+        status = loads(output.read_text(encoding="utf-8"))["status"]
+        print(f"Studio pipeline evaluation: {output}")
+        print(f"status={status} independent_qa=required promotion=HOLD")
+        return 0 if status == "READY_FOR_QA" else 1
 
     if args.command == "studio-plan":
         plan = create_studio_plan(args.mission, args.output_root)
