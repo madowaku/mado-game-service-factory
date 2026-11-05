@@ -67,6 +67,17 @@ mgsf edenspark-loop <project> <mission.json> --max-iterations 3
 mgsf prototype-promote <evaluation.json> [<evaluation.json> ...]
 ```
 
+## Creative Studio Orchestrator M0.1 (incubation)
+
+Inspired by [Claude Code Game Studios](https://github.com/Donchitos/Claude-Code-Game-Studios), the Studio Orchestrator introduces **minimal, game-domain role routing** without installing upstream hooks or launching paid agents. Producer, gameplay developer, and independent QA are always planned; art and audio are optional. Execution and capability grants belong to the existing MADO Cockpit.
+
+```sh
+mgsf studio-plan fixtures/studio/mission-isometric-room-001.json
+mgsf studio-gate <project-root> <mission.json> <evidence-manifest.json>
+```
+
+`studio-plan` generates a machine-readable advisory plan. `studio-gate` validates evidence file paths and SHA-256 hashes, returning `HOLD`, `ITERATE`, or `READY_FOR_REVIEW`. **None of these statuses promotes a game or proves an engine run.** See [MGSF-STUDIO-M0.1 contract](docs/MGSF_STUDIO_M0_1_CREATIVE_ORCHESTRATOR.md).
+
 ## Windows product preview
 
 Product:

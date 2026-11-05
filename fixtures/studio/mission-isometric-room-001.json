@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "mission_id": "isometric-room-001",
+  "title": "One-room isometric interaction prototype",
+  "hypothesis": "A player can discover and repeat one satisfying interaction in an isometric diorama.",
+  "engine": "godot",
+  "success_criteria": [
+    "The room launches and accepts keyboard input.",
+    "The interaction produces visible feedback.",
+    "A direct gameplay capture and runtime log are retained for QA review."
+  ],
+  "workstreams": [
+    "gameplay",
+    "art",
+    "audio"
+  ]
+}
