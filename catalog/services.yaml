@@ -68,6 +68,19 @@ services:
     entrypoint: mgsf prototype-promote
     service_contract: docs/MGSF_M0_6_TO_M0_8_EDENSPARK_PROTOTYPE_LOOP.md
 
+  - id: creative-studio-orchestrator
+    name: Creative Studio Orchestrator
+    stage: incubation
+    problem: Route compact game-production workstreams through advisory role handoffs and triage evidence receipts.
+    milestone: MGSF-STUDIO-M0.1
+    entrypoint: mgsf studio-plan
+    eval_entrypoint: mgsf studio-gate
+    service_contract: docs/MGSF_STUDIO_M0_1_CREATIVE_ORCHESTRATOR.md
+    evidence:
+      fixture: deterministic_studio_receipts
+      review_status: READY_FOR_REVIEW
+      live_required_for_promotion: true
+
   - id: build-doctor
     name: Game Build Doctor
     stage: candidate
