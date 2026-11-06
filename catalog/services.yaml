@@ -87,3 +87,13 @@ services:
     name: Release Doctor
     stage: candidate
     problem: Run evidence-backed pre-release checks for game projects.
+
+  - id: shared-brain
+    name: MGSF Shared Brain
+    stage: incubation
+    problem: Curate project decisions and agent handoffs across ChatGPT, Codex, and Claude Code without losing GitHub evidence provenance.
+    milestone: MGSF Shared Brain M0.1
+    integration: notion-official-remote-mcp
+    service_contract: docs/MGSF_SHARED_BRAIN_M0_1.md
+    offline_eval: python scripts/shared_brain_check.py
+    live_required_for_promotion: true
