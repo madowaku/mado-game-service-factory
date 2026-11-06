@@ -1,0 +1,6 @@
+# MGSF Shared Brain M0.1: Notion official remote MCP.
+# No credentials are stored here. Each user authorizes locally:
+#   codex mcp login notion
+# OAuth may grant broad workspace access; read docs/MGSF_SHARED_BRAIN_M0_1.md first.
+[mcp_servers.notion]
+url = "https://mcp.notion.com/mcp"

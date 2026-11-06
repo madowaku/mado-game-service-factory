@@ -170,3 +170,15 @@ The previously planned External Tester Preview moves to the next unallocated mil
 
 
 Parallel agent-native boundary: run the first real EdenSpark dogfood mission on a local EdenSpark project with its generated MCP configuration. The target proof is one recorded Codex run that inspects the scene, compiles, plays, simulates input, preserves a screenshot or equivalent artifact, checks logs, and earns PASS.
+
+
+## MGSF Shared Brain M0.1 (incubation)
+
+Notion official MCP is the optional cross-agent context layer for ChatGPT, Codex and Claude Code. GitHub remains canonical for code and engine evidence. Credentials are never committed; OAuth must be completed by the user. All remote writes require approval in M0.1.
+
+- Setup, permissions, acceptance criteria: [Shared Brain M0.1](docs/MGSF_SHARED_BRAIN_M0_1.md)
+- Agent behavior contract: [Shared Brain Agent Operating Guide](shared-brain/AGENT_OPERATING_GUIDE.md)
+- Proposed, not yet published handoff: [seed.json](shared-brain/seed.json)
+- Offline validation: `python scripts/shared_brain_check.py` or `pytest tests/test_shared_brain.py`
+
+Live Notion OAuth, cross-agent read/write and user-approved handoff remain **NOT RUN** until the user connects a dedicated workspace.

@@ -1,0 +1,30 @@
+{
+  "schema_version": "mgsf.shared-brain.v0.1",
+  "records": [
+    {
+      "id": "mgsf-sf-door-handoff-001",
+      "kind": "handoff",
+      "title": "SF automatic door: initial validation handoff",
+      "project": "MGSF CAD Forge / Godot",
+      "status": "proposed",
+      "confidence": "unverified",
+      "owner": "human",
+      "created_at": "2026-11-06",
+      "summary": "Candidate proof: model and test an SF automatic door using CAD Forge, Blender, Godot MCP and Game Test Player. No engine run has been verified by this record.",
+      "decision": "No implementation or performance claim approved yet.",
+      "next_action": "Write scene/animation acceptance criteria and gather real engine evidence.",
+      "source_refs": [
+        "https://github.com/madowaku/mado-game-service-factory"
+      ],
+      "evidence_refs": [],
+      "supersedes": [],
+      "tags": [
+        "sf-door",
+        "godot",
+        "prototype"
+      ],
+      "visibility": "internal",
+      "publish_approved": false
+    }
+  ]
+}
