@@ -67,6 +67,23 @@ mgsf edenspark-loop <project> <mission.json> --max-iterations 3
 mgsf prototype-promote <evaluation.json> [<evaluation.json> ...]
 ```
 
+## Design-to-Code Bridge M0.1 (incubation)
+
+Original UI ideas and authorized visual references can now be compiled into
+revision-pinned Codex missions without overriding MADO's creative intent.
+
+```sh
+mgsf design-to-code-plan fixtures/design-to-code/madowaku-window-portal-001.json --output-root missions/design-to-code
+mgsf design-to-code-eval <mission-folder> <receipt.json> --project-root <local-project-folder>
+```
+
+The bridge creates mission instructions and checks local screenshot integrity.
+It does **not** run an agent or browser, calculate pixel differences, or approve
+release. The upstream design-to-code skill is pinned and must be reviewed and
+installed separately. Live UI evaluation can later hand off to the existing
+MADO Cockpit Playwright evidence flow. See
+[the M0.1 contract](docs/MGSF_DESIGN_TO_CODE_BRIDGE_M0_1.md).
+
 ## Windows product preview
 
 Product:
