@@ -221,7 +221,7 @@ def evaluate_render_receipt(mission_dir: Path, receipt_path: Path, project_root:
         }:
             raise ValueError("Invalid screenshot entry")
         state = item["state"]
-        if state not in {"desktop", "mobile", "tablet"} or state in names:
+        if state not in expected_viewports or state in names:
             raise ValueError("Unknown or duplicate screenshot state")
         names.add(state)
         relative = Path(item["path"])
