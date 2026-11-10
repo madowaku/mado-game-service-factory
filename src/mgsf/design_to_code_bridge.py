@@ -188,6 +188,17 @@ def evaluate_render_receipt(mission_dir: Path, receipt_path: Path, project_root:
     mission = _load_dict(mission_dir / "mission.json")
     if mission.get("schema") != MISSION_SCHEMA:
         raise ValueError("Invalid mission")
+    brief = mission.get("brief")
+    if not isinstance(brief, dict):
+        raise ValueError("Missing mission brief")
+    validate_brief(brief)
+    if (mission.get("id") != brief["id"]
+            or mission.get("brief_sha256") != _digest(_canonical(brief))
+            or mission.get("upstream", {}).get("commit") != UPSTREAM_COMMIT):
+        raise ValueError("Mission contents or upstream lock changed")
+    expected_viewports = {
+        v["name"]: (v["width"], v["height"]) for v in brief["viewports"]
+    }
     prompt = (mission_dir / "AGENT_PROMPT.md").read_bytes()
     if mission.get("prompt_sha256") != _digest(prompt):
         raise ValueError("Mission prompt changed")
@@ -219,12 +230,15 @@ def evaluate_render_receipt(mission_dir: Path, receipt_path: Path, project_root:
         path = (base / relative).resolve(strict=True)
         if not path.is_relative_to(base) or not path.is_file():
             raise ValueError("Screenshot escapes project")
+        if path.stat().st_size > 20 * 1024 * 1024:
+            raise ValueError("Screenshot exceeds size limit")
         raw = path.read_bytes()
-        if not raw or len(raw) > 20 * 1024 * 1024 or _digest(raw) != item["sha256"]:
+        if not raw or _digest(raw) != item["sha256"]:
             raise ValueError("Screenshot integrity mismatch")
         dimensions = _png_dimensions(path)
         if (type(item["width"]) is not int or type(item["height"]) is not int
-                or dimensions != (item["width"], item["height"])):
+                or dimensions != (item["width"], item["height"])
+                or dimensions != expected_viewports[state]):
             raise ValueError("Screenshot dimensions mismatch")
         checked.append({"state": state, "sha256": _digest(raw),
                         "width": dimensions[0], "height": dimensions[1],
