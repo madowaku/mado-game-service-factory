@@ -68,6 +68,22 @@ services:
     entrypoint: mgsf prototype-promote
     service_contract: docs/MGSF_M0_6_TO_M0_8_EDENSPARK_PROTOTYPE_LOOP.md
 
+  - id: design-to-code-bridge
+    name: Design-to-Code Bridge
+    stage: incubation
+    problem: Translate creative-intent-backed UI references into pinned Codex missions and provenance-aware render evidence without replacing project artistic conventions.
+    milestone: MGSF-UI-M0.1
+    entrypoint: mgsf design-to-code-plan
+    eval_entrypoint: mgsf design-to-code-eval
+    service_contract: docs/MGSF_DESIGN_TO_CODE_BRIDGE_M0_1.md
+    eval: evals/design-to-code-bridge.yaml
+    related_repo: madowaku/mado-cockpit
+    upstream: Atharvsinh-codez/skills
+    evidence:
+      fixture: deterministic_design_to_code_mission
+      live: independently_reviewed_playwright_build
+      live_required_for_promotion: true
+
   - id: build-doctor
     name: Game Build Doctor
     stage: candidate
