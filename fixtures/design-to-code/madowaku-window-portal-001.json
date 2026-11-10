@@ -1,0 +1,35 @@
+{
+  "schema": "mgsf.design-to-code-brief.v1",
+  "id": "madowaku-window-portal-001",
+  "source_mode": "greenfield_art_direction",
+  "surface_track": "marketing",
+  "project": "madowaku/madowaku-cockpit",
+  "routes": [
+    "/"
+  ],
+  "intent": "Create a welcoming madowaku portal where hand-drawn windows can be opened to reveal different small game and creative project rooms. Preserve a warm imperfect hand-made feeling rather than a glossy SaaS dashboard.",
+  "must_keep": [
+    "Clickable windows are meaningful native controls, not a flattened background image.",
+    "Keep deliberately irregular pixel-art and painterly edges where they carry character.",
+    "Respect existing MADO creative direction, approved assets, and project architecture.",
+    "Remain usable with keyboard, touch, reduced motion and mobile viewports."
+  ],
+  "references": [],
+  "viewports": [
+    {
+      "name": "desktop",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "name": "mobile",
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "interactions": [
+    "Activate a window with pointer or keyboard and open its content.",
+    "Close an opened window and restore focus to its trigger.",
+    "Honor reduced-motion settings in open and close transitions."
+  ]
+}

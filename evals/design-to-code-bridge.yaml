@@ -1,0 +1,23 @@
+id: design-to-code-bridge
+milestone: MGSF-UI-M0.1
+stage: incubation
+fixture:
+  brief: fixtures/design-to-code/madowaku-window-portal-001.json
+  expected_source_mode: greenfield_art_direction
+  expected_state: NOT_EXECUTED
+  expected_release_approved: false
+checks:
+  - mission has SHA-256 prompt hash and pinned upstream commit
+  - user creative constraints outrank upstream default styling
+  - desktop and mobile viewports required
+  - reference reconstruction rejects missing references
+  - fixture PNG evidence produces HOLD
+  - browser-claimed PNG integrity cannot directly approve release
+  - screenshot hash mismatch and traversal are rejected
+promotion:
+  requires_real_target_build: true
+  requires_real_playwright_capture: true
+  requires_independent_visual_comparison: true
+  requires_interaction_and_accessibility_review: true
+  requires_human_taste_review: true
+  fixture_may_promote: false

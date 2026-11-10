@@ -4,6 +4,7 @@ import argparse
 from pathlib import Path
 
 from .catalog import load_catalog
+from .design_to_code_bridge import create_mission_pack as create_design_to_code_mission, evaluate_render_receipt
 from .edenspark_agent_adapter import (
     create_mission_pack,
     evaluate_result as evaluate_edenspark_result,
@@ -216,6 +217,26 @@ def main() -> int:
         help="root directory for promotion decisions",
     )
 
+    design_plan = sub.add_parser(
+        "design-to-code-plan",
+        help="Create a pinned creative-intent-preserving UI implementation mission",
+    )
+    design_plan.add_argument("brief", type=Path, help="Design-to-code brief JSON")
+    design_plan.add_argument(
+        "--output-root", type=Path, default=Path("missions/design-to-code")
+    )
+
+    design_eval = sub.add_parser(
+        "design-to-code-eval",
+        help="Check screenshot provenance for a UI mission, without claiming visual QA",
+    )
+    design_eval.add_argument("mission_dir", type=Path)
+    design_eval.add_argument("receipt", type=Path)
+    design_eval.add_argument("--project-root", type=Path, required=True)
+    design_eval.add_argument(
+        "--output-root", type=Path, default=Path("evidence/design-to-code")
+    )
+
     args = parser.parse_args()
 
     if args.command in {"validate-catalog", "list"}:
@@ -230,6 +251,23 @@ def main() -> int:
         for service in services:
             print(f"{service['id']}\t{service['stage']}\t{service['name']}")
         return 0
+
+    if args.command == "design-to-code-plan":
+        root = create_design_to_code_mission(args.brief, args.output_root)
+        print(f"Design-to-code mission: {root}")
+        print("state=NOT_EXECUTED gate=HOLD")
+        return 0
+
+    if args.command == "design-to-code-eval":
+        report = evaluate_render_receipt(
+            args.mission_dir, args.receipt, args.project_root, args.output_root,
+        )
+        import json
+
+        verdict = json.loads(report.read_text(encoding="utf-8"))["verdict"]
+        print(f"Design-to-code evidence: {report}")
+        print(f"verdict={verdict} release_approved=false")
+        return 0 if verdict in {"HOLD", "READY_FOR_HUMAN_REVIEW"} else 1
 
     if args.command == "transport-probe":
         evidence_path = run_transport_fixture(args.fixture, args.output_root)
