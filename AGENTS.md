@@ -73,6 +73,15 @@ Prioritize:
 
 Do not call reconstructed SEGA slide values a live network measurement.
 
+## Design-to-Code Bridge M0.1 boundary
+
+- Compile UI intent with `mgsf design-to-code-plan` before upstream skill use.
+- Preserve user creative direction and authorized reference over third-party stylistic defaults.
+- Pin and review Atharvsinh-codez/skills before installing it in a project worktree.
+- Keep MADO Cockpit design-quality evidence as a separate gate; never invent a provider run.
+- Do not equate screenshots with semantic UI, verified Playwright origin, functionality, accessibility or a release decision.
+- A fixture is HOLD; an operator-supplied browser screenshot receipt is at most READY_FOR_HUMAN_REVIEW.
+
 ## Deferred boundary
 External Tester Preview remains important and moves to the next unallocated milestone after M0.5.
 
