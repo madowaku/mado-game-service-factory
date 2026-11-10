@@ -42,7 +42,7 @@ def _receipt(tmp_path: Path, mission: Path, *, origin: str = "fixture") -> Path:
     project = tmp_path / "project"
     project.mkdir(exist_ok=True)
     screenshots = []
-    for state, width, height in (("desktop", 480, 320), ("mobile", 390, 480)):
+    for state, width, height in (("desktop", 1440, 900), ("mobile", 390, 844)):
         image = _png(width, height)
         filename = state + ".png"
         (project / filename).write_bytes(image)
@@ -136,4 +136,25 @@ def test_reject_tampered_prompt(tmp_path: Path) -> None:
     receipt = _receipt(tmp_path, mission)
     (mission / "AGENT_PROMPT.md").write_text("tampered", encoding="utf-8")
     with pytest.raises(ValueError, match="Mission prompt changed"):
+        evaluate_render_receipt(mission, receipt, tmp_path / "project", tmp_path / "out")
+
+
+def test_reject_screenshot_not_matching_mission_viewport(tmp_path: Path) -> None:
+    mission = _build_mission(tmp_path)
+    receipt = _receipt(tmp_path, mission)
+    record = json.loads(receipt.read_text(encoding="utf-8"))
+    record["screenshots"][0]["width"] = 1234
+    receipt.write_text(json.dumps(record), encoding="utf-8")
+    with pytest.raises(ValueError, match="dimensions mismatch"):
+        evaluate_render_receipt(mission, receipt, tmp_path / "project", tmp_path / "out")
+
+
+def test_reject_mutated_mission_without_matching_brief_digest(tmp_path: Path) -> None:
+    mission = _build_mission(tmp_path)
+    receipt = _receipt(tmp_path, mission)
+    mission_file = mission / "mission.json"
+    data = json.loads(mission_file.read_text(encoding="utf-8"))
+    data["brief"]["id"] = "another-mission"
+    mission_file.write_text(json.dumps(data), encoding="utf-8")
+    with pytest.raises(ValueError, match="Mission contents"):
         evaluate_render_receipt(mission, receipt, tmp_path / "project", tmp_path / "out")
