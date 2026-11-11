@@ -1,0 +1,72 @@
+{
+  "schema": "mgsf.motion-graphics-brief.v1",
+  "id": "madowaku-window-opening-001",
+  "project": "madowaku/madowaku-cockpit",
+  "creative_intent": "クリックした窓がゆっくり開き、内側の世界の光が差し込む。手作り感のある少し不揃いな線と、やわらかな動きを保つ。",
+  "target": "web_svg",
+  "source_svg": "madowaku-window-source.svg",
+  "scene": {
+    "width": 640,
+    "height": 480,
+    "fps": 30,
+    "frames": 36
+  },
+  "states": [
+    "closed",
+    "opening",
+    "open"
+  ],
+  "tracks": [
+    {
+      "object_id": "window-sash",
+      "property": "scale",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": "1.00, 1.00"
+        },
+        {
+          "frame": 10,
+          "value": "0.90, 1.00"
+        },
+        {
+          "frame": 28,
+          "value": "0.42, 1.00"
+        },
+        {
+          "frame": 35,
+          "value": "0.40, 1.00"
+        }
+      ]
+    },
+    {
+      "object_id": "window-glow",
+      "property": "opacity",
+      "keyframes": [
+        {
+          "frame": 0,
+          "value": "0.0"
+        },
+        {
+          "frame": 12,
+          "value": "0.1"
+        },
+        {
+          "frame": 30,
+          "value": "0.85"
+        },
+        {
+          "frame": 35,
+          "value": "0.8"
+        }
+      ]
+    }
+  ],
+  "reduced_motion": "prefers-reduced-motion 時は移動・拡大縮小アニメーションを停止し、開いた窓と光の静止状態を即時表示する。",
+  "acceptance": [
+    "窓が閉じている状態と開いている状態を、アニメーションなしでも区別できる",
+    "開閉アニメーションは約1.2秒で完了し、途中の再クリックで状態が破綻しない",
+    "キーボード操作とフォーカス表示はSVGとは独立してWeb側で維持する",
+    "Safari/Firefox/Chrome とモバイルでSVG出力の表示を目視確認する"
+  ]
+}
