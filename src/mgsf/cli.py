@@ -5,6 +5,7 @@ from pathlib import Path
 
 from .catalog import load_catalog
 from .design_to_code_bridge import create_mission_pack as create_design_to_code_mission, evaluate_render_receipt
+from .motion_graphics_bridge import create_motion_pack, evaluate_svg_export
 from .edenspark_agent_adapter import (
     create_mission_pack,
     evaluate_result as evaluate_edenspark_result,
@@ -237,7 +238,37 @@ def main() -> int:
         "--output-root", type=Path, default=Path("evidence/design-to-code")
     )
 
+    motion_plan = sub.add_parser(
+        "motion-graphics-plan", help="Compile a Friction animation handoff without running the editor",
+    )
+    motion_plan.add_argument("brief", type=Path)
+    motion_plan.add_argument("--output-root", type=Path, default=Path("missions/motion-graphics"))
+
+    motion_eval = sub.add_parser(
+        "motion-graphics-eval", help="Inspect operator-supplied animated SVG; no render proof",
+    )
+    motion_eval.add_argument("mission_dir", type=Path)
+    motion_eval.add_argument("exported_svg", type=Path)
+    motion_eval.add_argument("--output-root", type=Path, default=Path("evidence/motion-graphics"))
+
     args = parser.parse_args()
+
+    if args.command == "motion-graphics-plan":
+        root = create_motion_pack(args.brief, args.output_root)
+        print(f"Friction handoff: {root}")
+        print("state=NOT_EXECUTED gate=HOLD")
+        return 0
+
+    if args.command == "motion-graphics-eval":
+        import json
+
+        report_path = evaluate_svg_export(
+            args.mission_dir, args.exported_svg, args.output_root,
+        )
+        status = json.loads(report_path.read_text(encoding="utf-8"))["verdict"]
+        print(f"Motion SVG evidence: {report_path}")
+        print(f"verdict={status} release_approved=false origin=unverified")
+        return 0
 
     if args.command in {"validate-catalog", "list"}:
         catalog = load_catalog(_catalog_path(args.path))

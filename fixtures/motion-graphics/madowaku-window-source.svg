@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480" viewBox="0 0 640 480" role="img" aria-labelledby="title desc">
+  <title id="title">madowaku window, static Friction input artwork</title>
+  <desc id="desc">Original handmade-inspired window sketch. Static source, not an exported animation.</desc>
+  <rect width="640" height="480" fill="#18282c"/>
+  <path d="M90 398 L93 75 Q92 65 106 64 L519 58 Q533 58 533 73 L539 397 Z" fill="#132529" stroke="#ddbd8c" stroke-width="13" stroke-linejoin="round"/>
+  <path d="M120 378 L120 94 L503 91 L507 375 Z" fill="#244b52"/>
+  <g id="window-glow" opacity="0">
+    <path d="M154 109 L491 108 L488 367 L162 367 Z" fill="#ffc77d"/>
+    <path d="M228 109 L464 109 L631 456 L380 456 Z" fill="#ffe4a4" opacity="0.5"/>
+  </g>
+  <g id="window-sash">
+    <path d="M122 94 Q123 88 131 88 L501 91 L505 377 L128 379 Z" fill="#214c54" stroke="#e9cda1" stroke-width="16"/>
+    <path d="M313 97 L316 368 M129 239 L495 237" stroke="#e9cda1" stroke-width="12" stroke-linecap="round"/>
+    <path d="M147 111 L301 110 L300 217 L147 219 Z" fill="#5c95a0"/>
+    <path d="M331 110 L481 109 L482 216 L330 219 Z" fill="#689ca3"/>
+    <path d="M145 256 L298 255 L296 359 L148 359 Z" fill="#527d85"/>
+    <path d="M334 255 L480 253 L481 360 L331 359 Z" fill="#5a8890"/>
+    <path d="M169 126 L185 124 M349 124 L362 123" stroke="#d4e8dd" stroke-width="5" opacity="0.6"/>
+    <path d="M304 143 Q315 138 313 150" fill="none" stroke="#9e7853" stroke-width="4"/>
+  </g>
+  <path d="M102 399 Q311 394 544 400" stroke="#f4d3a2" stroke-width="12" fill="none" stroke-linecap="round"/>
+</svg>
