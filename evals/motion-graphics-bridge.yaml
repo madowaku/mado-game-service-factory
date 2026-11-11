@@ -1,0 +1,18 @@
+service: motion-graphics-bridge
+milestone: MGSF-MOTION-M0.1
+fixture: fixtures/motion-graphics/madowaku-window-opening-001.json
+checks:
+  - source SVG is locally contained and viewBox matches scene
+  - named object IDs exist and keyframes are ordered
+  - handoff content is checksum pinned
+  - animated SVG export input is structurally valid and hashed
+  - static SVG export is HOLD
+  - actual Friction run and browser playback are never inferred from an SVG file
+promotion:
+  fixture: HOLD
+  live_requires:
+    - recorded Friction version and native project
+    - authenticated export provenance and SHA-256
+    - real browser or Godot render evidence
+    - keyboard and reduced-motion verification
+    - human artistic and asset-license review
