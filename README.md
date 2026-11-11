@@ -84,6 +84,21 @@ installed separately. Live UI evaluation can later hand off to the existing
 MADO Cockpit Playwright evidence flow. See
 [the M0.1 contract](docs/MGSF_DESIGN_TO_CODE_BRIDGE_M0_1.md).
 
+## Friction Motion Graphics Bridge M0.1 (incubation)
+
+Generate an editable SVG motion handoff for Friction 1.0.0 and verify
+operator-supplied animated SVG structure without claiming the editor ran.
+
+```sh
+mgsf motion-graphics-plan fixtures/motion-graphics/madowaku-window-opening-001.json --output-root missions/motion-graphics
+mgsf motion-graphics-eval <generated-mission-folder> <friction-export.svg> --output-root evidence/motion-graphics
+```
+
+The sample source is **static**, not a rendered Friction animation. Friction
+must be installed and operated separately. Fixture-only evidence stays HOLD;
+animated SVG intake is review-required, not live/browser proof. See
+[the M0.1 contract](docs/MGSF_MOTION_GRAPHICS_BRIDGE_M0_1.md).
+
 ## Windows product preview
 
 Product:
