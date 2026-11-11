@@ -84,6 +84,22 @@ services:
       live: independently_reviewed_playwright_build
       live_required_for_promotion: true
 
+  - id: motion-graphics-bridge
+    name: Friction Motion Graphics Bridge
+    stage: incubation
+    problem: Compile reusable Friction handoffs and verify operator-supplied SVG exports without inventing render or browser proof.
+    milestone: MGSF-MOTION-M0.1
+    entrypoint: mgsf motion-graphics-plan
+    eval_entrypoint: mgsf motion-graphics-eval
+    service_contract: docs/MGSF_MOTION_GRAPHICS_BRIDGE_M0_1.md
+    eval: evals/motion-graphics-bridge.yaml
+    related_repo: madowaku/madowaku-cockpit
+    upstream: friction2d/friction
+    evidence:
+      fixture: deterministic_motion_handoff
+      live: recorded_friction_export_plus_browser_review
+      live_required_for_promotion: true
+
   - id: build-doctor
     name: Game Build Doctor
     stage: candidate
