@@ -19,7 +19,7 @@ func _ready() -> void:
         stack.sprite_sheet = ImageTexture.create_from_image(image)
         stack.layers = int(metadata["slices"])
         stack.angular_velocity = 0.3 + float(i) * 0.23
-        stack.position = Vector2(X_COORDS[i], 115)
+        stack.position = Vector2(X_COORDS[i], 129)
         add_child(stack)
 
 func _draw() -> void:
