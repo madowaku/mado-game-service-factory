@@ -84,6 +84,20 @@ services:
       live: independently_reviewed_playwright_build
       live_required_for_promotion: true
 
+  - id: sakuga-interaction
+    name: Sakuga Interaction Layer / Human Touch Lab
+    stage: incubation
+    problem: Add expressive but truthful UI feedback to game-development workflows without expanding control-plane authority.
+    milestone: MGSF-SAKUGA-M0.1
+    service_contract: docs/MGSF_SAKUGA_INTERACTION_LAYER_M0_1.md
+    eval: evals/sakuga-interaction.yaml
+    related_repo: madowaku/mado-cockpit
+    upstream: finktheartist/sakuga-vfx
+    evidence:
+      fixture: offline_simulated_interaction_lab
+      real: actual_cockpit_browser_and_accessibility_review
+      live_required_for_promotion: true
+
   - id: build-doctor
     name: Game Build Doctor
     stage: candidate
