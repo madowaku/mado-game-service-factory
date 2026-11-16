@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MGSF Sakuga Interaction Lab M0.1</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --sk-ink: #192a33;
+      --sk-card: #fffaf2;
+      --sk-pri: #8decca;
+      --sk-acc: #ff84aa;
+      --sk-progress-width: 280px;
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      background: #101a24;
+      color: #e8f6f0;
+    }
+    * { box-sizing: border-box; }
+    body { min-height: 100vh; margin: 0; padding: 24px 16px; }
+    main { width: min(760px, 100%); margin: 48px auto; }
+    .eyebrow { color: #8decca; letter-spacing: .12em; font-size: .78rem; font-weight: 800; }
+    h1 { font-size: clamp(1.75rem, 6vw, 3rem); line-height: 1.15; margin: 12px 0; }
+    p { max-width: 64ch; line-height: 1.7; color: #bfd0dc; }
+    .lab { margin-top: 28px; padding: 28px; background: #1a2b38; border: 1px solid #38505d; border-radius: 18px; overflow: visible; }
+    .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; min-height: 92px; }
+    form { margin: 28px 0 0; }
+    .progress-wrap { min-height: 240px; margin: 22px 0 0; }
+    sakuga-progress { max-width: 100%; }
+    output { display: block; font-size: 1rem; min-height: 3.4rem; line-height: 1.6; color: #e8f6f0; }
+    .note { font-size: .88rem; color: #adc1ce; }
+    @media (max-width: 480px) {
+      main { margin: 12px auto; }
+      .lab { padding: 18px 14px; }
+      .actions { gap: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="eyebrow">MGSF · INCUBATION · M0.1</div>
+    <h1>Sakuga Interaction Lab</h1>
+    <p>A local, offline experiment in rewarding UI feedback. The task below is a simulation, not a real game build, QA pass or release authorization.</p>
+    <section class="lab" aria-label="Interaction demo">
+      <div class="actions">
+        <sakuga-button id="run">Run simulation</sakuga-button>
+        <sakuga-button id="reset" variant="secondary">Reset</sakuga-button>
+      </div>
+      <form id="review-options">
+        <sakuga-checkbox id="review" name="review" value="required" checked>Require human review</sakuga-checkbox>
+      </form>
+      <div class="progress-wrap">
+        <sakuga-progress id="progress" label="Simulated task progress"></sakuga-progress>
+      </div>
+      <output id="status" role="status" aria-live="polite">Ready. No work has been performed.</output>
+      <p class="note">No network calls, agents, game engines, or write operations. Motion follows your system reduced-motion preference. This demo is not part of the production Cockpit UI.</p>
+    </section>
+  </main>
+  <script src="./vendor/button.js"></script>
+  <script src="./vendor/checkbox.js"></script>
+  <script src="./vendor/progress.js"></script>
+  <script>
+    (() => {
+      const run = document.getElementById('run');
+      const reset = document.getElementById('reset');
+      const review = document.getElementById('review');
+      const progress = document.getElementById('progress');
+      const status = document.getElementById('status');
+      let ticker = null;
+      let step = 0;
+
+      const announce = message => { status.textContent = message; };
+      const stop = () => {
+        if (ticker !== null) clearInterval(ticker);
+        ticker = null;
+        run.disabled = false;
+      };
+
+      run.addEventListener('click', () => {
+        if (ticker !== null) return;
+        step = 0;
+        progress.reset();
+        run.disabled = true;
+        announce('Simulation started. 0 of 8 steps.');
+        ticker = setInterval(() => {
+          step += 1;
+          progress.set(step / 8);
+          announce('Simulation in progress. ' + step + ' of 8 steps.');
+          if (step === 8) {
+            clearInterval(ticker);
+            ticker = null;
+            // The progress component reports completion after its own animation settles.
+          }
+        }, 180);
+      });
+
+      progress.addEventListener('sakuga:done', () => {
+        run.disabled = false;
+        run.done();
+        announce(review.checked
+          ? 'Simulation finished. Human review is still required; no real QA passed.'
+          : 'Simulation finished. Review toggle is off; no real QA passed.');
+      });
+
+      reset.addEventListener('click', () => {
+        stop();
+        step = 0;
+        progress.reset();
+        announce('Reset. No work has been performed.');
+      });
+
+      review.addEventListener('change', () => {
+        if (ticker === null && step === 8) {
+          announce(review.checked
+            ? 'Simulation finished. Human review is still required; no real QA passed.'
+            : 'Simulation finished. Review toggle is off; no real QA passed.');
+        }
+      });
+
+      Promise.all(['sakuga-button', 'sakuga-checkbox', 'sakuga-progress']
+        .map(tag => customElements.whenDefined(tag)))
+        .then(() => { document.documentElement.dataset.componentsReady = 'true'; });
+    })();
+  </script>
+</body>
+</html>
