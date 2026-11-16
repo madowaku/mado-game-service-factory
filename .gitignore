@@ -6,3 +6,6 @@ dist/
 build/
 *.egg-info/
 evidence/
+
+# Locally generated sprite stacking demo assets
+examples/godot-pixel-volume/generated/

@@ -84,6 +84,18 @@ services:
       live: independently_reviewed_playwright_build
       live_required_for_promotion: true
 
+  - id: pixel-volume-studio
+    name: Pixel Volume Studio
+    stage: incubation
+    problem: Turn reproducible voxel primitives into rotatable pixel-art slice sheets without paid generation services.
+    milestone: MGSF-PVS-M0.1
+    entrypoint: python -m mgsf.pixel_volume
+    service_contract: docs/MGSF_PIXEL_VOLUME_STUDIO_M0_1.md
+    related_repo: madowaku/mado-asset-foundry
+    evidence:
+      fixture: synthetic_asset_fixture
+      live_required_for_promotion: true
+
   - id: build-doctor
     name: Game Build Doctor
     stage: candidate

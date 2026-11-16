@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "name": "paper-house",
+  "size": [24, 24, 20],
+  "shapes": [
+    {"kind":"box", "min":[4,4,0], "max":[20,20,11], "color":"#f3d9b4"},
+    {"kind":"box", "min":[10,4,1], "max":[15,5,9], "color":"#9c5f58"},
+    {"kind":"box", "min":[6,4,5], "max":[9,5,9], "color":"#87b1c8"},
+    {"kind":"box", "min":[16,4,5], "max":[19,5,9], "color":"#87b1c8"},
+    {"kind":"box", "min":[2,2,11], "max":[22,22,13], "color":"#b85f67"},
+    {"kind":"box", "min":[4,4,13], "max":[20,20,15], "color":"#c56b70"},
+    {"kind":"box", "min":[6,6,15], "max":[18,18,17], "color":"#db8d82"},
+    {"kind":"box", "min":[8,8,17], "max":[16,16,19], "color":"#eda99a"}
+  ]
+}
