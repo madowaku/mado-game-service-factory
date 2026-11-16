@@ -1,0 +1,25 @@
+id: sakuga-interaction
+milestone: MGSF-SAKUGA-M0.1
+stage: incubation
+upstream: finktheartist/sakuga-vfx
+pinned_revision: c3dabb173928a3ad2372183103caf2e6f50953d0
+fixture:
+  root: services/incubation/sakuga-interaction
+  browser_demo: index.html
+  kind: simulated_local_ui
+  real_backend: false
+  expected_release_approved: false
+checks:
+  - original assets match pinned Git blob hashes
+  - no runtime network imports or dependencies
+  - button completion follows the progress done event
+  - status reports simulation not actual product QA
+  - review option is not bypassed by effects
+promotion:
+  fixture_may_promote: false
+  requires_real_chromium_capture: true
+  requires_desktop_and_mobile_testing: true
+  requires_keyboard_touch_and_accessibility_review: true
+  requires_reduced_motion_review: true
+  requires_cockpit_security_and_layering_review: true
+  requires_human_taste_review: true
