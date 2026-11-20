@@ -84,6 +84,18 @@ installed separately. Live UI evaluation can later hand off to the existing
 MADO Cockpit Playwright evidence flow. See
 [the M0.1 contract](docs/MGSF_DESIGN_TO_CODE_BRIDGE_M0_1.md).
 
+## Launch Cinema M0.1 (incubation)
+
+Ava Studio's launch-remake workflow is available as a **review-first local Codex handoff**, not as an installed or executed renderer. A 15-second madowaku window teaser is the starter fixture. Third-party scripts, authentication, reference rights, paid music and publication remain manual gates.
+
+```sh
+mgsf launch-cinema-plan fixtures/launch-cinema/madowaku-window-teaser-001.json --output-root missions/launch-cinema
+```
+
+This generates a SHA-256 recorded mission and agent prompt with state NOT_EXECUTED, gate HOLD, and release_approved=false. It does not call Ava, spend credits, capture webpages or generate a video.
+
+See [Launch Cinema M0.1](docs/MGSF_LAUNCH_CINEMA_M0_1.md).
+
 ## Windows product preview
 
 Product:
