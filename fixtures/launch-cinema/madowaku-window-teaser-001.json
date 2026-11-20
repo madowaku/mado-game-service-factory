@@ -1,0 +1,24 @@
+{
+  "schema": "mgsf.launch-cinema-brief.v1",
+  "id": "madowaku-window-teaser-001",
+  "project_repository": "madowaku/madowaku.github.io",
+  "product_url": null,
+  "goal": "madowakuの窓をひとつ開けると、さまざまな小さな世界へつながることを15秒で感じさせる。機能一覧ではなく、発見の楽しさを伝える。",
+  "audience": "好奇心のあるゲーム好き、作品づくりや不思議なWeb体験が好きな人",
+  "creative_direction": "手描き・ピクセル・柔らかな光を尊重。夜の家に灯りが点り、窓が開き、実際の作品への入り口が見えて、最後に静かな誘いが残る。大げさなSaaS広告調にはしない。",
+  "cta": "窓をひらく",
+  "mode": "opening_only",
+  "aspect_ratio": "16:9",
+  "duration_seconds": 15,
+  "reference_url": null,
+  "reference_policy": "review_before_reuse",
+  "ava_credit_limit": 0,
+  "publication_approved": false,
+  "must_keep": [
+    "撮影前にmadowakuの現行サイトのURLと掲載許可を確認する。確認前に偽のUIや架空の作品を作らない。",
+    "実際の窓や作品を素材として使用し、窓を開けて世界が変わる体験を示す。",
+    "カットの速度やカメラの文法だけを参考にし、第三者の映像・音声・文章・人物・ロゴを転用しない。",
+    "窓の手触りと静けさを残し、スマートフォンサイズでも読める文字にする。",
+    "自動投稿、配信、公開、課金を行わず、映像が実在して検証されるまで HOLD とする。"
+  ]
+}
