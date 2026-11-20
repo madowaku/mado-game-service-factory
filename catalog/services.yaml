@@ -84,6 +84,21 @@ services:
       live: independently_reviewed_playwright_build
       live_required_for_promotion: true
 
+  - id: launch-cinema
+    name: Launch Cinema / Ava Studio Handoff
+    stage: incubation
+    problem: Turn a game's launch idea into a rights-aware, credit-capped, evidence-backed short launch-film handoff.
+    milestone: MGSF-LAUNCH-M0.1
+    entrypoint: mgsf launch-cinema-plan
+    service_contract: docs/MGSF_LAUNCH_CINEMA_M0_1.md
+    eval: evals/launch-cinema.yaml
+    related_repo: madowaku/madowaku.github.io
+    upstream: hologramxyz/avastudio-mcp
+    evidence:
+      fixture: deterministic_offline_launch_mission
+      live: reviewed_local_ava_launch_render
+      live_required_for_promotion: true
+
   - id: build-doctor
     name: Game Build Doctor
     stage: candidate

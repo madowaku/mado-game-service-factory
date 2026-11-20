@@ -11,6 +11,7 @@ from .edenspark_agent_adapter import (
     load_mission as load_edenspark_mission,
     run_autonomous_loop as run_edenspark_loop,
 )
+from .launch_cinema import create_mission_pack as create_launch_cinema_mission
 from .gameplay_capture import run_capture_playtest, run_gameplay_capture
 from .godot_capture_adapter import run_godot_capture_adapter
 from .playtest_report import run_playtest_report
@@ -237,6 +238,15 @@ def main() -> int:
         "--output-root", type=Path, default=Path("evidence/design-to-code")
     )
 
+    launch_plan = sub.add_parser(
+        "launch-cinema-plan",
+        help="Compile a local review-first launch-video opening mission",
+    )
+    launch_plan.add_argument("brief", type=Path, help="Launch Cinema brief JSON")
+    launch_plan.add_argument(
+        "--output-root", type=Path, default=Path("missions/launch-cinema")
+    )
+
     args = parser.parse_args()
 
     if args.command in {"validate-catalog", "list"}:
@@ -250,6 +260,12 @@ def main() -> int:
             services = [s for s in services if s["stage"] == args.stage]
         for service in services:
             print(f"{service['id']}\t{service['stage']}\t{service['name']}")
+        return 0
+
+    if args.command == "launch-cinema-plan":
+        root = create_launch_cinema_mission(args.brief, args.output_root)
+        print(f"Launch Cinema mission: {root}")
+        print("state=NOT_EXECUTED gate=HOLD release_approved=false")
         return 0
 
     if args.command == "design-to-code-plan":

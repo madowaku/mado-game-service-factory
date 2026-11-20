@@ -82,6 +82,15 @@ Do not call reconstructed SEGA slide values a live network measurement.
 - Do not equate screenshots with semantic UI, verified Playwright origin, functionality, accessibility or a release decision.
 - A fixture is HOLD; an operator-supplied browser screenshot receipt is at most READY_FOR_HUMAN_REVIEW.
 
+## Launch Cinema M0.1 boundary
+
+- Compile short-launch missions offline with mgsf launch-cinema-plan; never call a compiled handoff a generated video.
+- Do not install or execute Ava Studio / third-party setup scripts without operator review and authorization.
+- Validate live product pages, asset rights and third-party reference attribution before capture or remixing.
+- The M0.1 fixture has zero Ava credits authorized; never make paid requests, upload private materials or publish automatically.
+- Keep launch missions HOLD until a real Mac/Linux render, native project, source hashes, actual QA logs, independent content/rights review and explicit publication approval.
+- Upstream source is revision-pinned for review, but the actual plugin is not vendored or installed by this repository.
+
 ## Deferred boundary
 External Tester Preview remains important and moves to the next unallocated milestone after M0.5.
 
