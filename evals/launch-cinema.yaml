@@ -1,0 +1,27 @@
+id: launch-cinema
+milestone: MGSF-LAUNCH-M0.1
+stage: incubation
+fixture:
+  brief: fixtures/launch-cinema/madowaku-window-teaser-001.json
+  expected_state: NOT_EXECUTED
+  expected_gate: HOLD
+  expected_render_verified: false
+  expected_release_approved: false
+checks:
+  - offline brief validation rejects unsafe ids and invalid format or spend limits
+  - mission records a SHA-256 brief hash and upstream revision
+  - generated handoff requires a verified product URL and real approved assets
+  - reference search, music generation and local rendering are not executed by this compiler
+  - zero-credit fixture never authorizes a paid Ava call
+  - protected source media and unapproved audio are excluded
+  - real artifact and QA evidence must be independently reviewed
+promotion:
+  requires_real_local_codex_run: true
+  requires_auth_and_dependency_review: true
+  requires_original_rights_review: true
+  requires_output_video_and_native_project: true
+  requires_source_and_media_sha256: true
+  requires_upstream_check_and_compare_logs: true
+  requires_human_screen_and_audio_review: true
+  requires_explicit_publication_approval: true
+  fixture_may_promote: false
